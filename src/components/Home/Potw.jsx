@@ -4,6 +4,8 @@ import { PotwCard } from "./Card";
 import { SparklesCore } from "../ui/sparkles";
 import { useEffect, useState } from "react";
 import { getPotwData } from "../../utils/contentful";
+import Squares from '../Elements/Squares';
+
 
 const Potw = () => {
   const [potwData, setPotwData] = useState({
@@ -23,16 +25,17 @@ const Potw = () => {
     >
       {/* Sparkles Background */}
       <div className="absolute inset-0 w-full h-full">
-        <SparklesCore
-          id="potwSparkles"
-          background="transparent"
-          minSize={0.6}
-          maxSize={1.4}
-          particleDensity={110}
-          className="w-full h-full"
-          particleColor="#C3FFC9"
-        />
+      <Squares 
+speed={0.5} 
+squareSize={40}
+direction='diagonal' // up, down, left, right, diagonal
+borderColor='#fff'
+hoverFillColor='#222'
+/>
+
       </div>
+    
+ 
 
       {/* Content */}
       <div className={`relative z-10 ${styles.contentWrapper}`}>

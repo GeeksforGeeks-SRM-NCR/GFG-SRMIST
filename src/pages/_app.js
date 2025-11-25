@@ -2,15 +2,18 @@ import { Roboto_Mono, Space_Mono } from "next/font/google";
 import "styles/globals.css";
 import { Layout } from "../components";
 import '../styles/Home/ScrambledText.module.css';
+import SplashCursor from '../components/Elements/SplashCursor'
 
 
 const Roboto = Roboto_Mono({ subsets: ["latin"] });
+
 const Space = Space_Mono({ subsets: ["latin"], weight: ["400", "700"] });
 
 export default function App({ Component }) {
   return (
     <>
       <Layout>
+        <SplashCursor />
         <Component />
       </Layout>
 
@@ -31,6 +34,8 @@ export default function App({ Component }) {
           font-family: ${Roboto.style.fontFamily};
           word-spacing: 0.2rem;
         }
+          
+          
       `}</style>
     </>
   );
