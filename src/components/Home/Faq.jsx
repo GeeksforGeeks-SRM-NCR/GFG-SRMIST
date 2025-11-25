@@ -1,6 +1,7 @@
 import { FaqApi } from "api/FaqAPI";
 import { useState } from "react";
 import styles from "styles/Home/Faq.module.css";
+import ScrambledText from '../Elements/ScrambleText';
 
 const Faq = () => {
   const [selected, setSelected] = useState(null);
@@ -14,7 +15,16 @@ const Faq = () => {
 
   return (
     <section className={styles.faq} id="faq">
-      <h2 className="section-title"> Frequently Asked Questions </h2>
+      
+            <ScrambledText
+        className="section-title"
+        radius={100}
+        duration={1.2}
+        speed={0.5}
+        scrambleChars=".:"
+      >
+       Frequently Asked Questions
+      </ScrambledText>
 
       {/* Accordion list */}
       <div className={styles.accordion}>

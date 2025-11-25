@@ -1,10 +1,20 @@
 import { FaDiscord, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import styles from "styles/Home/Footer.module.css";
+import ScrambledText from '../Elements/ScrambleText';
 
 const Footer = () => {
   return (
     <footer id="Contact">
-      <h2 className="section-title">Get In Touch</h2>
+
+            <ScrambledText
+        className="section-title"
+        radius={100}
+        duration={1.2}
+        speed={0.5}
+        scrambleChars=".:"
+      >
+       Get In Touch
+      </ScrambledText>
       <div className={styles.container}>
         <a
           href="https://www.linkedin.com/company/gfg-srm/"

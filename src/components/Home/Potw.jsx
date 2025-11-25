@@ -5,7 +5,7 @@ import TiltedCard from '../Elements/TiltedCard';
 import { useEffect, useState } from "react";
 import { getPotwData } from "../../utils/contentful";
 import Squares from '../Elements/Squares';
-
+import ScrambledText from '../Elements/ScrambleText';
 
 const Potw = () => {
   const [potwData, setPotwData] = useState({
@@ -25,7 +25,16 @@ const Potw = () => {
     >
       {/* Title - Outside the grid animation */}
       <div className="relative z-20 pt-8">
-        <h2 className="section-title text-white text-center">Performer of the Week</h2>
+       
+            <ScrambledText
+        className="section-title"
+        radius={100}
+        duration={1.2}
+        speed={0.5}
+        scrambleChars=".:"
+      >
+       Performer of the Week
+      </ScrambledText>
       </div>
 
       {/* Animated Grid Background */}
