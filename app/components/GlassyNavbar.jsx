@@ -3,11 +3,13 @@ import { Logo } from "../logo/logo";
 import Link from "next/link";
 import { useState } from "react";
 import DecryptedText from "./DecryptedText";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX, FiArrowLeft } from "react-icons/fi";
+import { usePathname } from "next/navigation";
 
 export default function GlassyNavbar() {
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const pathname = usePathname();
 
     const navItems = [
         { label: 'About', href: '/pages/about' },
@@ -15,6 +17,8 @@ export default function GlassyNavbar() {
         { label: 'Team', href: '/pages/team' },
         { label: 'Challenges', href: '/pages/challenges' }
     ];
+
+    const isHomePage = pathname === '/';
 
     return (
         <>
@@ -34,7 +38,7 @@ export default function GlassyNavbar() {
                             onMouseLeave={() => setHoveredIndex(null)}
                             className={`
                                 flex items-center justify-center px-7 py-2.5 text-lg font-roboto-slab font-medium text-white no-underline rounded-[30px] transition-all duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)]
-                                ${hoveredIndex === index
+                                ${hoveredIndex === index || pathname === item.href
                                     ? 'bg-[#2f8d46] border border-[#2f8d46] scale-105 shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-[10px]'
                                     : 'bg-transparent border border-transparent scale-100 shadow-none'}
                             `}
@@ -56,11 +60,29 @@ export default function GlassyNavbar() {
                     ))}
                 </div>
 
-                {/* Right side - Empty for balance on desktop */}
-                <div className="hidden md:block flex-none w-[60px]" />
+                {/* Right side - Go Back Button or Spacer */}
+                <div className="hidden md:flex flex-none w-[100px] justify-end">
+                    {!isHomePage && (
+                        <Link
+                            href="/"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
+                        >
+                            <FiArrowLeft />
+                            <span>Home</span>
+                        </Link>
+                    )}
+                </div>
 
                 {/* Mobile Menu Button */}
-                <div className="md:hidden flex items-center">
+                <div className="md:hidden flex items-center gap-4">
+                    {!isHomePage && (
+                        <Link
+                            href="/"
+                            className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
+                        >
+                            <FiArrowLeft size={20} />
+                        </Link>
+                    )}
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         className="text-white p-2 focus:outline-none"
