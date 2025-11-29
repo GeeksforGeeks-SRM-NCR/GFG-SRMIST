@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "GeeksForGeeks-SRMIST",
   description: "",
   icons: {
-    icon: "./logo/logo",
+    icon: "./titlelogo.png",
   },
 };
 

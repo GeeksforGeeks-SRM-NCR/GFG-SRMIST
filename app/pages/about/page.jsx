@@ -249,6 +249,24 @@ export default function HomePage() {
           </div>
         </section>
 
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '100vh',
+                    padding: '40px',
+                    color: 'white'
+                }}>
+                    <h1 style={{
+                        fontSize: '4rem',
+                        fontWeight: 'bold',
+                        marginBottom: '20px',
+                        textAlign: 'center'
+                    }}>
+                        ABOUT US
+                    </h1>
+                </div>
         {/* What We Do Section */}
         <section
           style={{
