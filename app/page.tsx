@@ -57,7 +57,8 @@ export default function Home() {
             enableHover={true}
             color="#ffffff"
           >
-            SRMIST NCR CHAPTER
+            Campus Body
+            SRMIST Delhi NCR Campus
           </FuzzyText>
 
         </div>
