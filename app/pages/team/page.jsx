@@ -14,6 +14,15 @@ const client = createClient({
     accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
 });
 
+const createSlug = (name) => {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')    // Remove special chars
+      .replace(/[\s_-]+/g, '-')    // Replace spaces with hyphens
+      .replace(/^-+|-+$/g, '');    // Remove leading/trailing hyphens
+  };
+
 export default function TeamPage() {
     const router = useRouter();
     const [selectedYear, setSelectedYear] = useState(2025);
@@ -41,8 +50,10 @@ export default function TeamPage() {
 
                 const formatted = response.items.map((item) => {
                     const imgUrl = item.fields.photo?.fields?.file?.url;
+                    const slug = createSlug(item.fields.name); 
                     return {
                         id: item.sys.id,
+                        slug: slug,
                         name: item.fields.name,
                         role: item.fields.role,
                         team: item.fields.team,
@@ -360,7 +371,7 @@ function MemberCard({ member, router, big = false, year }) {
 
     return (
         <div
-            onClick={() => router.push(`/pages/team/${member.id}`)}
+        onClick={() => router.push(`/pages/team/${member.slug}`)}
             style={{ cursor: "pointer" }}
         >
             <TiltedCard
