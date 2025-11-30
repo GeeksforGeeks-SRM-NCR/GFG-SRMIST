@@ -201,7 +201,7 @@ export default function TeamPage() {
                                             animation: "gradient-shift 3s ease infinite"
                                         }}
                                     >
-                                        General Members
+                                        Core Members
                                     </motion.h2>
 
                                     <div style={{ display: "grid", gap: "20px" }}>
