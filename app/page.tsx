@@ -58,7 +58,7 @@ export default function Home() {
             color="#ffffff"
           >
             Campus Body
-            SRMIST Delhi NCR Campus
+            SRMIST Delhi NCR
           </FuzzyText>
 
         </div>
