@@ -74,19 +74,8 @@ export default function AdminPage() {
     // --- Admin Actions ---
     const fetchRegistrations = async () => {
         try {
-            // Initialize Supabase Client (Client-side)
-            // Note: In a real app, use environment variables.
-            // Assuming public access or anon key is sufficient for this demo,
-            // or that the user has set these up.
-            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-            const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-            if (!supabaseUrl || !supabaseKey) {
-                console.warn('Supabase credentials missing');
-                return;
-            }
-
-            const supabase = createClient(supabaseUrl, supabaseKey);
+            // Use the shared Supabase client
+            const { supabase } = await import('@/lib/supabase');
 
             const { data, error } = await supabase
                 .from('vuln-VANGUARD')
