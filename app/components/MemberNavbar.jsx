@@ -22,7 +22,7 @@ export default function GlassyNavbar() {
 
     return (
         <>
-            <nav className="fixed top-[30px] left-1/2 -translate-x-1/2 w-[85%] max-w-[1100px] h-[70px] bg-white/5 backdrop-blur-[25px] saturate-[180%] border border-white/15 rounded-[40px] shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.2),inset_0_0_20px_rgba(255,255,255,0.02)] flex items-center justify-between px-6 md:px-10 z-[1000]">
+            <nav className="fixed top-[30px] left-1/2 -translate-x-1/2 w-[85%] max-w-[1100px] h-[70px] bg-white/8 backdrop-blur-[30px] saturate-[180%] border border-white/15 rounded-[40px] shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.2),inset_0_0_20px_rgba(255,255,255,0.02)] flex items-center justify-between px-6 md:px-10 z-[1000]">
                 {/* Left side - Logo */}
                 <div className="flex items-center flex-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
                     <Logo />
@@ -62,27 +62,27 @@ export default function GlassyNavbar() {
 
                 {/* Right side - Team Button */}
                 <div className="hidden md:flex flex-none w-[100px] justify-end">
-                    
-                        <Link
-                            href="/pages/team"
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
-                        >
-                            <FiArrowLeft />
-                            <span>Team</span>
-                        </Link>
-                    
+
+                    <Link
+                        href="/pages/team"
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
+                    >
+                        <FiArrowLeft />
+                        <span>Team</span>
+                    </Link>
+
                 </div>
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden flex items-center gap-4">
-                    
-                        <Link
-                            href="/pages/team"
-                            className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
-                        >
-                            <FiArrowLeft size={20} />
-                        </Link>
-                    
+
+                    <Link
+                        href="/pages/team"
+                        className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
+                    >
+                        <FiArrowLeft size={20} />
+                    </Link>
+
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         className="text-white p-2 focus:outline-none"

@@ -1,6 +1,9 @@
 "use client";
 import RecruitmentForm from '@/app/components/RecruitmentForm';
 import Squares from '@/app/components/Squares';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+
 export default function RecruitmentPage() {
     return (
 
@@ -15,6 +18,7 @@ export default function RecruitmentPage() {
                 />
             </div>
             <div className="relative z-10">
+
                 <RecruitmentForm />
             </div>
         </div>
