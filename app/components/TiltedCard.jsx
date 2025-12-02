@@ -101,7 +101,7 @@ export default function TiltedCard({
         }}
       >
         {children ? (
-          <div className="absolute top-0 left-0 w-full h-full [transform:translateZ(0)]">
+          <div className="relative w-full h-full [transform:translateZ(0)]">
             {children}
           </div>
         ) : (

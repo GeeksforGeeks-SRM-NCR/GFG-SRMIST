@@ -94,12 +94,7 @@ export default function HomePage() {
                             style={{
                                 fontSize: "clamp(3rem, 8vw, 5rem)",
                                 marginBottom: "20px",
-                                background: "linear-gradient(135deg, #ffffff 0%, #46b94e 50%, #ffffff 100%)",
-                                backgroundSize: "200% 200%",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                                backgroundClip: "text",
-                                animation: "gradient-shift 3s ease infinite",
+                                color: "#46b94e",
                                 textAlign: "center",
                             }}
                         >
@@ -285,24 +280,29 @@ export default function HomePage() {
                 <section
                     style={{
                         padding: "80px 40px",
-                        textAlign: "center",
                     }}
                 >
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                         style={{
-                            maxWidth: "800px",
+                            maxWidth: "900px",
                             margin: "0 auto",
+                            padding: "clamp(30px, 5vw, 50px)",
+                            background: "rgba(0, 0, 0, 0.6)",
+                            borderRadius: "20px",
+                            border: "1px solid rgba(70, 185, 78, 0.3)",
+                            backdropFilter: "blur(10px)",
+                            textAlign: "center",
                         }}
                     >
                         <h2
                             className="font-sf-pro"
                             style={{
                                 fontSize: "clamp(2rem, 5vw, 3rem)",
-                                marginBottom: "30px",
+                                marginBottom: "25px",
                                 color: "#46b94e",
                             }}
                         >
@@ -311,28 +311,34 @@ export default function HomePage() {
                         <p
                             className="font-sf-pro"
                             style={{
-                                fontSize: "1.2rem",
+                                fontSize: "clamp(1rem, 2vw, 1.15rem)",
                                 lineHeight: "1.8",
-                                marginBottom: "40px",
-                                color: "rgba(255, 255, 255, 0.8)",
+                                marginBottom: "35px",
+                                color: "rgba(255, 255, 255, 0.92)",
                             }}
                         >
                             Be part of a vibrant community where innovation meets
                             collaboration. Whether you're a beginner or an expert, there's a
-                            place for you here.
+                            place for you here. Join us to learn, grow, and build amazing
+                            things together!
                         </p>
 
                         <Link href="/pages/recruitment">
                             <motion.button
-                                whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(70, 185, 78, 0.4)" }}
+                                className="font-sf-pro"
+                                whileHover={{
+                                    scale: 1.05,
+                                    boxShadow: "0 0 30px rgba(70, 185, 78, 0.5)",
+                                    background: "rgba(70, 185, 78, 0.3)",
+                                }}
                                 whileTap={{ scale: 0.95 }}
                                 style={{
-                                    padding: "15px 40px",
-                                    fontSize: "1.2rem",
-                                    fontWeight: "bold",
+                                    padding: "16px 45px",
+                                    fontSize: "1.1rem",
+                                    fontWeight: "600",
                                     color: "white",
                                     background: "rgba(70, 185, 78, 0.2)",
-                                    border: "1px solid #46b94e",
+                                    border: "2px solid #46b94e",
                                     borderRadius: "30px",
                                     backdropFilter: "blur(10px)",
                                     cursor: "pointer",

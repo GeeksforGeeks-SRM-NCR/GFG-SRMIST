@@ -61,7 +61,7 @@ export default function GlassyNavbar() {
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
                             className={`
-                                flex items-center justify-center px-7 py-2.5 text-lg font-medium text-white no-underline rounded-[30px] transition-all duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)]
+                                font-sf-pro flex items-center justify-center px-7 py-2.5 text-lg font-medium text-white no-underline rounded-[30px] transition-all duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)]
                                 ${hoveredIndex === index || pathname === item.href
                                     ? 'bg-[#2f8d46] border border-[#2f8d46] scale-105 shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-[10px]'
                                     : 'bg-transparent border border-transparent scale-100 shadow-none'}
@@ -76,7 +76,7 @@ export default function GlassyNavbar() {
                                 speed={40}
                                 maxIterations={15}
                                 characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+"
-                                className="revealed"
+                                className="revealed font-sf-pro"
                                 parentClassName="all-letters"
                                 encryptedClassName="encrypted"
                             />
@@ -86,22 +86,24 @@ export default function GlassyNavbar() {
 
                 {/* Right side - Login/Logout & Go Back */}
                 <div className="hidden md:flex flex-none w-[150px] justify-end items-center gap-3">
-                    {user ? (
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
-                            title="Logout"
-                        >
-                            <LogOut size={18} />
-                        </button>
-                    ) : (
-                        <Link
-                            href="/login"
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
-                            title="Login"
-                        >
-                            <LogIn size={18} />
-                        </Link>
+                    {isHomePage && (
+                        user ? (
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
+                                title="Logout"
+                            >
+                                <LogOut size={18} />
+                            </button>
+                        ) : (
+                            <Link
+                                href="/login"
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
+                                title="Login"
+                            >
+                                <LogIn size={18} />
+                            </Link>
+                        )
                     )}
 
                     {!isHomePage && (
@@ -117,20 +119,22 @@ export default function GlassyNavbar() {
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden flex items-center gap-4">
-                    {user ? (
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
-                        >
-                            <LogOut size={18} />
-                        </button>
-                    ) : (
-                        <Link
-                            href="/login"
-                            className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
-                        >
-                            <LogIn size={18} />
-                        </Link>
+                    {isHomePage && (
+                        user ? (
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
+                            >
+                                <LogOut size={18} />
+                            </button>
+                        ) : (
+                            <Link
+                                href="/login"
+                                className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
+                            >
+                                <LogIn size={18} />
+                            </Link>
+                        )
                     )}
 
                     {!isHomePage && (
@@ -159,7 +163,7 @@ export default function GlassyNavbar() {
                                 key={index}
                                 href={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-2xl font-medium text-white hover:text-[#2f8d46] transition-colors"
+                                className="font-sf-pro text-2xl font-medium text-white hover:text-[#2f8d46] transition-colors"
                             >
                                 {item.label}
                             </Link>
