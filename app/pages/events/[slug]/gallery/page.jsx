@@ -81,9 +81,9 @@ export default function EventGalleryPage() {
             {domeImages.length > 0 ? (
                 <DomeGallery
                     images={domeImages}
-                    fit={isMobile ? 1.1 : 0.95}
-                    fitBasis={isMobile ? "width" : "auto"}
-                    minRadius={isMobile ? 600 : 800}
+                    fit={isMobile ? 1.3 : 0.95}
+                    fitBasis={isMobile ? "height" : "auto"}
+                    minRadius={isMobile ? 700 : 800}
                     maxRadius={isMobile ? 1200 : 1600}
                     openedImageWidth={isMobile ? "min(95vw, 700px)" : "700px"}
                     openedImageHeight={isMobile ? "min(85vh, 700px)" : "700px"}
