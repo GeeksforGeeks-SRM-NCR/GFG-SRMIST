@@ -1,11 +1,11 @@
 import { createClient } from 'contentful-management';
 
-if (!process.env.CONTENTFUL_MANAGEMENT_TOKEN) {
+if (!process.env.NEXT_PUBLIC_CONTENTFUL_PAT) {
   throw new Error('CONTENTFUL_MANAGEMENT_TOKEN is not defined');
 }
 
 export const contentfulManagementClient = createClient({
-  accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
+  accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_PAT,
 });
 
 export const SPACE_ID = process.env.CONTENTFUL_SPACE_ID!;
