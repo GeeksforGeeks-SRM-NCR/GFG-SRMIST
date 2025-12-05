@@ -17,7 +17,7 @@ export default function AdrikaSarawatPage() {
         email: "sarawatadrika@gmail.com",
         linkedin: "https://www.linkedin.com/in/adrika-sarawat-99209a328/",
         github: "https://github.com/Adrika-02",
-        about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
+        about: "As a highly driven and inquisitive third-year Computer Science student, I bring hands-on experience in full-stack development across both web and desktop applications. I enjoy transforming ideas into fully functional, user-centric software by blending strong problem-solving skills with a creative approach to UI/UX design. During my Web Development Internship, I gained real-world experience by building responsive user interfaces, handling backend integrations, and working on a complete project from planning to deployment—enhancing both my technical expertise and practical understanding of development workflows.",
         profileImage: "https://images.ctfassets.net/u39iu0kuz48f/4Rc3YNWdd96uMWsOA2wPHd/a0fd1329b0a1392fc8ddefb6782816bf/image.png",
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
@@ -439,7 +439,7 @@ export default function AdrikaSarawatPage() {
                                     {/* Social Links */}
                                     <div style={{ display: "flex", gap: "12px" }}>
                                         <a
-                                            href={`https://${profileData.linkedin}`}
+                                            href={`${profileData.linkedin}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
@@ -473,7 +473,7 @@ export default function AdrikaSarawatPage() {
                                             LinkedIn
                                         </a>
                                         <a
-                                            href={`https://${profileData.github}`}
+                                            href={`${profileData.github}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{

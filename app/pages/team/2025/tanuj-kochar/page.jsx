@@ -10,16 +10,16 @@ import { Logo2 } from "../../../../logo/logo2";
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-        name: "Pulkit Gupta",
-        role: "Technical Co-Lead",
+        name: "Tanuj Kochar",
+        role: "Marketing Lead",
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
-        email: "gupta.pulkit2408@gmail.com",
-        linkedin: "https://www.linkedin.com/in/pulkitgupta2408/",
-        github: "https://github.com/pulkit1417",
+        email: "tanujkochar26@gmail.com",
+        linkedin: "https://in.linkedin.com/in/tanuj-kochar-a2b487297",
+        github: "https://github.com",
+        about: "I am a Computer Science Engineer undergrad graduating from SRM Institute of Science And Technology with specializing in Data Science along with B.s in Data Science and Application from IIT Madras.I thrive on turning raw data into meaningful insights and solving complex problems, moreover am driven by a passion for leveraging data to make informed decisions. My work range from predictive modelling to data visualisation, reflecting my commitment to apply logical knowledge in practical scenarios.",
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/5R6YysIoRR0RuyMZ7ZE7s2/500ba95d4ee5a38b0ba104db4a4be1c9/WhatsApp_Image_2025-12-05_at_13.46.47.jpeg",
 
-        about: "Computer Science undergraduate at SRM University with a CGPA of 9.95, passionate about Full Stack Development, and DevOps. I specialize in building scalable, secure, and efficient web applications using the MEARN stack. My projects include Connect SRM (500+ users), and contributions to the official websites of GFG, ISTE and CSI clubs — showcasing my ability to deliver reliable solutions in team-based environments. With 300+ LeetCode problems solved, I’ve developed strong problem-solving skills and a solid grasp of core DSA concepts. I'm enthusiastic about infrastructure automation, deployment pipelines, and backend performance — and committed to building real-world tech that makes a difference.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/2iHxApodM34qW7BuN1mV44/391332fe506b7c43998876e2afff7792/pulkit.jpeg",
 
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
@@ -39,7 +39,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Pulkit Gupta',
+                    'fields.name': 'Tanuj Kochar',
                 });
 
                 if (response.items.length > 0) {

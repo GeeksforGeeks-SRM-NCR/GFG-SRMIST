@@ -10,17 +10,17 @@ import { Logo2 } from "../../../../logo/logo2";
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-        name: "Pulkit Gupta",
-        role: "Technical Co-Lead",
+        name: "Tanshi Praveen",
+        role: "Photography Lead",
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
         email: "tanshipraveen005@gmail.com",
         linkedin: "https://www.linkedin.com/in/tanshi-praveen-a46b21328",
-        github: "https://github.com/tanshi-praveen",
+        github: "https://github.com/",
 
-        about: "I’m Trisha Raj, a 3rd-year B.Tech CSE student passionate about building impactful solutions. I have hands-on experience in MERN Stack development, Data Analytics, and strong problem-solving skills with a good DSA foundation. I enjoy creating efficient, user-focused projects and continuously improving my technical expertise.",
+        about: "I’m Tanshi Praveen, a 3rd-year B.Tech CSE student passionate about photography. I have hands-on experience in MERN Stack development, Data Analytics, and strong problem-solving skills with a good DSA foundation. I enjoy creating efficient, user-focused projects and continuously improving my technical expertise.",
 
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/2iHxApodM34qW7BuN1mV44/391332fe506b7c43998876e2afff7792/pulkit.jpeg",
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/1svgSaHqKCs8XD6YLibQis/86e292798d2d8bfd3d9486492f8ec9b0/IMG_8783.JPG",
 
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
@@ -40,7 +40,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Pulkit Gupta',
+                    'fields.name': 'Tanshi Praveen',
                 });
 
                 if (response.items.length > 0) {

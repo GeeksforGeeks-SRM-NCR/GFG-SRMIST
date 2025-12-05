@@ -10,16 +10,16 @@ import { Logo2 } from "../../../../logo/logo2";
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-        name: "Pulkit Gupta",
-        role: "Technical Co-Lead",
+        name: "Trisha Raj",
+        role: "Social Media Lead",
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
-        email: "gupta.pulkit2408@gmail.com",
-        linkedin: "https://www.linkedin.com/in/pulkitgupta2408/",
-        github: "https://github.com/pulkit1417",
+        email: "rajtrisha1103@gmail.com",
+        linkedin: "https://in.linkedin.com/in/trisha-rajjj",
+        github: "https://github.com",
+        about: "I’m Trisha Raj, a 3rd-year B.Tech CSE student passionate about building impactful solutions. I have hands-on experience in MERN Stack development, Data Analytics, and strong problem-solving skills with a good DSA foundation. I enjoy creating efficient, user-focused projects and continuously improving my technical expertise.",
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/3aqZumHiG8n8jN8GI8E7Y4/a89d8308fb97f959ab916171c4ec96c1/image.png",
 
-        about: "Computer Science undergraduate at SRM University with a CGPA of 9.95, passionate about Full Stack Development, and DevOps. I specialize in building scalable, secure, and efficient web applications using the MEARN stack. My projects include Connect SRM (500+ users), and contributions to the official websites of GFG, ISTE and CSI clubs — showcasing my ability to deliver reliable solutions in team-based environments. With 300+ LeetCode problems solved, I’ve developed strong problem-solving skills and a solid grasp of core DSA concepts. I'm enthusiastic about infrastructure automation, deployment pipelines, and backend performance — and committed to building real-world tech that makes a difference.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/2iHxApodM34qW7BuN1mV44/391332fe506b7c43998876e2afff7792/pulkit.jpeg",
 
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
@@ -39,7 +39,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Pulkit Gupta',
+                    'fields.name': 'Trisha Raj',
                 });
 
                 if (response.items.length > 0) {
@@ -345,7 +345,6 @@ export default function AdrikaSarawatPage() {
                                             color: "rgba(255,255,255,0.85)",
                                             marginBottom: "20px",
                                             fontWeight: "400",
-                                            textAlign: "justify",
                                         }}
                                     >
                                         {profileData.about}

@@ -13,11 +13,11 @@ export default function Home() {
     { node: <SiInstagram color="#ffffff" />, title: "Instagram", href: "https://www.instagram.com/gfg_srmist_ncr" },
     { node: <SiGithub color="#ffffff" />, title: "GitHub", href: "https://github.com/GEEKSFORGEEKS-SRMIST-NCR" },
     { node: <SiLinkedin color="#ffffff" />, title: "LinkedIn", href: "https://www.linkedin.com/company/gfgsrmist/" },
-    { node: <SiDiscord color="#ffffff" />, title: "Discord", href: "https://discord.com/invite/jSCXs8tV" },
+    { node: <SiDiscord color="#ffffff" />, title: "Discord", href: "https://discord.gg/58uwPkFjJJ" },
     { node: <SiInstagram color="#ffffff" />, title: "Instagram", href: "https://www.instagram.com/gfg_srmist_ncr" },
     { node: <SiGithub color="#ffffff" />, title: "GitHub", href: "https://github.com/GEEKSFORGEEKS-SRMIST-NCR" },
     { node: <SiLinkedin color="#ffffff" />, title: "LinkedIn", href: "https://www.linkedin.com/company/gfgsrmist/" },
-    { node: <SiDiscord color="#ffffff" />, title: "Discord", href: "https://discord.com/invite/jSCXs8tV" },
+    { node: <SiDiscord color="#ffffff" />, title: "Discord", href: "https://discord.gg/58uwPkFjJJ" },
   ];
 
   return (

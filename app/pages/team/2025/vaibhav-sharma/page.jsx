@@ -15,7 +15,7 @@ export default function AdrikaSarawatPage() {
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
         email: "sharmavaibhav447@gmail.com",
-        linkedin: "https://www.linkedin.com/in/vaibhav-sharma-71a066363/",
+        linkedin: "https://in.linkedin.com/in/vaibhav-sharma-71a066363/",
         github: "https://github.com",
         about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
         profileImage: "https://images.ctfassets.net/u39iu0kuz48f/1KgtxBtXpB2ZtREJYb5UFw/8276293443027570a98672ed33ab6f82/image.png",

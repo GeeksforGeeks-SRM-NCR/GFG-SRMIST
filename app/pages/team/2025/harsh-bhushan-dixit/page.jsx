@@ -17,7 +17,7 @@ export default function AdrikaSarawatPage() {
         email: "harshbhushandixit@gmail.com",
         linkedin: "https://www.linkedin.com/in/harshbhushandixit/",
         github: "https://github.com/HarshBhushanD",
-        about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
+        about: "I’m Harsh Bhushan Dixit, a 3rd-year B.Tech CSE student passionate about web development. I have hands-on experience in MERN Stack development, Data Analytics, and strong problem-solving skills with a good DSA foundation. I enjoy creating efficient, user-focused projects and continuously improving my technical expertise.",
         profileImage: "https://images.ctfassets.net/u39iu0kuz48f/60F5GhPTtt0CLPbZfp4NOG/43193d84e43345c0347e75f9ed37858d/image.png",
 
 
