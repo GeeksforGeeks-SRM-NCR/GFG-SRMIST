@@ -33,6 +33,28 @@ export default async function AdminPage() {
                     <p className="text-lg font-medium text-white">{user.email}</p>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                    <a href="/admin/events" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 flex flex-col items-center gap-3 text-center">
+                        <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            📅
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-white">Events</h3>
+                            <p className="text-sm text-white/40">Manage club events</p>
+                        </div>
+                    </a>
+
+                    <a href="/admin/recruitment" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 flex flex-col items-center gap-3 text-center">
+                        <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            👥
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-white">Recruitment</h3>
+                            <p className="text-sm text-white/40">View submissions</p>
+                        </div>
+                    </a>
+                </div>
+
                 <LogoutButton />
             </div>
         </div>

@@ -8,5 +8,5 @@ export const contentfulManagementClient = createClient({
   accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_PAT,
 });
 
-export const SPACE_ID = process.env.CONTENTFUL_SPACE_ID!;
-export const ENVIRONMENT_ID = process.env.CONTENTFUL_ENVIRONMENT_ID || 'master';
+export const SPACE_ID = process.env.CONTENTFUL_SPACE_ID || process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID!;
+export const ENVIRONMENT_ID = process.env.CONTENTFUL_ENVIRONMENT_ID || process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID || 'master';
