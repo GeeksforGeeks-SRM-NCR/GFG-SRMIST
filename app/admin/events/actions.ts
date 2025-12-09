@@ -69,15 +69,12 @@ export async function uploadEventImage(eventId: string, formData: FormData) {
     if (!file) throw new Error('No file provided')
 
     const arrayBuffer = await file.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
 
     const environment = await getEnvironment()
 
     // Step 1: Upload file
     const upload = await environment.createUpload({
-        file: buffer,
-        contentType: file.type,
-        fileName: file.name
+        file: arrayBuffer
     })
 
     // Step 2: Create Asset
