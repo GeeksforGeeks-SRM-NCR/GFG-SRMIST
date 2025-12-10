@@ -3,7 +3,7 @@ import { Logo2 } from "./logo/logo2";
 import FuzzyText from "./components/FuzzyText";
 import GlassyNavbar from "./components/GlassyNavbar";
 import LogoLoop from './components/LogoLoop';
-import { SiInstagram, SiGithub, SiLinkedin, SiDiscord } from 'react-icons/si';
+import { SiInstagram, SiGithub, SiLinkedin, SiDiscord, SiX } from 'react-icons/si';
 
 import DecryptedText from './components/DecryptedText';
 
@@ -14,10 +14,13 @@ export default function Home() {
     { node: <SiGithub color="#ffffff" />, title: "GitHub", href: "https://github.com/GEEKSFORGEEKS-SRMIST-NCR" },
     { node: <SiLinkedin color="#ffffff" />, title: "LinkedIn", href: "https://www.linkedin.com/company/gfgsrmist/" },
     { node: <SiDiscord color="#ffffff" />, title: "Discord", href: "https://discord.gg/58uwPkFjJJ" },
+    { node: <SiX color="#ffffff" />, title: "Instagram", href: "https://x.com/gfg_srmist_ncr?s=11" },
     { node: <SiInstagram color="#ffffff" />, title: "Instagram", href: "https://www.instagram.com/gfg_srmist_ncr" },
     { node: <SiGithub color="#ffffff" />, title: "GitHub", href: "https://github.com/GEEKSFORGEEKS-SRMIST-NCR" },
     { node: <SiLinkedin color="#ffffff" />, title: "LinkedIn", href: "https://www.linkedin.com/company/gfgsrmist/" },
     { node: <SiDiscord color="#ffffff" />, title: "Discord", href: "https://discord.gg/58uwPkFjJJ" },
+    { node: <SiX color="#ffffff" />, title: "Instagram", href: "https://x.com/gfg_srmist_ncr?s=11" },
+
   ];
 
   return (

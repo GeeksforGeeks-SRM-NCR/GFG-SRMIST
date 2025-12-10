@@ -39,7 +39,7 @@ export default function ChallengesPage() {
                         textAlign: 'center',
                         color: '#46b94e'
                     }}>
-                      
+
                     </h1>
 
                     <div style={{
