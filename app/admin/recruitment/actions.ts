@@ -55,6 +55,7 @@ export async function toggleRecruitmentStatus(isOpen: boolean) {
         }
 
         revalidatePath('/admin/recruitment')
+        revalidatePath('/pages/recruitment')
     } catch (error) {
         console.error('Error toggling recruitment status:', error)
         throw error

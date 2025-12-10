@@ -4,6 +4,8 @@ import Squares from '@/app/components/Squares';
 import { Logo2 } from '@/app/logo/logo2';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 async function getRecruitmentStatus() {
     try {
         const entries = await contentfulClient.getEntries({
