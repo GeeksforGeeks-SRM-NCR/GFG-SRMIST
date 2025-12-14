@@ -39,7 +39,7 @@ export default function GlassyNavbar() {
         { label: 'About', href: '/pages/about' },
         { label: 'Events', href: '/pages/events' },
         { label: 'Team', href: '/pages/team' },
-        { label: 'Challenges', href: '/pages/challenges' }
+        { label: 'Challenges', href: '/practice' }
     ];
 
     const isHomePage = pathname === '/';
