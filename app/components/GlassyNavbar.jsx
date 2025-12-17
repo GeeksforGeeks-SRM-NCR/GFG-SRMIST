@@ -144,8 +144,8 @@ export default function GlassyNavbar() {
                     <Logo />
                 </Link>
 
-                {/* Center - Navigation Links (Desktop) */}
-                <div className="hidden md:flex gap-3 items-center justify-center flex-1">
+                {/* Center - Navigation Links (Desktop) - Show only above 1100px */}
+                <div className="hidden custom-desktop:flex gap-3 items-center justify-center flex-1">
                     {navItems.map((item, index) => (
                         <Link
                             key={index}
@@ -176,13 +176,13 @@ export default function GlassyNavbar() {
                     ))}
                 </div>
 
-                {/* Right side - Login/Logout & Go Back (Home button restored) */}
-                <div className="hidden md:flex flex-none w-[150px] justify-end items-center gap-3">
+                {/* Right side - Login/Logout & Go Back - Show only above 1100px */}
+                <div className="hidden custom-desktop:flex flex-none justify-end items-center gap-3 min-w-[180px]">
                     {isHomePage && (
                         user ? (
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap"
                                 title="Logout"
                             >
                                 <LogOut size={18} />
@@ -190,7 +190,7 @@ export default function GlassyNavbar() {
                         ) : (
                             <Link
                                 href="/login"
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap"
                                 title="Login"
                             >
                                 <LogIn size={18} />
@@ -202,7 +202,7 @@ export default function GlassyNavbar() {
                     {!isHomePage && (
                         <Link
                             href="/"
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap"
                         >
                             <FiArrowLeft />
                             <span>Home</span>
@@ -210,8 +210,8 @@ export default function GlassyNavbar() {
                     )}
                 </div>
 
-                {/* Mobile Menu Button */}
-                <div className="md:hidden flex items-center gap-4">
+                {/* Mobile Menu Button - Show below 1100px */}
+                <div className="custom-desktop:hidden flex items-center gap-4">
                     {isHomePage && (
                         user ? (
                             <button
@@ -251,9 +251,9 @@ export default function GlassyNavbar() {
                 </div>
             </nav>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile Menu Overlay - Show below 1100px */}
             {isMobileMenuOpen && (
-                <div className="fixed inset-0 z-[999] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center md:hidden">
+                <div className="fixed inset-0 z-[999] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center custom-desktop:hidden">
                     <div className="flex flex-col gap-6 items-center">
                         {navItems.map((item, index) => (
                             <Link
