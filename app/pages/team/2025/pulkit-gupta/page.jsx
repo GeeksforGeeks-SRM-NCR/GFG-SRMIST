@@ -1,26 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Mail, Linkedin, Github, MapPin, Briefcase } from "lucide-react";
-import GlassyNavbar from "../../../../components/MemberNavbar";
+import { Mail, Linkedin, Github, MapPin, Calendar, Award, Code, Sparkles, ArrowLeft, ExternalLink } from "lucide-react";
+import { motion } from "motion/react";
+import GlassyNavbar from "../../../../components/GlassyNavbar";
 import Squares from "../../../../components/Squares";
+import LightRays from "../../../../components/LightRays";
 import { contentfulClient } from '@/lib/contentful';
 import { Logo2 } from "../../../../logo/logo2";
+import { Logo } from "../../../../logo/logo";
 
-export default function AdrikaSarawatPage() {
-    const [isHovered, setIsHovered] = useState(false);
+export default function PulkitGuptaProfile() {
     const [profileData, setProfileData] = useState({
         name: "Pulkit Gupta",
-        role: "Technical Co-Lead",
+        role: "Member",
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
-        email: "gupta.pulkit2408@gmail.com",
-        linkedin: "https://www.linkedin.com/in/pulkitgupta2408/",
-        github: "https://github.com/pulkit1417",
-
-        about: "Computer Science undergraduate at SRM University with a CGPA of 9.95, passionate about Full Stack Development, and DevOps. I specialize in building scalable, secure, and efficient web applications using the MEARN stack. My projects include Connect SRM (500+ users), and contributions to the official websites of GFG, ISTE and CSI clubs — showcasing my ability to deliver reliable solutions in team-based environments. With 300+ LeetCode problems solved, I’ve developed strong problem-solving skills and a solid grasp of core DSA concepts. I'm enthusiastic about infrastructure automation, deployment pipelines, and backend performance — and committed to building real-world tech that makes a difference.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/2iHxApodM34qW7BuN1mV44/391332fe506b7c43998876e2afff7792/pulkit.jpeg",
-
+        email: "member@srmist.edu.in",
+        linkedin: "#",
+        github: "#",
+        about: "Hi, I’m Pulkit Gupta — driven by a passion for creating impactful digital solutions. From hackathons to leadership roles, I thrive on transforming ambitious ideas into reality. I excel in collaborative team environments and strive to leave a meaningful mark in the tech space.",
+        profileImage: "/placeholder.png",
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
             { name: "Next.js", level: "Advanced", color: "#000000" },
@@ -33,7 +33,6 @@ export default function AdrikaSarawatPage() {
         ],
     });
 
-    // Fetch profile data from Contentful
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
@@ -54,13 +53,12 @@ export default function AdrikaSarawatPage() {
                         linkedin: member.linkedin || prev.linkedin,
                         github: member.github || prev.github,
                         about: member.about || prev.about,
-                        profileImage: member.profileImage || prev.profileImage,
+                        profileImage: member.photo?.fields?.file?.url ? (member.photo.fields.file.url.startsWith('//') ? `https:${member.photo.fields.file.url}` : member.photo.fields.file.url) : prev.profileImage,
                         skills: member.skills || prev.skills,
                     }));
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
-                // Keep using default data on error
             }
         };
 
@@ -68,9 +66,9 @@ export default function AdrikaSarawatPage() {
     }, []);
 
     return (
-        <div style={{ width: "100%", minHeight: "100vh", position: "relative" }}>
-            {/* Background */}
-            <div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
+        <div className="min-h-screen bg-black text-white relative overflow-hidden">
+            {/* Background Effects */}
+            <div className="fixed inset-0 z-0">
                 <Squares
                     speed={0.5}
                     squareSize={40}
@@ -80,647 +78,206 @@ export default function AdrikaSarawatPage() {
                 />
             </div>
 
-            {/* Foreground content */}
-            <div style={{ position: "relative", zIndex: 1 }}>
-                <GlassyNavbar backLink="/pages/team" backLabel="← Back to Team" />
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <LightRays
+                    raysColor="#46b94e"
+                    raysOrigin="top-center"
+                    raysSpeed={1.5}
+                    lightSpread={0.8}
+                    rayLength={1.2}
+                    followMouse={true}
+                    mouseInfluence={0.1}
+                    noiseAmount={0.1}
+                    distortion={0.05}
+                />
+            </div>
 
-                <main
-                    style={{
-                        minHeight: "100vh",
-                        padding: "100px 40px 40px",
-                        color: "white",
-                    }}
-                >
-                    {/* Main Content Container */}
-                    <div
-                        className="main-grid"
-                        style={{
-                            maxWidth: "1400px",
-                            width: "100%",
-                            margin: "0 auto",
-                            display: "grid",
-                            gridTemplateColumns: "400px 1fr",
-                            gridTemplateRows: "auto auto",
-                            gap: "30px",
-                            alignItems: "start",
-                        }}
+            {/* Ambient Glow */}
+            <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-green-600/10 rounded-full blur-[128px] z-0 animate-pulse" />
+            <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[128px] z-0 animate-pulse" style={{ animationDelay: '1s' }} />
+
+            {/* Content */}
+            <div className="relative z-10">
+                <GlassyNavbar />
+
+                <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+                    {/* Hero Section */}
+                    <motion.div
+                        initial={{ y: 30 }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="flex flex-col lg:flex-row gap-12 mb-16"
                     >
-                        {/* Top Left - Lanyard ID Card */}
-                        <div
-                            className="id-card-container"
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                position: "sticky",
-                                top: "120px",
-                                left: "220px",
-                            }}
+                        {/* Profile Image Card */}
+                        <motion.div
+                            initial={{ x: -30 }}
+                            animate={{ x: 0 }}
+                            transition={{ delay: 0.2, duration: 0.8 }}
+                            className="lg:w-80 shrink-0"
                         >
-                            {/* Lanyard String */}
-                            <div
-                                className="id-card-wrapper"
-                                style={{
-                                    position: "relative",
-
-                                    transformOrigin: "top center",
-                                }}
-                            >
-                                {/* Lanyard Clip */}
-                                <div
-                                    style={{
-                                        width: "40px",
-                                        height: "20px",
-                                        background: "linear-gradient(145deg, #444, #222)",
-                                        borderRadius: "10px 10px 0 0",
-                                        margin: "0 auto",
-                                        position: "relative",
-                                        boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            width: "8px",
-                                            height: "8px",
-                                            background: "#666",
-                                            borderRadius: "50%",
-                                            position: "absolute",
-                                            top: "6px",
-                                            left: "50%",
-                                            transform: "translateX(-50%)",
-                                        }}
-                                    />
-                                </div>
-
-                                {/* Lanyard String */}
-                                <div
-                                    style={{
-                                        width: "4px",
-                                        height: "80px",
-                                        background: "linear-gradient(to bottom, #00ff88, #00cc6a)",
-                                        margin: "0 auto",
-                                        boxShadow: "0 0 10px rgba(0,255,136,0.3)",
-                                    }}
-                                />
-
-                                {/* ID Card */}
-                                <div
-                                    style={{
-                                        width: "320px",
-                                        background: "rgba(5, 3, 3, 0.89)",
-                                        backdropFilter: "blur(20px)",
-                                        borderRadius: "24px",
-                                        padding: "30px",
-                                        border: "1px solid rgba(0, 255, 136, 0.2)",
-                                        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 255, 136, 0.1), inset 0 0 20px rgba(0, 255, 136, 0.05)",
-                                        position: "relative",
-                                        overflow: "hidden",
-                                        transition: "all 0.3s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = "scale(1.05) rotateY(5deg)";
-                                        e.currentTarget.style.boxShadow = "0 30px 80px rgba(0,0,0,0.6), 0 0 50px rgba(0,255,136,0.2)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = "scale(1) rotateY(0deg)";
-                                        e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(0,255,136,0.1)";
-                                    }}
-                                >
-
-                                    {/* Logo2 at Top Center */}
-                                    <div
-                                        style={{
-                                            width: "180px",
-                                            height: "auto",
-                                            margin: "0 auto 50px",
-                                        }}
-                                    >
+                            <div className="relative">
+                                {/* Decorative Background - Reduced greenish tint */}
+                                <div className="absolute -inset-4 bg-gradient-to-br from-gray-500/10 to-gray-600/10 rounded-3xl blur-2xl" />
+                                
+                                <div className="relative bg-gradient-to-br from-black/80 to-black/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 overflow-hidden">
+                                    {/* Logo2 at Top */}
+                                    <div className="w-32 mx-auto mb-4">
                                         <Logo2 />
                                     </div>
 
                                     {/* Profile Image */}
-                                    <div
-                                        style={{
-                                            width: "170px",
-                                            height: "170px",
-                                            margin: "20px auto 30px",
-                                            borderRadius: "50%",
-                                            overflow: "hidden",
-                                            border: "4px solid rgba(0,255,136,0.5)",
-                                            boxShadow: "0 0 30px rgba(0,255,136,0.3), inset 0 0 20px rgba(0,0,0,0.3)",
-                                            position: "relative",
-                                        }}
-                                    >
+                                    <div className="relative mb-6">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-gray-400/20 to-gray-500/20 rounded-2xl blur-xl opacity-30" />
                                         <img
                                             src={profileData.profileImage}
                                             alt={profileData.name}
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                objectFit: "cover",
-                                            }}
+                                            className="relative w-full aspect-square object-cover rounded-2xl border-2 border-white/20"
                                         />
+                                        <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-green-500 rounded-full flex items-center justify-center border-4 border-black shadow-xl p-3 overflow-hidden">
+                                            <Award className="text-black" size={32} />
+                                        </div>
                                     </div>
 
-                                    {/* Name and Role */}
-                                    <div style={{ textAlign: "center", marginTop: "30px" }}>
-                                        <h2
-                                            style={{
-
-                                                fontSize: "26px",
-                                                fontWeight: "700",
-                                                marginBottom: "8px",
-                                                color: "#00ff88",
-                                            }}
-                                        >
+                                    {/* Name & Role */}
+                                    <div className="text-center mb-6">
+                                        <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                                             {profileData.name}
-                                        </h2>
-                                        <p
-                                            style={{
-                                                fontSize: "14px",
-                                                color: "#00ff88",
-                                                fontWeight: "500",
-                                                letterSpacing: "1px",
-                                            }}
-                                        >
-                                            {profileData.role}
-                                        </p>
+                                        </h1>
+                                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full">
+                                            <Sparkles size={14} className="text-green-400" />
+                                            <span className="text-green-400 font-semibold text-sm">{profileData.role}</span>
+                                        </div>
                                     </div>
 
-                                    {/* ID Number */}
-                                    <div
-                                        style={{
-                                            marginTop: "20px",
-                                            padding: "10px",
-                                            background: "rgba(0,0,0,0.3)",
-                                            borderRadius: "8px",
-                                            textAlign: "center",
-                                            border: "1px solid rgba(0,255,136,0.2)",
-                                        }}
-                                    >
-                                        <p style={{ fontSize: "11px", color: "#888", marginBottom: "4px" }}>
-                                            Member Since 2024
-                                        </p>
-                                        <p
-                                            style={{
-                                                fontSize: "16px",
-                                                fontWeight: "600",
-                                                letterSpacing: "2px",
-                                                color: "#00ff88",
-                                            }}
-                                        >
-
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right Column - About Me and Technical Skills */}
-                        <div
-                            className="right-column"
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "30px",
-                                paddingLeft: "240px",
-                                paddingTop: "120px",
-                            }}
-                        >
-                            {/* About Me Section */}
-                            <div
-                                style={{
-                                    background: "rgba(10, 10, 10, 0.8)",
-                                    backdropFilter: "blur(20px)",
-                                    borderRadius: "24px",
-                                    padding: "28px 32px",
-                                    border: "1px solid rgba(0, 255, 136, 0.2)",
-                                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 255, 136, 0.1), inset 0 0 20px rgba(0, 255, 136, 0.05)",
-                                    position: "relative",
-                                    overflow: "hidden",
-                                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                                    maxWidth: "580px",
-                                    width: "100%",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = "translateY(-6px)";
-                                    e.currentTarget.style.boxShadow = "0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(0,255,136,0.15), inset 0 1px 0 rgba(255,255,255,0.12)";
-                                    e.currentTarget.style.border = "2px solid rgba(0,255,136,0.4)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = "translateY(0)";
-                                    e.currentTarget.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)";
-                                    e.currentTarget.style.border = "2px solid rgba(0,255,136,0.2)";
-                                }}
-                            >
-                                <div style={{ position: "relative", zIndex: 1 }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                                        <div
-                                            style={{
-                                                width: "4px",
-                                                height: "28px",
-                                                background: "linear-gradient(180deg, #00ff88, #00cc6a)",
-                                                borderRadius: "2px",
-                                                boxShadow: "0 0 15px rgba(0,255,136,0.4)",
-                                            }}
-                                        />
-                                        <h3
-                                            style={{
-                                                fontSize: "26px",
-                                                fontWeight: "700",
-
-                                                letterSpacing: "-0.3px",
-                                                margin: 0,
-                                                color: "#00ff88",
-                                            }}
-                                        >
-                                            About Me
-                                        </h3>
-                                    </div>
-
-                                    <p
-                                        style={{
-                                            fontSize: "14px",
-                                            lineHeight: "1.7",
-                                            color: "rgba(255,255,255,0.85)",
-                                            marginBottom: "20px",
-                                            fontWeight: "400",
-                                            textAlign: "justify",
-                                        }}
-                                    >
-                                        {profileData.about}
-                                    </p>
-
-                                    {/* Contact Info Grid */}
-                                    <div
-                                        style={{
-                                            display: "grid",
-                                            gridTemplateColumns: "1fr 1fr",
-                                            gap: "12px",
-                                            marginBottom: "16px",
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: "10px",
-                                                padding: "12px 14px",
-                                                background: "rgba(0,255,136,0.05)",
-                                                borderRadius: "12px",
-                                                border: "1px solid rgba(0,255,136,0.15)",
-                                                transition: "all 0.3s ease",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.background = "rgba(0,255,136,0.08)";
-                                                e.currentTarget.style.border = "1px solid rgba(0,255,136,0.25)";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.background = "rgba(0,255,136,0.05)";
-                                                e.currentTarget.style.border = "1px solid rgba(0,255,136,0.15)";
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    width: "32px",
-                                                    height: "32px",
-                                                    background: "linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,255,136,0.08))",
-                                                    borderRadius: "10px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    flexShrink: 0,
-                                                }}
-                                            >
-                                                <MapPin size={16} color="#00ff88" />
+                                    {/* Quick Info */}
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                                            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                <MapPin size={16} className="text-blue-400" />
                                             </div>
-                                            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)", flex: 1, lineHeight: "1.4" }}>
-                                                {profileData.location}
-                                            </span>
+                                            <div className="flex-1">
+                                                <p className="text-xs text-gray-500">Location</p>
+                                                <p className="text-sm text-gray-300">{profileData.location}</p>
+                                            </div>
                                         </div>
 
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: "10px",
-                                                padding: "12px 14px",
-                                                background: "rgba(0,255,136,0.05)",
-                                                borderRadius: "12px",
-                                                border: "1px solid rgba(0,255,136,0.15)",
-                                                transition: "all 0.3s ease",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.background = "rgba(0,255,136,0.08)";
-                                                e.currentTarget.style.border = "1px solid rgba(0,255,136,0.25)";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.background = "rgba(0,255,136,0.05)";
-                                                e.currentTarget.style.border = "1px solid rgba(0,255,136,0.15)";
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    width: "32px",
-                                                    height: "32px",
-                                                    background: "linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,255,136,0.08))",
-                                                    borderRadius: "10px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    flexShrink: 0,
-                                                }}
-                                            >
-                                                <Mail size={16} color="#00ff88" />
+                                        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                                            <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                                <Mail size={16} className="text-purple-400" />
                                             </div>
-                                            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)", flex: 1, lineHeight: "1.4" }}>
-                                                {profileData.email}
-                                            </span>
+                                            <div className="flex-1">
+                                                <p className="text-xs text-gray-500">Email</p>
+                                                <p className="text-sm text-gray-300 truncate">{profileData.email}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                                            <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                                <Calendar size={16} className="text-green-400" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-xs text-gray-500">Member Since</p>
+                                                <p className="text-sm text-gray-300">2024</p>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Social Links */}
-                                    <div style={{ display: "flex", gap: "12px" }}>
+                                    <div className="mt-6 flex gap-3">
                                         <a
-                                            href={`${profileData.linkedin}`}
+                                            href={profileData.linkedin}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            style={{
-                                                flex: 1,
-                                                padding: "12px 16px",
-                                                background: "linear-gradient(135deg, rgba(0,119,181,0.12), rgba(0,119,181,0.04))",
-                                                border: "1.5px solid rgba(0,119,181,0.25)",
-                                                borderRadius: "12px",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                gap: "8px",
-                                                textDecoration: "none",
-                                                color: "#0ea5e9",
-                                                fontSize: "13px",
-                                                fontWeight: "600",
-                                                transition: "all 0.3s ease",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.background = "linear-gradient(135deg, rgba(0,119,181,0.2), rgba(0,119,181,0.08))";
-                                                e.currentTarget.style.transform = "translateY(-2px)";
-                                                e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,119,181,0.25)";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.background = "linear-gradient(135deg, rgba(0,119,181,0.12), rgba(0,119,181,0.04))";
-                                                e.currentTarget.style.transform = "translateY(0)";
-                                                e.currentTarget.style.boxShadow = "none";
-                                            }}
+                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-500/10 border border-blue-500/30 rounded-xl text-blue-400 hover:bg-blue-500/20 hover:border-blue-500/50 transition-all group"
                                         >
-                                            <Linkedin size={16} />
-                                            LinkedIn
+                                            <Linkedin size={18} />
+                                            <span className="text-sm font-medium">LinkedIn</span>
                                         </a>
+
                                         <a
-                                            href={`${profileData.github}`}
+                                            href={profileData.github}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            style={{
-                                                flex: 1,
-                                                padding: "12px 16px",
-                                                background: "linear-gradient(135deg, rgba(139,92,246,0.12), rgba(139,92,246,0.04))",
-                                                border: "1.5px solid rgba(139,92,246,0.25)",
-                                                borderRadius: "12px",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                gap: "8px",
-                                                textDecoration: "none",
-                                                color: "#a78bfa",
-                                                fontSize: "13px",
-                                                fontWeight: "600",
-                                                transition: "all 0.3s ease",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.background = "linear-gradient(135deg, rgba(139,92,246,0.2), rgba(139,92,246,0.08))";
-                                                e.currentTarget.style.transform = "translateY(-2px)";
-                                                e.currentTarget.style.boxShadow = "0 8px 20px rgba(139,92,246,0.25)";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.background = "linear-gradient(135deg, rgba(139,92,246,0.12), rgba(139,92,246,0.04))";
-                                                e.currentTarget.style.transform = "translateY(0)";
-                                                e.currentTarget.style.boxShadow = "none";
-                                            }}
+                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all group"
                                         >
-                                            <Github size={16} />
-                                            GitHub
+                                            <Github size={18} />
+                                            <span className="text-sm font-medium">GitHub</span>
                                         </a>
                                     </div>
                                 </div>
                             </div>
+                        </motion.div>
 
-                            {/* Technical Skills Section - Below About Me */}
-                            <div
-                                style={{
-                                    background: "rgba(10, 10, 10, 0.8)",
-                                    backdropFilter: "blur(20px)",
-                                    borderRadius: "24px",
-                                    padding: "28px 32px",
-                                    border: "1px solid rgba(0, 255, 136, 0.2)",
-                                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 255, 136, 0.1), inset 0 0 20px rgba(0, 255, 136, 0.05)",
-                                    position: "relative",
-                                    overflow: "hidden",
-                                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                                    maxWidth: "580px",
-                                    width: "100%",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = "translateY(-6px)";
-                                    e.currentTarget.style.boxShadow = "0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(0,255,136,0.15), inset 0 1px 0 rgba(255,255,255,0.12)";
-                                    e.currentTarget.style.border = "2px solid rgba(0,255,136,0.4)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = "translateY(0)";
-                                    e.currentTarget.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)";
-                                    e.currentTarget.style.border = "2px solid rgba(0,255,136,0.2)";
-                                }}
+                        {/* Main Content */}
+                        <div className="flex-1 space-y-8">
+                            {/* About Section */}
+                            <motion.div
+                                initial={{ y: 30 }}
+                                animate={{ y: 0 }}
+                                transition={{ delay: 0.4, duration: 0.8 }}
                             >
-                                <div style={{ position: "relative", zIndex: 1 }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                                        <div
-                                            style={{
-                                                width: "4px",
-                                                height: "28px",
-                                                background: "linear-gradient(180deg, #00ff88, #00cc6a)",
-                                                borderRadius: "2px",
-                                                boxShadow: "0 0 15px rgba(0,255,136,0.4)",
-                                            }}
-                                        />
-                                        <h3
-                                            style={{
-                                                fontSize: "26px",
-                                                fontWeight: "700",
-                                                letterSpacing: "-0.3px",
-                                                margin: 0,
-                                                color: "#00ff88",
-                                            }}
-                                        >
-                                            Technical Skills
-                                        </h3>
+                                <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-1 h-8 bg-gradient-to-b from-green-400 to-emerald-500 rounded-full" />
+                                        <h2 className="text-2xl font-bold text-white">About Me</h2>
                                     </div>
+                                    <p className="text-gray-300 leading-relaxed text-justify">
+                                        {profileData.about}
+                                    </p>
+                                </div>
+                            </motion.div>
 
-                                    <div
-                                        style={{
-                                            display: "grid",
-                                            gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-                                            gap: "12px",
-                                        }}
-                                    >
+                            {/* Skills Section */}
+                            <motion.div
+                                initial={{ y: 30 }}
+                                animate={{ y: 0 }}
+                                transition={{ delay: 0.6, duration: 0.8 }}
+                            >
+                                <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-1 h-8 bg-gradient-to-b from-blue-400 to-purple-500 rounded-full" />
+                                        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                                            <Code size={24} />
+                                            Technical Skills
+                                        </h2>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                         {profileData.skills.map((skill, index) => (
-                                            <div
+                                            <motion.div
                                                 key={skill.name}
-                                                style={{
-                                                    padding: "16px 20px",
-                                                    background: `linear-gradient(135deg, ${skill.color}10, ${skill.color}04)`,
-                                                    border: `1.5px solid ${skill.color}28`,
-                                                    borderRadius: "14px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                                                    animation: `fadeInUp 0.5s ease ${index * 0.06}s both`,
-                                                    cursor: "pointer",
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.transform = "translateY(-4px) scale(1.02)";
-                                                    e.currentTarget.style.boxShadow = `0 12px 30px ${skill.color}35`;
-                                                    e.currentTarget.style.border = `1.5px solid ${skill.color}60`;
-                                                    e.currentTarget.style.background = `linear-gradient(135deg, ${skill.color}18, ${skill.color}06)`;
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.transform = "translateY(0) scale(1)";
-                                                    e.currentTarget.style.boxShadow = "none";
-                                                    e.currentTarget.style.border = `1.5px solid ${skill.color}28`;
-                                                    e.currentTarget.style.background = `linear-gradient(135deg, ${skill.color}10, ${skill.color}04)`;
-                                                }}
+                                                initial={{ scale: 0.8 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
+                                                whileHover={{ scale: 1.05, y: -5 }}
+                                                className="relative group"
                                             >
-                                                <span
+                                                <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 rounded-xl blur-lg transition-opacity duration-300" style={{ backgroundColor: `${skill.color}40` }} />
+                                                <div
+                                                    className="relative p-4 rounded-xl border backdrop-blur-sm transition-all duration-300"
                                                     style={{
-                                                        fontSize: "14px",
-                                                        fontWeight: "600",
-                                                        color: "#ffffff",
+                                                        background: `linear-gradient(135deg, ${skill.color}15, ${skill.color}05)`,
+                                                        borderColor: `${skill.color}30`
                                                     }}
                                                 >
-                                                    {skill.name}
-                                                </span>
-                                            </div>
+                                                    <div className="text-center">
+                                                        <p className="font-semibold text-white mb-1">{skill.name}</p>
+                                                        <p className="text-xs text-gray-400">{skill.level}</p>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
                                         ))}
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         </div>
-                    </div>
-                </main>
+                    </motion.div>
+                </div>
             </div>
 
-            {/* CSS Animations */}
-            <style jsx>{`
-        @keyframes swingLanyard {
-          0% {
-            transform: rotate(3deg);
-          }
-          50% {
-            transform: rotate(-3deg);
-          }
-          100% {
-            transform: rotate(3deg);
-          }
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 1200px) {
-          .main-grid {
-            grid-template-columns: 1fr !important;
-            gap: 40px !important;
-          }
-          
-          .id-card-container {
-            position: relative !important;
-            top: 0 !important;
-            left: 0 !important;
-            margin-bottom: 20px;
-          }
-
-          .right-column {
-            padding-left: 0 !important;
-            padding-top: 0 !important;
-          }
-        }
-
-        @media (max-width: 768px) {
-          main {
-            padding: 80px 20px 40px !important;
-          }
-          
-          .id-card-wrapper {
-            transform: scale(0.85);
-          }
-
-          .right-column > div {
-            padding: 20px 24px !important;
-          }
-
-          .right-column h3 {
-            font-size: 22px !important;
-          }
-
-          .right-column p {
-            font-size: 13px !important;
-          }
-        }
-
-        @media (max-width: 480px) {
-          main {
-            padding: 70px 16px 30px !important;
-          }
-
-          .id-card-wrapper {
-            transform: scale(0.75);
-          }
-
-          .main-grid {
-            gap: 30px !important;
-          }
-
-          .right-column > div {
-            padding: 18px 20px !important;
-            border-radius: 18px !important;
-          }
-
-          .right-column h3 {
-            font-size: 20px !important;
-          }
-
-          .right-column p {
-            font-size: 12px !important;
-            line-height: 1.6 !important;
-          }
-
-          .right-column > div > div > div[style*="gridTemplateColumns"] {
-            grid-template-columns: 1fr !important;
-          }
-
-          .right-column a {
-            font-size: 12px !important;
-            padding: 10px 14px !important;
-          }
-        }
-      `}</style >
-        </div >
+            {/* Copyright Footer */}
+            <div className="relative z-20 w-full text-center py-6 text-white/60 text-xs">
+                <p>&#9426; Copyrights 2026 by GFG SRMIST DELHI NCR. All Rights Reserved.</p>
+            </div>
+        </div>
     );
 }

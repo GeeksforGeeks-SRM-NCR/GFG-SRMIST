@@ -185,11 +185,11 @@ export default function TeamPage() {
                     {loading ? (
                         <p>Loading...</p>
                     ) : (
-                        <div style={{ maxWidth: "1200px", width: "100%", display: "flex", flexDirection: "column", gap: "80px" }}>
+                        <div style={{ maxWidth: "1400px", width: "100%", display: "flex", flexDirection: "column", gap: "80px" }}>
 
                             {/* Leadership */}
                             {leadership.length > 0 && (
-                                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "30px" }}>
+                                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "clamp(30px, 4vw, 60px)" }}>
                                     {leadership.map((member) => (
                                         <MemberCard key={member.id} member={member} big router={router} year={selectedYear} />
                                     ))}
@@ -198,7 +198,7 @@ export default function TeamPage() {
 
                             {/* Core Team */}
                             {coreTeam.length > 0 && (
-                                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "30px" }}>
+                                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "clamp(30px, 4vw, 60px)" }}>
                                     {coreTeam.map((member) => (
                                         <MemberCard key={member.id} member={member} router={router} year={selectedYear} />
                                     ))}

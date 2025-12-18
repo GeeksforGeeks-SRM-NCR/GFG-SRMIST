@@ -154,39 +154,7 @@ export default function HomePage() {
 
                 </motion.div>
 
-                {/* Mission & Vision Section */}
-                <section
-                    style={{
-                        padding: "80px 40px",
-                    }}
-                >
-                    <div
-                        style={{
-                            maxWidth: "1200px",
-                            margin: "0 auto",
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                            gap: "40px",
-                        }}
-                    >
-                        {[
-                            {
-                                icon: Rocket,
-                                title: "Our Mission",
-                                description: "To empower students with industry-relevant skills, foster innovation, and build a strong community of tech enthusiasts who can solve real-world problems through coding and collaborative learning.",
-                                delay: 0
-                            },
-                            {
-                                icon: Lightbulb,
-                                title: "Our Vision",
-                                description: "To be the leading technical community that bridges the gap between academic learning and industry requirements, creating future-ready professionals who can contribute meaningfully to the tech ecosystem.",
-                                delay: 0.2
-                            }
-                        ].map((item, index) => (
-                            <MissionCard key={index} {...item} />
-                        ))}
-                    </div>
-                </section>
+
 
                 {/* What We Do Section */}
                 <section

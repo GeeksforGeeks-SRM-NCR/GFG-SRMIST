@@ -1,15 +1,27 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle, XCircle, Terminal } from 'lucide-react';
+import { CheckCircle, XCircle, Terminal, Loader2, AlertCircle } from 'lucide-react';
 
 const ConsoleOutput = ({ results, status, isRunning, error }) => {
     if (isRunning) {
         return (
-            <div className="h-full w-full p-4 bg-black/90 text-gray-300 font-mono text-sm overflow-auto border-t border-border">
-                <div className="flex items-center gap-2 animate-pulse">
-                    <Terminal size={16} />
-                    <span>Running code...</span>
+            <div className="h-full w-full bg-gradient-to-b from-black to-black/95 text-white overflow-auto">
+                <div className="p-4 border-b border-white/10 bg-blue-500/10">
+                    <div className="flex items-center gap-3">
+                        <Loader2 size={18} className="animate-spin text-blue-400" />
+                        <span className="text-sm font-semibold text-blue-400">Running Code...</span>
+                    </div>
+                </div>
+                <div className="p-6 flex items-center justify-center">
+                    <div className="text-center space-y-3">
+                        <div className="flex justify-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        </div>
+                        <p className="text-sm text-gray-400">Executing test cases...</p>
+                    </div>
                 </div>
             </div>
         );
@@ -17,65 +29,135 @@ const ConsoleOutput = ({ results, status, isRunning, error }) => {
 
     if (error) {
         return (
-            <div className="h-full w-full p-4 bg-black/90 text-red-400 font-mono text-sm overflow-auto border-t border-border">
-                <div className="flex items-center gap-2 mb-2">
-                    <XCircle size={16} />
-                    <span className="font-bold">Execution Error</span>
+            <div className="h-full w-full bg-gradient-to-b from-black to-black/95 text-white overflow-auto">
+                <div className="p-4 border-b border-red-500/30 bg-red-500/10">
+                    <div className="flex items-center gap-3">
+                        <AlertCircle size={18} className="text-red-400" />
+                        <span className="text-sm font-semibold text-red-400">Execution Error</span>
+                    </div>
                 </div>
-                <pre>{error}</pre>
+                <div className="p-6">
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                        <pre className="text-sm text-red-300 font-mono whitespace-pre-wrap">{error}</pre>
+                    </div>
+                </div>
             </div>
         );
     }
 
     if (!results && !status) {
         return (
-            <div className="h-full w-full p-4 bg-black/90 text-gray-500 font-mono text-sm overflow-auto border-t border-border flex items-center justify-center">
-                <span>Run code to see output</span>
+            <div className="h-full w-full bg-gradient-to-b from-black to-black/95 text-white overflow-auto flex items-center justify-center">
+                <div className="text-center space-y-3 p-6">
+                    <Terminal size={40} className="mx-auto text-gray-600" />
+                    <p className="text-sm text-gray-500">Run your code to see output</p>
+                    <p className="text-xs text-gray-600">Click "Run Code" to test against sample cases</p>
+                </div>
             </div>
         );
     }
 
+    const passedCount = results ? results.filter(r => r.passed).length : 0;
+    const totalCount = results ? results.length : 0;
+
     return (
-        <div className="h-full w-full flex flex-col bg-black/90 text-gray-100 font-mono text-sm border-t border-border">
-            <div className={`p-2 border-b border-white/10 flex items-center gap-2 ${status ? 'text-green-400' : 'text-red-400'}`}>
-                {status ? <CheckCircle size={16} /> : <XCircle size={16} />}
-                <span className="font-bold">{status ? 'All Tests Passed' : 'Tests Failed'}</span>
-            </div>
-            <div className="flex-1 overflow-auto p-4 space-y-4">
-                {results && results.map((res, idx) => (
-                    <div key={idx} className="space-y-1 pb-4 border-b border-white/10 last:border-0">
-                        <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
-                            <span>Test Case {idx + 1}</span>
-                            <span className={res.passed ? "text-green-500" : "text-red-500"}>
-                                {res.passed ? "PASSED" : "FAILED"}
-                            </span>
-                        </div>
-                        <div className="grid grid-cols-1 gap-2">
-                            <div>
-                                <span className="text-gray-500 text-xs">Input:</span>
-                                <div className="bg-white/5 p-2 rounded text-xs">{res.input}</div>
-                            </div>
-                            {!res.passed && (
-                                <div>
-                                    <span className="text-gray-500 text-xs">Expected:</span>
-                                    <div className="bg-white/5 p-2 rounded text-xs text-green-300/80">{res.expected}</div>
-                                </div>
-                            )}
-                            <div>
-                                <span className="text-gray-500 text-xs">Output:</span>
-                                <div className={`bg-white/5 p-2 rounded text-xs ${res.passed ? 'text-gray-300' : 'text-red-300'}`}>
-                                    {res.actual}
-                                </div>
-                            </div>
-                            {res.stderr && (
-                                <div>
-                                    <span className="text-gray-500 text-xs">Stderr:</span>
-                                    <div className="bg-red-900/20 p-2 rounded text-xs text-red-300">{res.stderr}</div>
-                                </div>
-                            )}
-                        </div>
+        <div className="h-full w-full flex flex-col bg-gradient-to-b from-black to-black/95 text-white overflow-hidden">
+            {/* Header */}
+            <div className={`p-4 border-b ${status === 'Passed' ? 'border-green-500/30 bg-green-500/10' : 'border-red-500/30 bg-red-500/10'}`}>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        {status === 'Passed' ? (
+                            <CheckCircle size={20} className="text-green-400" />
+                        ) : (
+                            <XCircle size={20} className="text-red-400" />
+                        )}
+                        <span className={`text-sm font-semibold ${status === 'Passed' ? 'text-green-400' : 'text-red-400'}`}>
+                            {status === 'Passed' ? 'All Tests Passed!' : 'Some Tests Failed'}
+                        </span>
                     </div>
-                ))}
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-400">Test Cases:</span>
+                        <span className={`text-sm font-bold ${status === 'Passed' ? 'text-green-400' : 'text-red-400'}`}>
+                            {passedCount}/{totalCount}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Results */}
+            <div className="flex-1 overflow-auto p-4">
+                <div className="space-y-3">
+                    {results && results.map((res, idx) => (
+                        <div 
+                            key={idx} 
+                            className={`rounded-xl border ${
+                                res.passed 
+                                    ? 'border-green-500/30 bg-green-500/5' 
+                                    : 'border-red-500/30 bg-red-500/5'
+                            } overflow-hidden transition-all hover:shadow-lg ${
+                                res.passed ? 'hover:shadow-green-500/20' : 'hover:shadow-red-500/20'
+                            }`}
+                        >
+                            {/* Test Case Header */}
+                            <div className={`px-4 py-2 flex items-center justify-between ${
+                                res.passed ? 'bg-green-500/10' : 'bg-red-500/10'
+                            }`}>
+                                <span className="text-xs font-semibold text-white">Test Case {idx + 1}</span>
+                                <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                                    res.passed 
+                                        ? 'bg-green-500/20 text-green-400' 
+                                        : 'bg-red-500/20 text-red-400'
+                                }`}>
+                                    {res.passed ? "✓ PASSED" : "✗ FAILED"}
+                                </span>
+                            </div>
+
+                            {/* Test Case Details */}
+                            <div className="p-4 space-y-3">
+                                <div>
+                                    <div className="text-xs text-gray-400 mb-1.5 font-medium">Input:</div>
+                                    <div className="bg-black/50 border border-white/10 rounded-lg p-3 font-mono text-xs text-gray-300">
+                                        {res.input}
+                                    </div>
+                                </div>
+
+                                {!res.passed && (
+                                    <div>
+                                        <div className="text-xs text-gray-400 mb-1.5 font-medium">Expected Output:</div>
+                                        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 font-mono text-xs text-green-300">
+                                            {res.expected}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <div className="text-xs text-gray-400 mb-1.5 font-medium">
+                                        {res.passed ? 'Output:' : 'Your Output:'}
+                                    </div>
+                                    <div className={`border rounded-lg p-3 font-mono text-xs ${
+                                        res.passed 
+                                            ? 'bg-white/5 border-white/10 text-gray-300' 
+                                            : 'bg-red-500/10 border-red-500/30 text-red-300'
+                                    }`}>
+                                        {res.actual}
+                                    </div>
+                                </div>
+
+                                {res.stderr && (
+                                    <div>
+                                        <div className="text-xs text-gray-400 mb-1.5 font-medium flex items-center gap-1.5">
+                                            <AlertCircle size={12} />
+                                            Error Output:
+                                        </div>
+                                        <div className="bg-red-900/30 border border-red-500/30 rounded-lg p-3 font-mono text-xs text-red-300">
+                                            {res.stderr}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

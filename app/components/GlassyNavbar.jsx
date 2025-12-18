@@ -198,14 +198,14 @@ export default function GlassyNavbar() {
                         )
                     )}
 
-                    {/* Home button restored - always show when not on homepage */}
+                    {/* Home/Team button - always show when not on homepage */}
                     {!isHomePage && (
                         <Link
-                            href="/"
+                            href={pathname.includes('/pages/team/2025/') ? '/pages/team' : '/'}
                             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap"
                         >
                             <FiArrowLeft />
-                            <span>Home</span>
+                            <span>{pathname.includes('/pages/team/2025/') ? 'Team' : 'Home'}</span>
                         </Link>
                     )}
                 </div>
