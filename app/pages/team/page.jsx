@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "contentful";
 import { Github, Linkedin, Instagram, Mail, ChevronDown, ChevronUp } from "lucide-react";
-import GlassyNavbar from "../../components/GlassyNavbar";
 import Squares from "../../components/Squares";
 import TiltedCard from "../../components/TiltedCard";
 import { motion, AnimatePresence } from "motion/react";
@@ -123,7 +122,7 @@ export default function TeamPage() {
     };
 
     return (
-        <div style={{ width: "100%", minHeight: "100vh", position: "relative" }}>
+        <div style={{ width: "100%", minHeight: "100vh", position: "relative", overflow: "hidden" }}>
             {/* Background */}
             <div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
                 <Squares
@@ -135,8 +134,11 @@ export default function TeamPage() {
                 />
             </div>
 
+            {/* Ambient Glow Blobs */}
+            <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-green-600/10 rounded-full blur-[128px] z-0 animate-pulse" />
+            <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[128px] z-0 animate-pulse" style={{ animationDelay: '1s' }} />
+
             <div style={{ position: "relative", zIndex: 1 }}>
-                <GlassyNavbar />
 
                 <div
                     style={{

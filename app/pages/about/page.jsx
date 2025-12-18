@@ -2,7 +2,6 @@
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { Rocket, Lightbulb, Code2, Trophy, Users } from "lucide-react";
-import GlassyNavbar from "../../components/GlassyNavbar";
 import Squares from "../../components/Squares";
 import { motion, useScroll, useTransform, useInView, useSpring } from "motion/react";
 
@@ -67,8 +66,6 @@ export default function HomePage() {
             </div>
 
             <div style={{ position: "relative", zIndex: 1 }}>
-                <GlassyNavbar />
-
                 {/* Hero Section with Parallax */}
                 <motion.div
                     style={{ y, opacity }}

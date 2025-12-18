@@ -1,5 +1,4 @@
 "use client";
-import GlassyNavbar from '../../components/GlassyNavbar';
 import Squares from '../../components/Squares';
 
 export default function ChallengesPage() {
@@ -21,7 +20,6 @@ export default function ChallengesPage() {
                 />
             </div>
             <div style={{ position: 'relative', zIndex: 1 }}>
-                <GlassyNavbar />
 
                 <div style={{
                     display: 'flex',

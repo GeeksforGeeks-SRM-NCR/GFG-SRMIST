@@ -3,7 +3,6 @@ import { contentfulClient } from '@/lib/contentful';
 import ProblemCard from '@/components/ProblemCard';
 import { createClient } from '@/lib/supabase-server';
 import { Trophy, Medal, AlertCircle, Code2, Target, Flame, Crown, TrendingUp, Award } from 'lucide-react';
-import GlassyNavbar from '../components/GlassyNavbar';
 import Squares from '../components/Squares';
 import LightRays from '../components/LightRays';
 
@@ -131,8 +130,6 @@ export default async function PracticePage() {
 
             {/* Content */}
             <div className="relative z-10">
-                <GlassyNavbar />
-
                 <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto">
                     {/* Hero Section */}
                     <div className="text-center mb-12">

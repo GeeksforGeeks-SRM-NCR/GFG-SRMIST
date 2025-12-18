@@ -25,9 +25,6 @@ export default function Home() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* Glassy Navbar */}
-      <GlassyNavbar />
-
       {/* GridScan Background */}
       <GridScan
         className="w-full h-full absolute top-0 left-0"

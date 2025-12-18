@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Mail, Linkedin, Github, MapPin, Calendar, Award, Code, Sparkles, ArrowLeft, ExternalLink } from "lucide-react";
 import { motion } from "motion/react";
-import GlassyNavbar from "../../../../components/GlassyNavbar";
 import Squares from "../../../../components/Squares";
 import LightRays from "../../../../components/LightRays";
 import { contentfulClient } from '@/lib/contentful';
@@ -98,7 +97,6 @@ export default function TrishaRajProfile() {
 
             {/* Content */}
             <div className="relative z-10">
-                <GlassyNavbar />
 
                 <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
                     {/* Hero Section */}
