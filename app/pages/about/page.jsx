@@ -10,7 +10,8 @@ import {
     BookOpen,
     Award,
     Zap,
-    ArrowRight
+    ArrowRight,
+    ChevronDown
 } from "lucide-react";
 import GlassyNavbar from "../../components/GlassyNavbar";
 import Squares from "../../components/Squares";
@@ -40,6 +41,7 @@ function AnimatedCounter({ value, duration = 2 }) {
 
 export default function AboutPage() {
     const containerRef = useRef(null);
+    const [openFaqIndex, setOpenFaqIndex] = useState(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start start", "end start"]
@@ -396,6 +398,101 @@ export default function AboutPage() {
                     </div>
                 </section>
 
+                {/* FAQ Section */}
+                <section style={{ padding: "100px 40px", background: "rgba(0, 0, 0, 0.2)" }}>
+                    <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            style={{ textAlign: "center", marginBottom: "60px" }}
+                        >
+                            <div style={{
+                                display: "inline-block",
+                                padding: "6px 16px",
+                                background: "rgba(255, 255, 255, 0.05)",
+                                border: "1px solid rgba(255, 255, 255, 0.1)",
+                                borderRadius: "50px",
+                                marginBottom: "20px",
+                            }}>
+                                <span style={{
+                                    fontSize: "0.85rem",
+                                    color: "rgba(255, 255, 255, 0.6)",
+                                    fontWeight: "500",
+                                    letterSpacing: "1.5px",
+                                    textTransform: "uppercase",
+                                }}>
+                                    Got Questions?
+                                </span>
+                            </div>
+
+                            <h2 className="font-sf-pro" style={{
+                                fontSize: "clamp(2.5rem, 6vw, 4rem)",
+                                fontWeight: "700",
+                                color: "#fff",
+                                marginBottom: "15px",
+                                letterSpacing: "-1px",
+                            }}>
+                                Frequently Asked <span style={{ color: "#46b94e" }}>Questions</span>
+                            </h2>
+
+                            <p style={{
+                                fontSize: "1.1rem",
+                                color: "rgba(255, 255, 255, 0.5)",
+                                maxWidth: "600px",
+                                margin: "0 auto",
+                            }}>
+                                Everything you need to know about joining our community
+                            </p>
+                        </motion.div>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <FAQItem
+                                index={0}
+                                question="What are GeeksforGeeks Student Chapters?"
+                                answer="GeeksforGeeks student Chapters are university-based community chapters for students interested in Computer Science and want to make their career in this field. By joining a GeeksforGeeks Student Chapters, students grow their knowledge in a peer-to-peer learning environment and build effective and optimised solutions for local businesses and their community."
+                                isOpen={openFaqIndex === 0}
+                                onToggle={() => setOpenFaqIndex(openFaqIndex === 0 ? null : 0)}
+                            />
+                            <FAQItem
+                                index={1}
+                                question="How will GeeksforGeeks student Chapters help students?"
+                                answer="GeeksforGeeks student Chapters will provide students with various events Webinars on coding or placements. Students may get internship opportunities at GeeksforGeeks. Along with all these students can get exclusive discounts on GFG courses. You will get an opportunity to organize your competition on a PAN India level. It will help students to grow a network among 145+ colleges."
+                                isOpen={openFaqIndex === 1}
+                                onToggle={() => setOpenFaqIndex(openFaqIndex === 1 ? null : 1)}
+                            />
+                            <FAQItem
+                                index={2}
+                                question="What perks will me and my team will get from GFG?"
+                                answer="You and your team will get Certified by GeeksforGeeks. When you organise an event with GFG as a sponsor, then also your organising Team will get appreciation rewards from GFG. It will help you to grow a network among 145+ colleges. It will help you grow as a better individual. You may get an internship opportunity at GeeksforGeeks."
+                                isOpen={openFaqIndex === 2}
+                                onToggle={() => setOpenFaqIndex(openFaqIndex === 2 ? null : 2)}
+                            />
+                            <FAQItem
+                                index={3}
+                                question="What benefits as a GeeksforGeeks student Chapters lead?"
+                                answer="You will be titled as President of the reputed GeeksforGeeks student Chapter of your respective college. You will be certified from GFG. You will have all vitto powers related to GeeksforGeeks student Chapters president. You will Improve Leadership, communication skills and management skills. It helps you to grow your connection with 145+ colleges students as well as Industry Experts. You may have a chance to grab an internship opportunity at GeeksforGeeks."
+                                isOpen={openFaqIndex === 3}
+                                onToggle={() => setOpenFaqIndex(openFaqIndex === 3 ? null : 3)}
+                            />
+                            <FAQItem
+                                index={4}
+                                question="Can I collaborate with other clubs?"
+                                answer="Yes, you can collaborate with other clubs to organise events."
+                                isOpen={openFaqIndex === 4}
+                                onToggle={() => setOpenFaqIndex(openFaqIndex === 4 ? null : 4)}
+                            />
+                            <FAQItem
+                                index={5}
+                                question="How is it beneficial for my college?"
+                                answer="If you have a GeeksforGeeks student Chapters in your campus, your campus will be in direct contact with GeeksforGeeks hence in future it college may get offers from GFG or other companies for placement drives and other available opportunities."
+                                isOpen={openFaqIndex === 5}
+                                onToggle={() => setOpenFaqIndex(openFaqIndex === 5 ? null : 5)}
+                            />
+                        </div>
+                    </div>
+                </section>
+
                 {/* Join Us Section */}
                 <section style={{ padding: "100px 40px 140px" }}>
                     <motion.div
@@ -701,6 +798,100 @@ function StatCard({ number, label, icon: Icon, index }) {
                 height: "2px",
                 background: "linear-gradient(90deg, transparent, #46b94e, transparent)",
             }} />
+        </motion.div>
+    );
+}
+
+// FAQ Item Component
+function FAQItem({ question, answer, isOpen, onToggle }) {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true });
+
+    return (
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+            style={{
+                background: "rgba(255, 255, 255, 0.03)",
+                borderRadius: "16px",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                backdropFilter: "blur(20px)",
+                overflow: "hidden",
+                transition: "all 0.3s ease",
+            }}
+        >
+            <button
+                onClick={onToggle}
+                style={{
+                    width: "100%",
+                    padding: "28px 32px",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "20px",
+                    textAlign: "left",
+                    transition: "all 0.3s ease",
+                }}
+            >
+                <h3 className="font-sf-pro" style={{
+                    fontSize: "1.15rem",
+                    fontWeight: "600",
+                    color: "#fff",
+                    margin: 0,
+                    letterSpacing: "-0.3px",
+                }}>
+                    {question}
+                </h3>
+                <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "8px",
+                        background: "rgba(70, 185, 78, 0.1)",
+                        border: "1px solid rgba(70, 185, 78, 0.2)",
+                        flexShrink: 0,
+                    }}
+                >
+                    <ChevronDown size={18} color="#46b94e" />
+                </motion.div>
+            </button>
+
+            <motion.div
+                initial={false}
+                animate={{
+                    height: isOpen ? "auto" : 0,
+                    opacity: isOpen ? 1 : 0,
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                style={{
+                    overflow: "hidden",
+                }}
+            >
+                <div style={{
+                    padding: "0 32px 28px",
+                    borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                    paddingTop: "20px",
+                }}>
+                    <p className="font-sf-pro" style={{
+                        fontSize: "1.05rem",
+                        lineHeight: "1.8",
+                        color: "rgba(255, 255, 255, 0.7)",
+                        margin: 0,
+                    }}>
+                        {answer}
+                    </p>
+                </div>
+            </motion.div>
         </motion.div>
     );
 }
