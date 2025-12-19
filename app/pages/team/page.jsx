@@ -148,9 +148,16 @@ export default function TeamPage() {
                         minHeight: "100vh",
                     }}
                 >
-                    <h1 style={{ fontSize: "4rem", fontWeight: "bold", marginBottom: "20px", color: "#46b94e" }}>
-                        Our Team
-                    </h1>
+                            <h1 className="font-sf-pro" style={{
+                                fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
+                                fontWeight: "800",
+                                color: "#fff",
+                                marginBottom: "25px",
+                                letterSpacing: "-3px",
+                                lineHeight: "1.1",
+                            }}>
+                                OUR <span style={{ color: "#46b94e" }}> TEAM</span>
+                            </h1>
 
                     {/* Year Toggle */}
                     <div
@@ -222,9 +229,16 @@ export default function TeamPage() {
                                         transition={{ duration: 0.5 }}
                                         className="text-center mb-16"
                                     >
-                                        <h2 className="text-5xl md:text-6xl font-bold mb-4 text-white">
-                                            Our Core Members
-                                        </h2>
+                                <h2 className="font-sf-pro" style={{
+                                fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
+                                fontWeight: "800",
+                                color: "#fff",
+                                marginBottom: "25px",
+                                letterSpacing: "-3px",
+                                lineHeight: "1.1",
+                            }}>
+                                CORE <span style={{ color: "#46b94e" }}> MEMBER</span>
+                            </h2>
                                         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
                                             Meet the talented individuals driving each department
                                         </p>

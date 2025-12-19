@@ -10,11 +10,13 @@ import {
     BookOpen,
     Award,
     Zap,
-    ArrowRight
+    ArrowRight,
+    Plus,
+    Minus
 } from "lucide-react";
 import GlassyNavbar from "../../components/GlassyNavbar";
 import Squares from "../../components/Squares";
-import { motion, useScroll, useTransform, useInView } from "motion/react";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "motion/react";
 
 // Animated Counter Component
 function AnimatedCounter({ value, duration = 2 }) {
@@ -396,6 +398,110 @@ export default function AboutPage() {
                     </div>
                 </section>
 
+                {/* Alumni Milestone Section */}
+                <section style={{ padding: "100px 40px", overflow: "hidden" }}>
+                    <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            style={{ textAlign: "center", marginBottom: "60px" }}
+                        >
+                            <div style={{
+                                display: "inline-block",
+                                padding: "6px 16px",
+                                background: "rgba(255, 255, 255, 0.05)",
+                                border: "1px solid rgba(255, 255, 255, 0.1)",
+                                borderRadius: "50px",
+                                marginBottom: "20px",
+                            }}>
+                                <span style={{
+                                    fontSize: "0.85rem",
+                                    color: "rgba(255, 255, 255, 0.6)",
+                                    fontWeight: "500",
+                                    letterSpacing: "1.5px",
+                                    textTransform: "uppercase",
+                                }}>
+                                    Our Success
+                                </span>
+                            </div>
+
+                            <h2 className="font-sf-pro" style={{
+                                fontSize: "clamp(2.5rem, 6vw, 4rem)",
+                                fontWeight: "700",
+                                color: "#fff",
+                                marginBottom: "15px",
+                                letterSpacing: "-1px",
+                            }}>
+                                Alumni <span style={{ color: "#46b94e" }}>Milestone</span>
+                            </h2>
+
+                            <p style={{
+                                fontSize: "1.1rem",
+                                color: "rgba(255, 255, 255, 0.5)",
+                                maxWidth: "600px",
+                                margin: "0 auto",
+                            }}>
+                                Our alumni are thriving at top companies worldwide
+                            </p>
+                        </motion.div>
+
+                        <LogoSlider />
+                    </div>
+                </section>
+
+                {/* FAQ Section */}
+                <section style={{ padding: "100px 40px", background: "rgba(0, 0, 0, 0.2)" }}>
+                    <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            style={{ textAlign: "center", marginBottom: "60px" }}
+                        >
+                            <div style={{
+                                display: "inline-block",
+                                padding: "6px 16px",
+                                background: "rgba(255, 255, 255, 0.05)",
+                                border: "1px solid rgba(255, 255, 255, 0.1)",
+                                borderRadius: "50px",
+                                marginBottom: "20px",
+                            }}>
+                                <span style={{
+                                    fontSize: "0.85rem",
+                                    color: "rgba(255, 255, 255, 0.6)",
+                                    fontWeight: "500",
+                                    letterSpacing: "1.5px",
+                                    textTransform: "uppercase",
+                                }}>
+                                    Got Questions?
+                                </span>
+                            </div>
+
+                            <h2 className="font-sf-pro" style={{
+                                fontSize: "clamp(2.5rem, 6vw, 4rem)",
+                                fontWeight: "700",
+                                color: "#fff",
+                                marginBottom: "15px",
+                                letterSpacing: "-1px",
+                            }}>
+                                Frequently Asked <span style={{ color: "#46b94e" }}>Questions</span>
+                            </h2>
+
+                            <p style={{
+                                fontSize: "1.1rem",
+                                color: "rgba(255, 255, 255, 0.5)",
+                                maxWidth: "600px",
+                                margin: "0 auto",
+                            }}>
+                                Everything you need to know about GeeksforGeeks Campus Body
+                            </p>
+                        </motion.div>
+
+                        <FAQAccordion />
+                    </div>
+                </section>
+
                 {/* Join Us Section */}
                 <section style={{ padding: "100px 40px 140px" }}>
                     <motion.div
@@ -701,6 +807,242 @@ function StatCard({ number, label, icon: Icon, index }) {
                 height: "2px",
                 background: "linear-gradient(90deg, transparent, #46b94e, transparent)",
             }} />
+        </motion.div>
+    );
+}
+
+// Logo Slider Component
+function LogoSlider() {
+    const logos = [
+        { name: "Infosys", src: "/infosys.png", width: "250px" },
+        { name: "Dell", src: "/dell.png", width: "250px" },
+        { name: "EY", src: "/ey.png", width: "110px" },
+        { name: "Boeing", src: "/boeing.png", width: "250px" },
+        { name: "BF", src: "/bf.png", width: "250px" },
+    ];
+
+    // Calculate exact width for one set of logos
+    const gapSize = 100;
+    const singleSetWidth = logos.reduce((acc, logo) => {
+        return acc + parseInt(logo.width) + gapSize;
+    }, 0);
+
+    return (
+        <div style={{
+            position: "relative",
+            width: "100%",
+            overflow: "hidden",
+            padding: "5px 0",
+        }}>
+            <div style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: "150px",
+                background: "linear-gradient(to right, rgba(0, 0, 0, 1), transparent)",
+                zIndex: 2,
+                pointerEvents: "none",
+            }} />
+            <div style={{
+                position: "absolute",
+                right: 0,
+                top: 0,
+                bottom: 0,
+                width: "150px",
+                background: "linear-gradient(to left, rgba(0, 0, 0, 1), transparent)",
+                zIndex: 2,
+                pointerEvents: "none",
+            }} />
+
+            <motion.div
+                animate={{
+                    x: [0, -singleSetWidth],
+                }}
+                transition={{
+                    x: {
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        duration: 25,
+                        ease: "linear",
+                    },
+                }}
+                style={{
+                    display: "flex",
+                    gap: `${gapSize}px`,
+                    width: "max-content",
+                    alignItems: "center",
+                }}
+            >
+                {[...logos, ...logos, ...logos, ...logos, ...logos, ...logos].map((logo, index) => (
+                    <div
+                        key={index}
+                        style={{
+                            width: logo.width,
+                            flexShrink: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <img
+                            src={logo.src}
+                            alt={logo.name}
+                            style={{
+                                width: "100%",
+                                height: "auto",
+                                objectFit: "contain",
+                                transition: "transform 0.3s ease",
+                                display: "block",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "scale(1.1)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "scale(1)";
+                            }}
+                        />
+                    </div>
+                ))}
+            </motion.div>
+        </div>
+    );
+}
+
+// FAQ Accordion Component
+function FAQAccordion() {
+    const [openIndex, setOpenIndex] = useState(null);
+
+    const faqs = [
+        {
+            question: "What is GeeksforGeeks campus body?",
+            answer: "GeeksforGeeks Campus Body is a student-led initiative that brings the power of GeeksforGeeks to your campus. It's a community of passionate coders and tech enthusiasts who organize workshops, coding competitions, and technical events to enhance students' programming skills and prepare them for successful careers in technology."
+        },
+        {
+            question: "How will GeeksforGeeks campus body help students?",
+            answer: "The campus body helps students by providing access to quality technical education, organizing regular coding contests, conducting workshops on trending technologies, offering mentorship from industry experts, creating networking opportunities with peers and professionals, and providing a platform to showcase their skills through various technical events and competitions."
+        },
+        {
+            question: "What perks will me and my team get from GFG?",
+            answer: "You and your team will receive exclusive benefits including GeeksforGeeks merchandise, certificates of recognition, priority access to GFG resources and courses, opportunities to write articles for GeeksforGeeks platform, direct interaction with GFG team members, organizing rights for official GFG events on campus, and potential internship opportunities."
+        },
+        {
+            question: "What benefits as a GeeksforGeeks campus body lead?",
+            answer: "As a campus body lead, you'll gain invaluable leadership experience, enhance your organizational and management skills, build a strong professional network, receive special recognition from GeeksforGeeks, get featured on official GFG channels, access exclusive resources and support from the GFG team, and stand out in your career with this prestigious position on your resume."
+        },
+        {
+            question: "Can I collaborate with other clubs?",
+            answer: "Absolutely! We encourage collaboration with other technical and non-technical clubs on campus. This creates more opportunities for students, brings diverse perspectives to events, helps in organizing larger and more impactful events, and fosters a stronger overall community culture on campus. Cross-club collaboration is one of our core values."
+        },
+        {
+            question: "How is it beneficial for my college?",
+            answer: "The campus body brings numerous benefits to your college including enhanced technical culture, improved placement records through better-prepared students, increased visibility and reputation in the tech community, opportunities for students to participate in national-level competitions, stronger industry connections, and creation of a vibrant coding ecosystem that attracts prospective students and recruiters."
+        }
+    ];
+
+    return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            {faqs.map((faq, index) => (
+                <FAQItem
+                    key={index}
+                    question={faq.question}
+                    answer={faq.answer}
+                    isOpen={openIndex === index}
+                    onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                    index={index}
+                />
+            ))}
+        </div>
+    );
+}
+
+// FAQ Item Component
+function FAQItem({ question, answer, isOpen, onClick, index }) {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+    return (
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            style={{
+                background: "rgba(255, 255, 255, 0.03)",
+                borderRadius: "16px",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                backdropFilter: "blur(20px)",
+                overflow: "hidden",
+            }}
+        >
+            <button
+                onClick={onClick}
+                style={{
+                    width: "100%",
+                    padding: "25px 30px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    textAlign: "left",
+                }}
+            >
+                <h3 className="font-sf-pro" style={{
+                    fontSize: "1.2rem",
+                    color: "#fff",
+                    fontWeight: "600",
+                    margin: 0,
+                    paddingRight: "20px",
+                }}>
+                    {question}
+                </h3>
+                
+                <motion.div
+                    animate={{ rotate: isOpen ? 45 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                        minWidth: "40px",
+                        minHeight: "40px",
+                        borderRadius: "10px",
+                        background: isOpen ? "rgba(70, 185, 78, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                        border: `1px solid ${isOpen ? "rgba(70, 185, 78, 0.4)" : "rgba(255, 255, 255, 0.1)"}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transition: "all 0.3s ease",
+                    }}
+                >
+                    <Plus size={20} color={isOpen ? "#46b94e" : "rgba(255, 255, 255, 0.6)"} />
+                </motion.div>
+            </button>
+
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        style={{ overflow: "hidden" }}
+                    >
+                        <div style={{
+                            padding: "0 30px 25px 30px",
+                            borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                        }}>
+                            <p className="font-sf-pro" style={{
+                                fontSize: "1.05rem",
+                                lineHeight: "1.8",
+                                color: "rgba(255, 255, 255, 0.7)",
+                                margin: "20px 0 0 0",
+                            }}>
+                                {answer}
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }

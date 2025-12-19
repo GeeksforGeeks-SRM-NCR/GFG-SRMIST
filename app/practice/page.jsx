@@ -141,9 +141,18 @@ export default async function PracticePage() {
                             <span className="text-green-400 font-semibold">Master Your Skills</span>
                         </div>
                         
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-900 via-green-500 to-green-900 pb-2">
-                            Coding Challenges
-                        </h1>
+
+                            <h1 className="font-sf-pro" style={{
+                                fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
+                                fontWeight: "800",
+                                color: "#fff",
+                                marginBottom: "25px",
+                                letterSpacing: "-3px",
+                                lineHeight: "1.1",
+                            }}>
+                                CODING <span style={{ color: "#46b94e" }}> CHALLENGES</span>
+                            </h1>
+                        
                         <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
                             Sharpen your problem-solving skills with curated DSA challenges.
                             <span className="text-white"> Track progress, compete on leaderboards</span>, and become interview-ready.
