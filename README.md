@@ -1,3 +1,4 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/815be4ff-7e8a-4752-8325-a81373c7a947/deploy-status)](https://app.netlify.com/projects/gfg-srmncr/deploys)
 # GEEKSFORGEEKS - SRMIST Website
 
 Community website for the SRMIST chapter of GeeksforGeeks — built with Next.js (App Router). The project provides public pages (events, team, recruitment, challenges) and an admin area for managing events and recruitment-related content.

@@ -2,10 +2,10 @@ import React from 'react';
 import { contentfulClient } from '@/lib/contentful';
 import ProblemCard from '@/components/ProblemCard';
 import { createClient } from '@/lib/supabase-server';
-import { Trophy, Medal, AlertCircle, Code2, Target, Flame, Crown, TrendingUp, Award } from 'lucide-react';
+import { AlertCircle, Code2 } from 'lucide-react';
 import GlassyNavbar from '../components/GlassyNavbar';
 import Squares from '../components/Squares';
-import LightRays from '../components/LightRays';
+import PracticeClient from './PracticeClient';
 
 export const revalidate = 60; // Revalidate every minute
 
@@ -105,6 +105,7 @@ export default async function PracticePage() {
     const totalProblems = problems.length;
     const solvedCount = solvedProblems.size;
     const progressPercentage = totalProblems > 0 ? Math.round((solvedCount / totalProblems) * 100) : 0;
+    const userRank = user && leaderboard.length > 0 ? (leaderboard.findIndex(u => u.user_id === user.id) + 1 || 'N/A') : 'N/A';
     
     const easyProblems = problems.filter(p => p.fields.difficulty === 'Easy');
     const mediumProblems = problems.filter(p => p.fields.difficulty === 'Medium');
@@ -153,7 +154,7 @@ export default async function PracticePage() {
                                 CODING <span style={{ color: "rgba(32,140,41,1)" }}> CHALLENGES</span>
                             </h1>
                         
-                        <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                        <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-12">
                             Sharpen your problem-solving skills with curated DSA challenges.
                             <span className="text-white"> Track progress, compete on leaderboards</span>, and become interview-ready.
                         </p>
@@ -167,201 +168,60 @@ export default async function PracticePage() {
                         </div>
                     )}
 
-                    {/* Stats Overview */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-green-500/30 transition-all duration-300 hover:scale-105">
-                            <Target className="mb-3 text-green-400" size={28} />
-                            <div className="text-3xl font-bold text-white mb-1">{totalProblems}</div>
-                            <div className="text-sm text-gray-400">Total Problems</div>
-                        </div>
-
-                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300 hover:scale-105">
-                            <Trophy className="mb-3 text-blue-400" size={28} />
-                            <div className="text-3xl font-bold text-blue-400 mb-1">{solvedCount}</div>
-                            <div className="text-sm text-gray-400">Solved</div>
-                        </div>
-
-                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-purple-500/30 transition-all duration-300 hover:scale-105">
-                            <TrendingUp className="mb-3 text-purple-400" size={28} />
-                            <div className="text-3xl font-bold text-purple-400 mb-1">{progressPercentage}%</div>
-                            <div className="text-sm text-gray-400">Progress</div>
-                        </div>
-
-                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-yellow-500/30 transition-all duration-300 hover:scale-105">
-                            <Flame className="mb-3 text-yellow-400" size={28} />
-                            <div className="text-3xl font-bold text-yellow-400 mb-1">
-                                {user ? (leaderboard.findIndex(u => u.user_id === user.id) + 1 || '-') : '-'}
-                            </div>
-                            <div className="text-sm text-gray-400">Your Rank</div>
-                        </div>
-                    </div>
+                    {/* New Two Container Section */}
+                    <PracticeClient 
+                        totalProblems={totalProblems}
+                        solvedCount={solvedCount}
+                        progressPercentage={progressPercentage}
+                        leaderboard={leaderboard}
+                        userRank={userRank}
+                    />
 
                     {/* Main Content */}
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        {/* Left Column: Problems */}
-                        <div className="flex-1">
-                            {/* Section Header */}
-                            <div className="mb-6">
-                                <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
-                                    <div className="w-1 h-8 bg-gradient-to-b from-green-400 to-emerald-500 rounded-full"></div>
-                                    Problem Set
-                                </h2>
-                                <p className="text-gray-400 text-sm ml-7">Click on any problem to start solving</p>
-                            </div>
+                    <div className="w-full">
+                        {/* Problem Set Title */}
+                        <div className="mb-8">
+                            
+                            <h1 className="font-sf-pro  text-center bg-clip-text text-transparent mb-6" style={{
+                                fontSize: "clamp(3.5rem, 4vw, 6.5rem)",
+                                fontWeight: "800",
+                                color: "#fff",
+                                marginBottom: "25px",
+                                letterSpacing: "-3px",
+                                lineHeight: "1.1",
+                            }}>
+                                PROBLEM <span style={{ color: "rgba(32,140,41,1)" }}> SET</span>
+                            </h1>
+                            
+                        </div>
 
-                            {/* Difficulty Stats */}
-                            <div className="grid grid-cols-3 gap-3 mb-6">
-                                <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 backdrop-blur-md border border-green-500/30 rounded-xl p-4 text-center hover:scale-105 transition-transform duration-300">
-                                    <div className="text-2xl font-bold text-green-400">{easyProblems.length}</div>
-                                    <div className="text-xs text-green-300/80 mt-1 font-medium">Easy</div>
-                                </div>
-                                <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 backdrop-blur-md border border-yellow-500/30 rounded-xl p-4 text-center hover:scale-105 transition-transform duration-300">
-                                    <div className="text-2xl font-bold text-yellow-400">{mediumProblems.length}</div>
-                                    <div className="text-xs text-yellow-300/80 mt-1 font-medium">Medium</div>
-                                </div>
-                                <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 backdrop-blur-md border border-red-500/30 rounded-xl p-4 text-center hover:scale-105 transition-transform duration-300">
-                                    <div className="text-2xl font-bold text-red-400">{hardProblems.length}</div>
-                                    <div className="text-xs text-red-300/80 mt-1 font-medium">Hard</div>
-                                </div>
+                        {/* Difficulty Stats - Full Width */}
+                        <div className="grid grid-cols-3 gap-6 mb-8 max-w-6xl mx-auto">
+                            <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 backdrop-blur-md border border-green-500/30 rounded-2xl p-6 text-center hover:scale-105 transition-transform duration-300">
+                                <div className="text-4xl font-bold text-green-400 mb-2">{easyProblems.length}</div>
+                                <div className="text-sm text-green-300/80 font-medium">Easy Problems</div>
                             </div>
-
-                            {/* Problems List */}
-                            <div className="space-y-3">
-                                {problems.map((problem, index) => (
-                                    <div key={problem.sys.id}>
-                                        <ProblemCard
-                                            problem={problem}
-                                            isSolved={solvedProblems.has(problem.fields.slug)}
-                                            index={index}
-                                        />
-                                    </div>
-                                ))}
+                            <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 backdrop-blur-md border border-yellow-500/30 rounded-2xl p-6 text-center hover:scale-105 transition-transform duration-300">
+                                <div className="text-4xl font-bold text-yellow-400 mb-2">{mediumProblems.length}</div>
+                                <div className="text-sm text-yellow-300/80 font-medium">Medium Problems</div>
+                            </div>
+                            <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 backdrop-blur-md border border-red-500/30 rounded-2xl p-6 text-center hover:scale-105 transition-transform duration-300">
+                                <div className="text-4xl font-bold text-red-400 mb-2">{hardProblems.length}</div>
+                                <div className="text-sm text-red-300/80 font-medium">Hard Problems</div>
                             </div>
                         </div>
 
-                        {/* Right Column: Leaderboard & Progress */}
-                        <div className="w-full lg:w-96 shrink-0 space-y-6">
-                            {/* Your Progress Card */}
-                            <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl rounded-2xl border border-green-500/20 p-6 relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent pointer-events-none" />
-                                
-                                <div className="relative z-10">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                            <Award className="text-green-400" size={20} />
-                                            Your Progress
-                                        </h3>
-                                    </div>
-
-                                    {user ? (
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-sm text-gray-300">Problems Solved</span>
-                                                <span className="text-2xl font-bold text-green-400">{solvedCount}/{totalProblems}</span>
-                                            </div>
-                                            
-                                            {/* Progress Bar */}
-                                            <div>
-                                                <div className="flex justify-between text-xs text-gray-400 mb-2">
-                                                    <span>Completion Rate</span>
-                                                    <span className="text-green-400 font-semibold">{progressPercentage}%</span>
-                                                </div>
-                                                <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full transition-all duration-1000 ease-out"
-                                                        style={{ width: `${progressPercentage}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* Difficulty Breakdown */}
-                                            <div className="pt-4 border-t border-white/10 space-y-2">
-                                                <div className="flex justify-between text-sm">
-                                                    <span className="text-gray-400">Easy</span>
-                                                    <span className="text-green-400 font-medium">
-                                                        {Array.from(solvedProblems).filter(slug => 
-                                                            problems.find(p => p.fields.slug === slug)?.fields.difficulty === 'Easy'
-                                                        ).length}/{easyProblems.length}
-                                                    </span>
-                                                </div>
-                                                <div className="flex justify-between text-sm">
-                                                    <span className="text-gray-400">Medium</span>
-                                                    <span className="text-yellow-400 font-medium">
-                                                        {Array.from(solvedProblems).filter(slug => 
-                                                            problems.find(p => p.fields.slug === slug)?.fields.difficulty === 'Medium'
-                                                        ).length}/{mediumProblems.length}
-                                                    </span>
-                                                </div>
-                                                <div className="flex justify-between text-sm">
-                                                    <span className="text-gray-400">Hard</span>
-                                                    <span className="text-red-400 font-medium">
-                                                        {Array.from(solvedProblems).filter(slug => 
-                                                            problems.find(p => p.fields.slug === slug)?.fields.difficulty === 'Hard'
-                                                        ).length}/{hardProblems.length}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-6">
-                                            <p className="text-sm text-gray-400 mb-4">Log in to track your coding journey</p>
-                                            <a href="/login" className="inline-block px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors">
-                                                Sign In
-                                            </a>
-                                        </div>
-                                    )}
+                        {/* Problems List - Full Width */}
+                        <div className="space-y-4 max-w-6xl mx-auto">
+                            {problems.map((problem, index) => (
+                                <div key={problem.sys.id}>
+                                    <ProblemCard
+                                        problem={problem}
+                                        isSolved={solvedProblems.has(problem.fields.slug)}
+                                        index={index}
+                                    />
                                 </div>
-                            </div>
-
-                            {/* Leaderboard Card */}
-                            <div className="bg-gradient-to-br from-yellow-500/10 to-amber-500/10 backdrop-blur-xl rounded-2xl border border-yellow-500/20 p-6 relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent pointer-events-none" />
-                                
-                                <div className="relative z-10">
-                                    <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                                        <Crown className="text-yellow-400" size={20} />
-                                        Top Solvers
-                                    </h2>
-
-                                    <div className="space-y-3">
-                                        {leaderboard.length > 0 ? (
-                                            leaderboard.map((u, idx) => (
-                                                <div 
-                                                    key={u.user_id} 
-                                                    className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ${
-                                                        idx < 3 
-                                                            ? 'bg-gradient-to-r from-white/10 to-white/5 border border-white/20' 
-                                                            : 'bg-white/5 hover:bg-white/10'
-                                                    }`}
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm ${
-                                                            idx === 0 ? 'bg-yellow-500/20 text-yellow-400' :
-                                                            idx === 1 ? 'bg-gray-400/20 text-gray-300' :
-                                                            idx === 2 ? 'bg-amber-700/20 text-amber-600' :
-                                                            'bg-white/5 text-gray-500'
-                                                        }`}>
-                                                            {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}
-                                                        </div>
-                                                        <span className="text-gray-200 text-sm font-mono">
-                                                            {user && user.id === u.user_id ? 'You' : `User_${u.user_id.slice(0, 4)}`}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-green-400 text-sm">{u.total_solved}</span>
-                                                        <Trophy size={14} className="text-green-400/60" />
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-center py-8">
-                                                <Trophy className="mx-auto mb-3 text-gray-600" size={32} />
-                                                <p className="text-gray-500 text-sm">No submissions yet. Be the first!</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
