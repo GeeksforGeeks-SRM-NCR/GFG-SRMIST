@@ -106,7 +106,7 @@ export default async function PracticePage() {
     const solvedCount = solvedProblems.size;
     const progressPercentage = totalProblems > 0 ? Math.round((solvedCount / totalProblems) * 100) : 0;
     const userRank = user && leaderboard.length > 0 ? (leaderboard.findIndex(u => u.user_id === user.id) + 1 || 'N/A') : 'N/A';
-    
+
     const easyProblems = problems.filter(p => p.fields.difficulty === 'Easy');
     const mediumProblems = problems.filter(p => p.fields.difficulty === 'Medium');
     const hardProblems = problems.filter(p => p.fields.difficulty === 'Hard');
@@ -141,19 +141,19 @@ export default async function PracticePage() {
                             <Code2 className="text-green-400" size={20} />
                             <span className="text-green-400 font-semibold">Master Your Skills</span>
                         </div>
-                        
 
-                            <h1 className="font-sf-pro" style={{
-                                fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
-                                fontWeight: "800",
-                                color: "#fff",
-                                marginBottom: "25px",
-                                letterSpacing: "-3px",
-                                lineHeight: "1.1",
-                            }}>
-                                CODING <span style={{ color: "rgba(32,140,41,1)" }}> CHALLENGES</span>
-                            </h1>
-                        
+
+                        <h1 className="font-sf-pro" style={{
+                            fontSize: "clamp(3rem, 10vw, 6.5rem)",
+                            fontWeight: "800",
+                            color: "#fff",
+                            marginBottom: "25px",
+                            letterSpacing: "-3px",
+                            lineHeight: "1.1",
+                        }}>
+                            CODING <span style={{ color: "rgba(32,140,41,1)" }}> CHALLENGES</span>
+                        </h1>
+
                         <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-12">
                             Sharpen your problem-solving skills with curated DSA challenges.
                             <span className="text-white"> Track progress, compete on leaderboards</span>, and become interview-ready.
@@ -169,7 +169,7 @@ export default async function PracticePage() {
                     )}
 
                     {/* New Two Container Section */}
-                    <PracticeClient 
+                    <PracticeClient
                         totalProblems={totalProblems}
                         solvedCount={solvedCount}
                         progressPercentage={progressPercentage}
@@ -181,9 +181,9 @@ export default async function PracticePage() {
                     <div className="w-full">
                         {/* Problem Set Title */}
                         <div className="mb-8">
-                            
+
                             <h1 className="font-sf-pro  text-center bg-clip-text text-transparent mb-6" style={{
-                                fontSize: "clamp(3.5rem, 4vw, 6.5rem)",
+                                fontSize: "clamp(3.2rem, 10vw, 6.5rem)",
                                 fontWeight: "800",
                                 color: "#fff",
                                 marginBottom: "25px",
@@ -192,7 +192,7 @@ export default async function PracticePage() {
                             }}>
                                 PROBLEM <span style={{ color: "rgba(32,140,41,1)" }}> SET</span>
                             </h1>
-                            
+
                         </div>
 
                         {/* Difficulty Stats - Full Width */}

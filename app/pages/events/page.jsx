@@ -84,12 +84,12 @@ export default function EventsPage() {
 
 
                     {/* Tabs */}
-                    <div className="flex gap-4 mb-12 p-1 bg-white/5 rounded-xl w-fit backdrop-blur-sm border border-white/10 mx-auto">
+                    <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-12 p-1 bg-white/5 rounded-xl w-fit max-w-full backdrop-blur-sm border border-white/10 mx-auto">
                         {['upcoming', 'current', 'completed'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-6 py-2 rounded-lg capitalize transition-all duration-300 ${activeTab === tab
+                                className={`px-4 py-2 sm:px-6 sm:py-2 rounded-lg capitalize transition-all duration-300 ${activeTab === tab
                                     ? 'bg-[#46b94e] text-black font-bold shadow-lg shadow-green-500/20'
                                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
