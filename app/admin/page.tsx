@@ -79,6 +79,16 @@ export default async function AdminPage() {
                             <p className="text-sm text-white/40">View submissions</p>
                         </div>
                     </a>
+
+                    <a href="/admin/users" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 flex flex-col items-center gap-3 text-center md:col-span-2">
+                        <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            🔐
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-white">Challenge Access</h3>
+                            <p className="text-sm text-white/40">Manage student whitelist</p>
+                        </div>
+                    </a>
                 </div>
 
                 <LogoutButton />
