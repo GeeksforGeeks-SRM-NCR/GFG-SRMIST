@@ -51,7 +51,7 @@ export default function AboutPage() {
     const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
     return (
-        <div ref={containerRef} style={{ width: "100%", minHeight: "100vh", position: "relative" }}>
+        <div ref={containerRef} style={{ width: "100%", minHeight: "100vh", position: "relative", overflowX: "hidden" }}>
             {/* Background */}
             <div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
                 <Squares
@@ -183,7 +183,7 @@ export default function AboutPage() {
                 </motion.section>
 
                 {/* Our Purpose Section */}
-                <section style={{ padding: "100px 40px" }}>
+                <section style={{ padding: "100px clamp(20px, 5vw, 40px)" }}>
                     <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
@@ -232,7 +232,7 @@ export default function AboutPage() {
 
                         <div style={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                             gap: "40px",
                         }}>
                             <PurposeCard
@@ -252,7 +252,7 @@ export default function AboutPage() {
                 </section>
 
                 {/* What We Do Section */}
-                <section style={{ padding: "50px 40px", background: "rgba(0, 0, 0, 0.2)" }}>
+                <section style={{ padding: "50px clamp(20px, 5vw, 40px)", background: "rgba(0, 0, 0, 0.2)" }}>
                     <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
@@ -301,7 +301,7 @@ export default function AboutPage() {
 
                         <div style={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                             gap: "30px",
                         }}>
                             {[
@@ -343,7 +343,7 @@ export default function AboutPage() {
                 </section>
 
                 {/* Stats Section */}
-                <section style={{ padding: "50px 40px" }}>
+                <section style={{ padding: "50px clamp(20px, 5vw, 40px)" }}>
                     <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
@@ -399,8 +399,8 @@ export default function AboutPage() {
                 </section>
 
                 {/* Alumni Milestone Section */}
-                <section style={{ padding: "100px 40px", overflow: "hidden" }}>
-                    <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+                <section style={{ padding: "100px 0", overflow: "hidden" }}>
+                    <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 clamp(20px, 5vw, 40px)" }}>
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -445,13 +445,15 @@ export default function AboutPage() {
                                 Our alumni are thriving at top companies worldwide
                             </p>
                         </motion.div>
+                    </div>
 
+                    <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
                         <LogoSlider />
                     </div>
                 </section>
 
                 {/* FAQ Section */}
-                <section style={{ padding: "100px 40px", background: "rgba(0, 0, 0, 0.2)" }}>
+                <section style={{ padding: "100px clamp(20px, 5vw, 40px)", background: "rgba(0, 0, 0, 0.2)" }}>
                     <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
@@ -503,7 +505,7 @@ export default function AboutPage() {
                 </section>
 
                 {/* Join Us Section */}
-                <section style={{ padding: "100px 40px 140px" }}>
+                <section style={{ padding: "100px clamp(20px, 5vw, 40px) 140px" }}>
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -839,7 +841,7 @@ function LogoSlider() {
                 left: 0,
                 top: 0,
                 bottom: 0,
-                width: "150px",
+                width: "clamp(0px, calc(25vw - 100px), 150px)",
                 background: "linear-gradient(to right, rgba(0, 0, 0, 1), transparent)",
                 zIndex: 2,
                 pointerEvents: "none",
@@ -849,7 +851,7 @@ function LogoSlider() {
                 right: 0,
                 top: 0,
                 bottom: 0,
-                width: "150px",
+                width: "clamp(0px, calc(25vw - 100px), 150px)",
                 background: "linear-gradient(to left, rgba(0, 0, 0, 1), transparent)",
                 zIndex: 2,
                 pointerEvents: "none",
@@ -998,7 +1000,7 @@ function FAQItem({ question, answer, isOpen, onClick, index }) {
                 }}>
                     {question}
                 </h3>
-                
+
                 <motion.div
                     animate={{ rotate: isOpen ? 45 : 0 }}
                     transition={{ duration: 0.3 }}

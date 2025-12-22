@@ -81,7 +81,7 @@ const IDEClient = ({ problem, initialCode }) => {
     const getDescriptionText = (desc) => {
         if (!desc) return 'Solve this problem by implementing the required algorithm.';
         if (typeof desc === 'string') return desc;
-        
+
         if (desc.content && Array.isArray(desc.content)) {
             const texts = [];
             const extractText = (node) => {
@@ -94,7 +94,7 @@ const IDEClient = ({ problem, initialCode }) => {
             desc.content.forEach(extractText);
             return texts.join(' ').trim() || 'Solve this problem by implementing the required algorithm.';
         }
-        
+
         return 'Solve this problem by implementing the required algorithm.';
     };
 
@@ -105,8 +105,8 @@ const IDEClient = ({ problem, initialCode }) => {
             {/* Top Navigation Bar */}
             <div className="fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
-                    <Link 
-                        href="/practice" 
+                    <Link
+                        href="/practice"
                         className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
                     >
                         <ArrowLeft size={20} />
@@ -131,29 +131,27 @@ const IDEClient = ({ problem, initialCode }) => {
             </div>
 
             {/* Main Content */}
-            <div className="pt-16 h-screen flex">
+            <div className="pt-16 min-h-screen lg:h-screen flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
                 {/* Left Panel: Problem Description */}
-                <div className={`${isFullscreen ? 'hidden' : 'w-full md:w-[450px]'} flex flex-col border-r border-white/10 bg-black`}>
+                <div className={`${isFullscreen ? 'hidden' : 'w-full lg:w-[450px] h-auto lg:h-full'} flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-white/10 bg-black`}>
                     {/* Tabs */}
                     <div className="flex border-b border-white/10 bg-white/5">
                         <button
                             onClick={() => setActiveTab('description')}
-                            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
-                                activeTab === 'description'
-                                    ? 'text-green-400 border-b-2 border-green-400 bg-green-500/10'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
+                            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${activeTab === 'description'
+                                ? 'text-green-400 border-b-2 border-green-400 bg-green-500/10'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
                         >
                             <BookOpen size={16} />
                             Description
                         </button>
                         <button
                             onClick={() => setActiveTab('submissions')}
-                            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
-                                activeTab === 'submissions'
-                                    ? 'text-green-400 border-b-2 border-green-400 bg-green-500/10'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
+                            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${activeTab === 'submissions'
+                                ? 'text-green-400 border-b-2 border-green-400 bg-green-500/10'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
                         >
                             <ListChecks size={16} />
                             Submissions
@@ -228,14 +226,14 @@ const IDEClient = ({ problem, initialCode }) => {
                     </div>
                 </div>
 
-                {/* Right Panel: Code Editor */}
-                <div className="flex-1 flex flex-col bg-black">
+                {/* Right Panel: Code Editor - FIXED FOR BOTH PORTRAIT AND LANDSCAPE MOBILE */}
+                <div className={`${isFullscreen ? 'w-full' : 'w-full lg:flex-1'} flex flex-col bg-black min-h-[500px] h-[calc(100vh-64px)] lg:h-full`}>
                     {/* Toolbar */}
                     <div className="h-14 border-b border-white/10 bg-white/5 flex items-center justify-between px-4 flex-shrink-0">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4">
                             <div className="flex items-center gap-2 text-sm text-gray-400">
                                 <Code2 size={16} />
-                                <span className="font-medium">Code Editor</span>
+                                <span className="font-medium hidden sm:inline">Code Editor</span>
                             </div>
                             <div className="h-4 w-px bg-white/10" />
                             <div className="relative">
@@ -252,17 +250,17 @@ const IDEClient = ({ problem, initialCode }) => {
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 sm:gap-3">
                             <button
                                 onClick={handleRun}
                                 disabled={isRunning}
-                                className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/20"
+                                className="flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/20"
                             >
                                 <Play size={16} fill="currentColor" />
                                 {isRunning ? 'Running...' : 'Run Code'}
                             </button>
                             <button
-                                className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-blue-500/20"
+                                className="flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-lg shadow-blue-500/20"
                             >
                                 <Send size={16} />
                                 Submit
@@ -270,18 +268,21 @@ const IDEClient = ({ problem, initialCode }) => {
                         </div>
                     </div>
 
-                    {/* Editor Area */}
-                    <div className="flex-1 flex flex-col min-h-0">
-                        <div className="flex-1 min-h-0 relative">
-                            <CodeEditor
-                                code={code}
-                                language={language === 'c++' ? 'cpp' : language}
-                                onChange={setCode}
-                            />
+                    {/* Editor Area - FIXED FOR HORIZONTAL MOBILE VIEW */}
+                    <div className="flex-1 flex flex-col min-h-0 w-full">
+                        <div className="flex-1 min-h-0 min-w-0 relative">
+                            {/* Absolute positioned wrapper to ensure full expansion */}
+                            <div className="absolute inset-0 w-full h-full">
+                                <CodeEditor
+                                    code={code}
+                                    language={language === 'c++' ? 'cpp' : language}
+                                    onChange={setCode}
+                                />
+                            </div>
                         </div>
 
                         {/* Console Output */}
-                        <div className="h-64 border-t border-white/10 shrink-0">
+                        <div className="h-64 border-t border-white/10 shrink-0 min-h-[200px]">
                             <ConsoleOutput
                                 results={executionResult}
                                 status={executionStatus}

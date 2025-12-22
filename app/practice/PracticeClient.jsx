@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Trophy, Target, TrendingUp, Crown, User, LogIn, Medal, Award, Settings, X, Upload, Camera } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import UserLoginModal from '../../components/UserLoginModal';
+
 
 // Demo credentials
 const DEMO_USER = {
@@ -17,12 +19,12 @@ const PROFILE_PHOTOS = {
     3: "https://randomuser.me/api/portraits/men/52.jpg"
 };
 
-export default function PracticeClient({ 
-    totalProblems, 
-    solvedCount, 
-    progressPercentage, 
+export default function PracticeClient({
+    totalProblems,
+    solvedCount,
+    progressPercentage,
     leaderboard,
-    userRank 
+    userRank
 }) {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,7 +32,7 @@ export default function PracticeClient({
     const [loginForm, setLoginForm] = useState({ username: '', password: '' });
     const [loginError, setLoginError] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
-    
+
     // Settings state
     const [showSettings, setShowSettings] = useState(false);
     const [settingsTab, setSettingsTab] = useState('profile'); // 'profile', 'username', 'password'
@@ -100,7 +102,7 @@ export default function PracticeClient({
 
     const handlePasswordReset = () => {
         setSettingsError('');
-        
+
         if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
             setSettingsError('All fields are required');
             return;
@@ -134,7 +136,7 @@ export default function PracticeClient({
                 {/* Left Container - User Profile & Stats */}
                 <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl rounded-3xl border border-green-500/20 p-8 relative">
                     <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent pointer-events-none" />
-                    
+
                     {/* Settings Button in Top Right Corner */}
                     {isLoggedIn && currentUser && (
                         <button
@@ -145,7 +147,7 @@ export default function PracticeClient({
                             <Settings size={18} />
                         </button>
                     )}
-                    
+
                     <div className="relative z-10">
                         {isLoggedIn && currentUser ? (
                             <>
@@ -158,12 +160,12 @@ export default function PracticeClient({
                                             getUserInitials(currentUser.username)
                                         )}
                                     </div>
-                                    
+
                                     {/* Username */}
                                     <h3 className="text-2xl font-bold text-white mb-2">
                                         {currentUser.username}
                                     </h3>
-                                    
+
                                     {/* Rank */}
                                     <p className="text-gray-400 text-lg flex items-center gap-2">
                                         Your Rank: <span className="text-yellow-400 font-bold text-2xl">{currentUser.rank}</span>
@@ -216,7 +218,7 @@ export default function PracticeClient({
                 {/* Right Container - Leaderboard */}
                 <div className="bg-gradient-to-br from-yellow-500/10 to-amber-500/10 backdrop-blur-xl rounded-3xl border border-yellow-500/20 p-8 relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent pointer-events-none" />
-                    
+
                     <div className="relative z-10">
                         {/* Leaderboard Title */}
                         <h2 className="text-4xl font-black text-center mb-8 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 bg-clip-text text-transparent" style={{ fontFamily: 'SF Pro Display, -apple-system, sans-serif', letterSpacing: '2px' }}>
@@ -289,70 +291,10 @@ export default function PracticeClient({
             </div>
 
             {/* Login Modal */}
-            {showLoginModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div className="bg-gradient-to-br from-gray-900 to-black border border-green-500/30 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-                        <h2 className="text-3xl font-bold text-white mb-6 text-center">Welcome Back!</h2>
-                        
-                        <form onSubmit={handleLogin} className="space-y-4">
-                            <div>
-                                <label className="block text-gray-300 text-sm font-medium mb-2">Username</label>
-                                <input
-                                    type="text"
-                                    value={loginForm.username}
-                                    onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 transition-all"
-                                    placeholder="Enter username"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-gray-300 text-sm font-medium mb-2">Password</label>
-                                <input
-                                    type="password"
-                                    value={loginForm.password}
-                                    onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 transition-all"
-                                    placeholder="Enter password"
-                                    required
-                                />
-                            </div>
-
-                            {loginError && (
-                                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
-                                    {loginError}
-                                </div>
-                            )}
-
-                            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-blue-300 text-xs">
-                                <strong>Demo Credentials:</strong><br />
-                                Username: demo<br />
-                                Password: demo123
-                            </div>
-
-                            <div className="flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowLoginModal(false);
-                                        setLoginError('');
-                                    }}
-                                    className="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition-all"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg"
-                                >
-                                    Sign In
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <UserLoginModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+            />
 
             {/* Settings Modal */}
             {showSettings && (
@@ -384,11 +326,10 @@ export default function PracticeClient({
                                     setSettingsError('');
                                     setSettingsSuccess('');
                                 }}
-                                className={`px-4 py-3 font-medium transition-all ${
-                                    settingsTab === 'profile'
+                                className={`px-4 py-3 font-medium transition-all ${settingsTab === 'profile'
                                         ? 'text-green-400 border-b-2 border-green-400'
                                         : 'text-gray-400 hover:text-white'
-                                }`}
+                                    }`}
                             >
                                 Profile Photo
                             </button>
@@ -398,11 +339,10 @@ export default function PracticeClient({
                                     setSettingsError('');
                                     setSettingsSuccess('');
                                 }}
-                                className={`px-4 py-3 font-medium transition-all ${
-                                    settingsTab === 'username'
+                                className={`px-4 py-3 font-medium transition-all ${settingsTab === 'username'
                                         ? 'text-green-400 border-b-2 border-green-400'
                                         : 'text-gray-400 hover:text-white'
-                                }`}
+                                    }`}
                             >
                                 Username
                             </button>
@@ -412,11 +352,10 @@ export default function PracticeClient({
                                     setSettingsError('');
                                     setSettingsSuccess('');
                                 }}
-                                className={`px-4 py-3 font-medium transition-all ${
-                                    settingsTab === 'password'
+                                className={`px-4 py-3 font-medium transition-all ${settingsTab === 'password'
                                         ? 'text-green-400 border-b-2 border-green-400'
                                         : 'text-gray-400 hover:text-white'
-                                }`}
+                                    }`}
                             >
                                 Reset Password
                             </button>

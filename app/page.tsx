@@ -45,7 +45,7 @@ export default function Home() {
       />
 
       {/* Center Content */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-10 w-full px-4">
+      <div className="absolute top-1/2 [@media(max-height:586px)]:top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-10 w-full px-4">
         {/* GeeksForGeeks Logo - positioned higher */}
         <div className="w-full max-w-[700px] flex justify-center items-center -mt-20 sm:-mt-24">
           <Logo2 />

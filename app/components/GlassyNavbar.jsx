@@ -7,14 +7,20 @@ import { FiMenu, FiX, FiArrowLeft } from "react-icons/fi";
 import { LogIn, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import UserLoginModal from "../../components/UserLoginModal";
+
 
 export default function GlassyNavbar() {
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showLoginOptions, setShowLoginOptions] = useState(false);
     const [user, setUser] = useState(null);
+    const dropdownRef = useRef(null);
+
     const pathname = usePathname();
     const router = useRouter();
-    
+
     // Use refs to track animation states
     const animationStatesRef = useRef({});
     const hoverTimeoutRef = useRef(null);
@@ -28,12 +34,21 @@ export default function GlassyNavbar() {
 
         checkUser();
 
+        // Handle click outside to close login dropdown
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowLoginOptions(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
         });
 
         return () => {
             subscription.unsubscribe();
+            document.removeEventListener("mousedown", handleClickOutside);
             // Clean up timeouts
             if (hoverTimeoutRef.current) {
                 clearTimeout(hoverTimeoutRef.current);
@@ -50,15 +65,15 @@ export default function GlassyNavbar() {
     const handleMouseEnter = useCallback((index) => {
         const now = Date.now();
         lastHoverTimeRef.current[index] = now;
-        
+
         // Clear any pending timeout for this index
         if (animationStatesRef.current[index]?.timeout) {
             clearTimeout(animationStatesRef.current[index].timeout);
         }
-        
+
         // Set the state immediately
         setHoveredIndex(index);
-        
+
         // Mark this index as needing encryption animation
         animationStatesRef.current[index] = {
             isAnimating: true,
@@ -70,12 +85,12 @@ export default function GlassyNavbar() {
     const handleMouseLeave = useCallback((index) => {
         const now = Date.now();
         lastHoverTimeRef.current[index] = now;
-        
+
         // Don't immediately change state, wait a bit to see if we're re-entering
         if (animationStatesRef.current[index]?.timeout) {
             clearTimeout(animationStatesRef.current[index].timeout);
         }
-        
+
         // Set a timeout to reset the hover state
         animationStatesRef.current[index] = {
             ...animationStatesRef.current[index],
@@ -98,7 +113,7 @@ export default function GlassyNavbar() {
     const NavItemText = useCallback(({ text, isHovered, index }) => {
         // Force a key change to reset animation when hover state changes
         const animationKey = `${index}-${isHovered ? 'hover' : 'normal'}`;
-        
+
         return (
             <div className="inline-block font-sf-pro font-bold text-[18px] text-center">
                 <DecryptedText
@@ -136,8 +151,8 @@ export default function GlassyNavbar() {
         <>
             <nav className="fixed top-[30px] left-1/2 -translate-x-1/2 w-[85%] max-w-[1100px] h-[70px] bg-white/8 backdrop-blur-[30px] saturate-[180%] border border-white/15 rounded-[40px] shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.2),inset_0_0_20px_rgba(255,255,255,0.02)] flex items-center justify-between px-6 md:px-10 z-[1000]">
                 {/* Left side - Clickable Logo that navigates to home */}
-                <Link 
-                    href="/" 
+                <Link
+                    href="/"
                     className="flex items-center flex-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] hover:opacity-90 transition-opacity duration-200"
                     title="Go to Home"
                 >
@@ -159,7 +174,7 @@ export default function GlassyNavbar() {
                                     ? 'bg-[#2f8d46] border border-[#2f8d46] scale-105 shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-[10px]'
                                     : 'bg-transparent border border-transparent scale-100 shadow-none'}
                             `}
-                            style={{ 
+                            style={{
                                 textShadow: '0 2px 4px rgba(0,0,0,0.3)',
                                 // Prevent width changes during animation
                                 width: 'auto',
@@ -167,8 +182,8 @@ export default function GlassyNavbar() {
                                 maxWidth: '130px'
                             }}
                         >
-                            <NavItemText 
-                                text={item.label} 
+                            <NavItemText
+                                text={item.label}
                                 isHovered={hoveredIndex === index}
                                 index={index}
                             />
@@ -188,14 +203,46 @@ export default function GlassyNavbar() {
                                 <LogOut size={18} />
                             </button>
                         ) : (
-                            <Link
-                                href="/login"
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap"
-                                title="Login"
-                            >
-                                <LogIn size={18} />
-                            </Link>
+                            <div className="relative" ref={dropdownRef}>
+                                <button
+                                    onClick={() => setShowLoginOptions(!showLoginOptions)}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap"
+                                    title="Login"
+                                >
+                                    <LogIn size={18} />
+                                    <span>Login</span>
+                                </button>
+
+                                {/* Login Options Dropdown */}
+                                {showLoginOptions && (
+                                    <div className="absolute top-full right-0 mt-3 w-48 py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1001] animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <button
+                                            onClick={() => {
+                                                setShowLoginModal(true);
+                                                setShowLoginOptions(false);
+                                            }}
+                                            className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-[#2f8d46]/20 flex items-center justify-center text-[#2f8d46]">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                            </div>
+                                            <span>User Login</span>
+                                        </button>
+                                        <Link
+                                            href="/login"
+                                            onClick={() => setShowLoginOptions(false)}
+                                            className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                            </div>
+                                            <span>Admin Login</span>
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
                         )
+
                     )}
 
                     {/* Home/Team button - always show when not on homepage */}
@@ -222,14 +269,41 @@ export default function GlassyNavbar() {
                                 <LogOut size={18} />
                             </button>
                         ) : (
-                            <Link
-                                href="/login"
-                                className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
-                                title="Login"
-                            >
-                                <LogIn size={18} />
-                            </Link>
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowLoginOptions(!showLoginOptions)}
+                                    className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
+                                    title="Login"
+                                >
+                                    <LogIn size={18} />
+                                </button>
+
+                                {showLoginOptions && (
+                                    <div className="absolute top-full right-0 mt-3 w-40 py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1001]">
+                                        <button
+                                            onClick={() => {
+                                                setShowLoginModal(true);
+                                                setShowLoginOptions(false);
+                                            }}
+                                            className="w-full text-left px-4 py-3 text-xs text-white border-b border-white/5"
+                                        >
+                                            User Login
+                                        </button>
+                                        <Link
+                                            href="/login"
+                                            onClick={() => {
+                                                setShowLoginOptions(false);
+                                                setIsMobileMenuOpen(false);
+                                            }}
+                                            className="w-full text-left px-4 py-3 text-xs text-white block"
+                                        >
+                                            Admin Login
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
                         )
+
                     )}
 
                     {/* Home button on mobile - show when not on homepage */}
@@ -268,6 +342,12 @@ export default function GlassyNavbar() {
                     </div>
                 </div>
             )}
+
+            <UserLoginModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+            />
         </>
+
     );
 }
