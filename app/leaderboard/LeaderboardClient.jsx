@@ -359,10 +359,7 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                 <div className="w-48">
                                     <Logo2 />
                                 </div>
-                                <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-                                    <TrendingUp className="text-green-400" size={32} />
-                                    Rankings
-                                </h2>
+
                             </div>
                         </div>
 
