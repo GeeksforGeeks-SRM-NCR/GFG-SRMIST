@@ -239,11 +239,12 @@ async function calculateAdvancedScore(submissionData: {
         // Path to the Python grading script
         const scriptPath = path.join(process.cwd(), 'scripts', 'grade_submission.py');
         const input = JSON.stringify(submissionData);
+        const base64Input = Buffer.from(input).toString('base64');
 
-        // Execute Python script with input via echo and pipe
-        const command = `echo '${input.replace(/'/g, "'\\''")}' | python3 ${scriptPath}`;
-
-        const { stdout, stderr } = await execAsync(command, {
+        // Execute python script with base64 encoded input to avoid shell issues
+        const command = `python ${scriptPath} --input-base64 ${base64Input}`;
+        
+        const { stdout, stderr } = await execAsync(command, { 
             maxBuffer: 1024 * 1024,
             timeout: 5000 // 5 second timeout
         });
@@ -267,7 +268,6 @@ async function calculateAdvancedScore(submissionData: {
             details: {
                 error: 'Grading algorithm unavailable, using fallback scoring',
                 execution_speed: { score: 0, max: 0 },
-                time_complexity: { score: 0, max: 0 },
                 lines_of_code: { score: 0, max: 0 }
             }
         };
@@ -473,42 +473,40 @@ export async function POST(request: Request) {
                 total_score: 0,
                 max_marks: maxMarks,
                 details: {
-                    execution_speed: { score: 0, max: maxMarks * 0.4 },
-                    time_complexity: { score: 0, max: maxMarks * 0.4 },
-                    lines_of_code: { score: 0, max: maxMarks * 0.2 }
+                    execution_speed: { score: 0, max: maxMarks * 0.6 },
+                    lines_of_code: { score: 0, max: maxMarks * 0.4 }
                 }
             };
         }
 
-        // 7. Save submission to user_submissions table
-        const { error: submissionError } = await supabase
-            .from('user_submissions')
-            .insert({
-                user_id: user.id,
-                problem_slug: problemSlug,
-                code: code,
-                language: language,
-                status: allPassed ? 'Passed' : 'Failed',
-                runtime: avgRuntime
-            });
+        const roundedScore = Math.round(scoreResult.total_score);
 
-        if (submissionError) {
-            console.error('Error saving to user_submissions:', submissionError);
-        }
-
-        // 8. Update user profile and rankings if passed
+        // 7. Handle submission and score update
         if (allPassed) {
-            // Check if this is the first time solving this problem
-            const { count } = await supabase
+            // Fetch previous best score BEFORE inserting current submission
+            const { data: previousScores, error: prevScoreError } = await supabase
                 .from('user_submissions')
-                .select('*', { count: 'exact', head: true })
+                .select('points_awarded')
                 .eq('user_id', user.id)
                 .eq('problem_slug', problemSlug)
-                .eq('status', 'Passed');
+                .gt('points_awarded', 0); // ✅ FIX HERE
 
-            // Only award points for the first successful submission
-            if (count === 1) {
-                // Fetch current profile data
+            let previousBestScore = 0;
+
+            if (prevScoreError) {
+                console.error('Error fetching previous scores:', prevScoreError);
+            }
+
+            if (previousScores && previousScores.length > 0) {
+                previousBestScore = Math.max(
+                    ...previousScores.map(s => s.points_awarded || 0)
+                );
+            }
+
+            const pointsToAdd = Math.max(roundedScore - previousBestScore, 0);
+
+            // Update profile points ONLY if improvement exists
+            if (pointsToAdd > 0) {
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('total_points')
@@ -516,27 +514,46 @@ export async function POST(request: Request) {
                     .single();
 
                 if (profileError) {
-                    console.error('Error fetching profile:', profileError);
+                    console.error('Error fetching profile for update:', profileError);
                 } else {
                     const currentPoints = profile?.total_points || 0;
-                    const newTotalPoints = currentPoints + Math.round(scoreResult.total_score);
+                    const newTotalPoints = currentPoints + pointsToAdd;
 
-                    // Update user's profile with new points
                     const { error: updateError } = await supabase
                         .from('profiles')
-                        .update({
-                            total_points: newTotalPoints
-                        })
+                        .update({ total_points: newTotalPoints })
                         .eq('id', user.id);
 
                     if (updateError) {
-                        console.error('Error updating profile:', updateError);
+                        console.error('Error updating profile points:', updateError);
                     } else {
-                        // Update rankings for all users
                         await updateAllRankings(supabase);
                     }
                 }
             }
+
+            // Insert submission AFTER score calculation
+            await supabase.from('user_submissions').insert({
+                user_id: user.id,
+                problem_slug: problemSlug,
+                code: code,
+                language: language,
+                status: 'Passed',
+                runtime: avgRuntime,
+                points_awarded: roundedScore,
+            });
+
+        } else {
+            // For failed submissions, just insert the record
+            await supabase.from('user_submissions').insert({
+                user_id: user.id,
+                problem_slug: problemSlug,
+                code: code,
+                language: language,
+                status: 'Failed',
+                runtime: avgRuntime,
+                points_awarded: 0,
+            });
         }
 
         // 9. Return response
@@ -544,12 +561,12 @@ export async function POST(request: Request) {
             success: true,
             passed: allPassed,
             results: results,
-            points_awarded: scoreResult.total_score,
+            points_awarded: roundedScore,
             max_points: scoreResult.max_marks,
             runtime: avgRuntime,
             score_breakdown: scoreResult.details,
-            message: allPassed
-                ? `Congratulations! All ${testCases.length} test cases passed. You earned ${scoreResult.total_score} points!`
+            message: allPassed 
+                ? `Congratulations! All ${testCases.length} test cases passed. You earned ${roundedScore} points!`
                 : `${results.filter(r => r.passed).length}/${testCases.length} test cases passed. Keep trying!`
         });
 

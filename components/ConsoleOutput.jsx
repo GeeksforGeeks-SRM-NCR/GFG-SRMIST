@@ -4,7 +4,60 @@ import React from 'react';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Terminal, Loader2, AlertCircle } from 'lucide-react';
 
-const ConsoleOutput = ({ results, status, isRunning, error }) => {
+const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) => {
+    if (submissionResult) {
+        const isSuccess = submissionResult.status === 'Success';
+        const grading = submissionResult.gradingResult;
+
+        return (
+            <div className="h-full w-full flex flex-col bg-gradient-to-b from-black to-black/95 text-white overflow-hidden">
+                {/* Header */}
+                <div className={`p-4 border-b ${isSuccess ? 'border-green-500/30 bg-green-500/10' : 'border-red-500/30 bg-red-500/10'}`}>
+                    <div className="flex items-center gap-3">
+                        {isSuccess ? (
+                            <CheckCircle size={20} className="text-green-400" />
+                        ) : (
+                            <XCircle size={20} className="text-red-400" />
+                        )}
+                        <span className={`text-sm font-semibold ${isSuccess ? 'text-green-400' : 'text-red-400'}`}>
+                            Submission {submissionResult.status}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Body */}
+                <div className="flex-1 overflow-auto p-6 space-y-4">
+                    <p className={`text-sm ${isSuccess ? 'text-gray-300' : 'text-red-300'}`}>
+                        {submissionResult.message}
+                    </p>
+                    
+                    {isSuccess && grading && (
+                         <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-lg font-bold text-white">Grading Result</h3>
+                                <div className="text-2xl font-bold text-green-400">
+                                    {grading.total_score}{' '}
+                                    <span className="text-base font-normal text-gray-400">/ {grading.max_marks}</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                {Object.entries(grading.details).map(([key, value]) => (
+                                    <div key={key} className="bg-black/50 p-3 rounded-lg border border-white/10">
+                                        <div className="capitalize text-gray-400 text-xs mb-1">{key.replace(/_/g, ' ')}</div>
+                                        <div className="font-medium text-white">
+                                            Score: {value.score} / {value.max}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     if (isRunning) {
         return (
             <div className="h-full w-full bg-gradient-to-b from-black to-black/95 text-white overflow-auto">

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS user_submissions (
     language TEXT NOT NULL,
     status TEXT NOT NULL, -- 'Passed', 'Failed'
     runtime INTEGER, -- in milliseconds
+    grading_result JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
