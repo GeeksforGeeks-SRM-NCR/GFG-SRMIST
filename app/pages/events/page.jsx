@@ -11,7 +11,8 @@ import EventCard from '../../components/EventCard';
 export default function EventsPage() {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('upcoming');
+    const [activeTab, setActiveTab] = useState('completed');
+
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -85,7 +86,8 @@ export default function EventsPage() {
 
                     {/* Tabs */}
                     <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-12 p-1 bg-white/5 rounded-xl w-fit max-w-full backdrop-blur-sm border border-white/10 mx-auto">
-                        {['upcoming', 'current', 'completed'].map((tab) => (
+                    {['completed', 'current', 'upcoming'].map((tab) => (
+
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}

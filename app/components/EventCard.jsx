@@ -9,13 +9,10 @@ export default function EventCard({ event }) {
     const { title, slug, date, venue, coverImage } = event.fields;
     const imageUrl = coverImage?.fields?.file?.url ? `https:${coverImage.fields.file.url}` : '/placeholder.jpg';
 
-    const imageDetails = coverImage?.fields?.file?.details?.image;
-    const aspectRatio = imageDetails ? `${imageDetails.width}/${imageDetails.height}` : '3/4';
-
     const isCompleted = moment(date).isBefore(moment());
 
     return (
-        <div className="block relative group w-full max-w-[400px]" style={{ flex: '1 1 300px' }}>
+        <div className="block relative group w-full" style={{ maxWidth: '380px', minWidth: '320px' }}>
             <div className="relative w-full">
                 {/* ShapeBlur Background Effect */}
                 <div className="absolute -inset-4 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl">
@@ -34,7 +31,8 @@ export default function EventCard({ event }) {
                     displayOverlayContent={false}
                 >
                     <div className="flex flex-col h-full bg-[#0a0a0a] border border-white/10 rounded-[25px] overflow-hidden">
-                        <Link href={`/pages/events/${slug}`} className="relative w-full block" style={{ aspectRatio: aspectRatio }}>
+                        {/* Fixed height banner */}
+                        <Link href={`/pages/events/${slug}`} className="relative w-full block h-[240px]">
                             <PixelCard
                                 variant="default"
                                 gap={8}

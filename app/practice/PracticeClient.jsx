@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from 'react';
-import { Trophy, Target, TrendingUp, Crown, User, LogIn, Medal, Award, Settings, X, Upload, Camera } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Trophy, Target, TrendingUp, Crown, User, LogIn, Medal, Award, Settings, X, Upload, Camera, LogOut, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import UserLoginModal from '../../components/UserLoginModal';
+import { supabase } from '@/lib/supabase';
 
 
 // Demo credentials
@@ -24,14 +25,18 @@ export default function PracticeClient({
     solvedCount,
     progressPercentage,
     leaderboard,
-    userRank
+    userRank,
+    initialUserProfile
 }) {
     const router = useRouter();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!initialUserProfile);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [loginForm, setLoginForm] = useState({ username: '', password: '' });
     const [loginError, setLoginError] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
+    const [userProfile, setUserProfile] = useState(initialUserProfile);
+    const [liveLeaderboard, setLiveLeaderboard] = useState(leaderboard);
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
     // Settings state
     const [showSettings, setShowSettings] = useState(false);
@@ -47,6 +52,120 @@ export default function PracticeClient({
     const [settingsError, setSettingsError] = useState('');
     const [settingsSuccess, setSettingsSuccess] = useState('');
 
+    // Define fetchUserProfile before useEffect
+    const fetchUserProfile = useCallback(async () => {
+        console.log('Fetching user profile...');
+        setIsLoadingProfile(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            console.log('User from supabase:', !!user);
+            if (user) {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('username, full_name, avatar_url, total_points, rank')
+                    .eq('id', user.id)
+                    .single();
+                
+                console.log('Profile fetched:', !!profile, 'Error:', error);
+                if (profile && !error) {
+                    setUserProfile(profile);
+                    setIsLoggedIn(true); // Ensure isLoggedIn is true when profile is set
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+        } finally {
+            setIsLoadingProfile(false);
+        }
+    }, []);
+
+    // Fetch user profile and leaderboard on mount and set up real-time updates
+    useEffect(() => {
+        // Check for existing session immediately on mount
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user && !initialUserProfile) {
+                setIsLoggedIn(true);
+                await fetchUserProfile();
+            }
+        };
+        
+        // Only fetch if we don't have initial profile
+        if (!initialUserProfile) {
+            checkSession();
+        }
+        fetchLeaderboard();
+        
+        // Set up real-time listener for leaderboard changes
+        const leaderboardSubscription = supabase
+            .channel('leaderboard_changes')
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'profiles' },
+                () => {
+                    fetchLeaderboard();
+                }
+            )
+            .subscribe();
+
+        // Set up real-time listener for profile changes
+        const profileSubscription = supabase
+            .channel('profile_changes')
+            .on('postgres_changes', 
+                { event: 'UPDATE', schema: 'public', table: 'profiles' },
+                (payload) => {
+                    // Update profile if it's the current user's profile
+                    if (payload.new.id === userProfile?.id) {
+                        fetchUserProfile();
+                    }
+                }
+            )
+            .subscribe();
+
+        // Auth state listener - faster response
+        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth event:', event, 'Session:', !!session);
+            
+            if (session?.user) {
+                setIsLoggedIn(true);
+                // Fetch profile immediately when user logs in
+                await fetchUserProfile();
+            } else {
+                setIsLoggedIn(false);
+                setUserProfile(null);
+                setIsLoadingProfile(false);
+            }
+        });
+
+        return () => {
+            leaderboardSubscription.unsubscribe();
+            profileSubscription.unsubscribe();
+            authSubscription.unsubscribe();
+        };
+    }, [fetchUserProfile]);
+
+    const fetchLeaderboard = async () => {
+        const { data } = await supabase
+            .from('profiles')
+            .select('username, full_name, total_points, avatar_url, id')
+            .order('total_points', { ascending: false })
+            .limit(10);
+        
+        if (data) {
+            setLiveLeaderboard(data);
+        }
+    };
+
+    const handleLogout = async () => {
+        // Immediately clear UI state before logout
+        setIsLoggedIn(false);
+        setUserProfile(null);
+        setIsLoadingProfile(false);
+        
+        // Then perform logout
+        await supabase.auth.signOut();
+        router.refresh();
+    };
+
     // Use props data if available, otherwise fallback
     const derivedCurrentUser = isLoggedIn || userRank !== 'N/A' ? {
         username: "You", // Ideally passed from parent or context
@@ -54,8 +173,10 @@ export default function PracticeClient({
         photo: null
     } : null;
 
-    // Derived state
-    const isUserLoggedIn = userRank !== 'N/A'; // Simple check based on rank presence
+    // Derived state - check if user is logged in
+    const isUserLoggedIn = useMemo(() => {
+        return isLoggedIn || !!userProfile;
+    }, [isLoggedIn, userProfile]);
 
     // We navigate to the full profile page for settings now, as it handles uniqueness checks etc better
     const handleOpenSettings = () => {
@@ -134,34 +255,54 @@ export default function PracticeClient({
                 <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl rounded-3xl border border-green-500/20 p-8 relative">
                     <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent pointer-events-none" />
 
-                    {/* Settings Button in Top Right Corner */}
-                    {isLoggedIn && currentUser && (
-                        <button
-                            onClick={() => setShowSettings(true)}
-                            className="absolute top-4 right-4 z-20 bg-green-500 hover:bg-green-600 text-white p-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-                            title="Settings"
-                        >
-                            <Settings size={18} />
-                        </button>
+                    {/* Top Right Corner Buttons */}
+                    {(isLoggedIn || isUserLoggedIn) && (
+                        <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+                            <button
+                                onClick={handleLogout}
+                                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 p-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-110 border border-red-500/30"
+                                title="Logout"
+                            >
+                                <LogOut size={18} />
+                            </button>
+                        </div>
                     )}
 
                     <div className="relative z-10">
-                        {isUserLoggedIn ? (
+                        {(isUserLoggedIn && userProfile && !isLoadingProfile) ? (
                             <>
                                 {/* Profile Circle */}
                                 <div className="flex flex-col items-center mb-8">
-                                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-5xl font-bold mb-4 shadow-2xl border-4 border-white/20 overflow-hidden cursor-pointer hover:scale-105 transition-transform" onClick={() => router.push('/practice/profile')}>
-                                        <User size={48} />
+                                    <div 
+                                        className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-5xl font-bold mb-4 shadow-2xl border-4 border-white/20 overflow-hidden cursor-pointer hover:scale-105 transition-transform" 
+                                        onClick={() => router.push('/practice/profile')}
+                                    >
+                                        {userProfile?.avatar_url ? (
+                                            <img 
+                                                src={userProfile.avatar_url} 
+                                                alt="Profile" 
+                                                className="w-full h-full object-cover"
+                                                loading="eager"
+                                                fetchPriority="high"
+                                            />
+                                        ) : (
+                                            <User size={48} />
+                                        )}
                                     </div>
 
                                     {/* Username */}
                                     <h3 className="text-2xl font-bold text-white mb-2">
-                                        Welcome Back!
+                                        {userProfile?.username || userProfile?.full_name || 'Welcome Back!'}
                                     </h3>
 
                                     {/* Rank */}
-                                    <p className="text-gray-400 text-lg flex items-center gap-2">
+                                    <p className="text-gray-400 text-lg flex items-center gap-2 mb-1">
                                         Current Rank: <span className="text-yellow-400 font-bold text-2xl">#{userRank}</span>
+                                    </p>
+
+                                    {/* Score */}
+                                    <p className="text-green-400 text-lg font-semibold">
+                                        {userProfile?.total_points || 0} Points
                                     </p>
                                 </div>
 
@@ -197,6 +338,14 @@ export default function PracticeClient({
                                     View Full Profile
                                 </button>
                             </>
+                        ) : isLoadingProfile ? (
+                            <div className="flex flex-col items-center justify-center h-full py-12">
+                                <Loader2 className="text-green-500 mb-6 animate-spin" size={64} />
+                                <h3 className="text-2xl font-bold text-white mb-4">Loading Profile...</h3>
+                                <p className="text-gray-400 text-center mb-6 max-w-sm">
+                                    Fetching your data
+                                </p>
+                            </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full py-12">
                                 <User className="text-gray-500 mb-6" size={64} />
@@ -229,51 +378,71 @@ export default function PracticeClient({
                     {/* Top 3 Podium */}
                     <div className="flex items-end justify-center gap-6 mb-8">
                         {/* 2nd Place */}
-                        <div className="flex flex-col items-center">
-                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-xl border-4 border-gray-400/30 overflow-hidden">
-                                <img src={PROFILE_PHOTOS[2]} alt="2nd place" className="w-full h-full object-cover" />
-                            </div>
-                            <div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-t-xl px-4 py-6 text-center w-24">
-                                <div className="text-3xl mb-2">🥈</div>
-                                <div className="text-xs text-gray-300 font-medium truncate">
-                                    {leaderboard[1]?.user_id ? `User_${leaderboard[1].user_id.slice(0, 4)}` : 'N/A'}
+                        {liveLeaderboard[1] && (
+                            <div className="flex flex-col items-center">
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-xl border-4 border-gray-400/30 overflow-hidden">
+                                    {liveLeaderboard[1]?.avatar_url ? (
+                                        <img src={liveLeaderboard[1].avatar_url} alt="2nd place" className="w-full h-full object-cover" loading="eager" fetchPriority="high" />
+                                    ) : (
+                                        <User size={32} />
+                                    )}
                                 </div>
-                                <div className="text-sm font-bold text-white mt-1">
-                                    {leaderboard[1]?.total_solved || 0}
+                                <div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-t-xl px-4 py-6 text-center w-24">
+                                    <div className="text-3xl mb-2">🥈</div>
+                                    <div className="text-xs text-gray-300 font-medium truncate">
+                                        {liveLeaderboard[1]?.full_name || liveLeaderboard[1]?.username || 'User'}
+                                    </div>
+                                    <div className="text-sm font-bold text-white mt-1">
+                                        {liveLeaderboard[1]?.total_points || 0}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* 1st Place */}
-                        <div className="flex flex-col items-center -mt-8">
-                            <Crown className="text-yellow-400 mb-2 animate-bounce" size={28} />
-                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-3xl font-bold mb-3 shadow-2xl border-4 border-yellow-400/50 overflow-hidden">
-                                <img src={PROFILE_PHOTOS[1]} alt="1st place" className="w-full h-full object-cover" />
-                            </div>
-                            <div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/50 rounded-t-xl px-4 py-8 text-center w-28">
-                                <div className="text-4xl mb-2">🥇</div>
-                                <div className="text-xs text-yellow-100 font-bold truncate">
-                                    {leaderboard[0]?.user_id ? `User_${leaderboard[0].user_id.slice(0, 4)}` : 'N/A'}
+                        {liveLeaderboard[0] && (
+                            <div className="flex flex-col items-center -mt-8">
+                                <Crown className="text-yellow-400 mb-2 animate-bounce" size={28} />
+                                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-3xl font-bold mb-3 shadow-2xl border-4 border-yellow-400/50 overflow-hidden">
+                                    {liveLeaderboard[0]?.avatar_url ? (
+                                        <img src={liveLeaderboard[0].avatar_url} alt="1st place" className="w-full h-full object-cover" loading="eager" fetchPriority="high" />
+                                    ) : (
+                                        <User size={40} />
+                                    )}
                                 </div>
-                                <div className="text-lg font-bold text-white mt-2">
-                                    {leaderboard[0]?.total_solved || 0}
+                                <div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/50 rounded-t-xl px-4 py-8 text-center w-28">
+                                    <div className="text-4xl mb-2">🥇</div>
+                                    <div className="text-xs text-yellow-100 font-bold truncate">
+                                        {liveLeaderboard[0]?.full_name || liveLeaderboard[0]?.username || 'User'}
+                                    </div>
+                                    <div className="text-lg font-bold text-white mt-2">
+                                        {liveLeaderboard[0]?.total_points || 0}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* 3rd Place */}
-                        <div className="flex flex-col items-center">
-                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-xl border-4 border-amber-700/30 overflow-hidden">
-                                <img src={PROFILE_PHOTOS[3]} alt="3rd place" className="w-full h-full object-cover" />
+                        {liveLeaderboard[2] && (
+                            <div className="flex flex-col items-center">
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-xl border-4 border-amber-700/30 overflow-hidden">
+                                    {liveLeaderboard[2]?.avatar_url ? (
+                                        <img src={liveLeaderboard[2].avatar_url} alt="3rd place" className="w-full h-full object-cover" loading="eager" fetchPriority="high" />
+                                    ) : (
+                                        <User size={32} />
+                                    )}
+                                </div>
+                                <div className="bg-gradient-to-b from-amber-600/30 to-amber-800/30 backdrop-blur-md border border-amber-700/40 rounded-t-xl px-4 py-6 text-center w-24">
+                                    <div className="text-3xl mb-2">🥉</div>
+                                    <div className="text-xs text-amber-100 font-medium truncate">
+                                        {liveLeaderboard[2]?.full_name || liveLeaderboard[2]?.username || 'User'}
+                                    </div>
+                                    <div className="text-sm font-bold text-white mt-1">
+                                        {liveLeaderboard[2]?.total_points || 0}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="bg-gradient-to-b from-amber-600/30 to-amber-800/30 backdrop-blur-md border border-amber-700/40 rounded-t-xl px-4 py-6 text-center w-24">
-                                <div className="text-3xl mb-2">🥉</div>
-                                {leaderboard[2]?.user_id ? (leaderboard[2].username || `User_${leaderboard[2].user_id.slice(0, 4)}`) : 'N/A'}
-                            </div>
-                            <div className="text-sm font-bold text-white mt-1">
-                                {leaderboard[2]?.total_solved || 0}
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 

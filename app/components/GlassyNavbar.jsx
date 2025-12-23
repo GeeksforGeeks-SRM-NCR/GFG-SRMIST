@@ -193,59 +193,7 @@ export default function GlassyNavbar() {
 
                 {/* Right side - Login/Logout & Go Back - Show only above 1100px */}
                 <div className="hidden custom-desktop:flex flex-none justify-end items-center gap-3 min-w-[180px]">
-                    {isHomePage && (
-                        user ? (
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap"
-                                title="Logout"
-                            >
-                                <LogOut size={18} />
-                            </button>
-                        ) : (
-                            <div className="relative" ref={dropdownRef}>
-                                <button
-                                    onClick={() => setShowLoginOptions(!showLoginOptions)}
-                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap"
-                                    title="Login"
-                                >
-                                    <LogIn size={18} />
-                                    <span>Login</span>
-                                </button>
-
-                                {/* Login Options Dropdown */}
-                                {showLoginOptions && (
-                                    <div className="absolute top-full right-0 mt-3 w-48 py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1001] animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <button
-                                            onClick={() => {
-                                                setShowLoginModal(true);
-                                                setShowLoginOptions(false);
-                                            }}
-                                            className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3"
-                                        >
-                                            <div className="w-8 h-8 rounded-lg bg-[#2f8d46]/20 flex items-center justify-center text-[#2f8d46]">
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                            </div>
-                                            <span>User Login</span>
-                                        </button>
-                                        <Link
-                                            href="/login"
-                                            onClick={() => setShowLoginOptions(false)}
-                                            className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3"
-                                        >
-                                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                            </div>
-                                            <span>Admin Login</span>
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-                        )
-
-                    )}
-
-                    {/* Home/Team button - always show when not on homepage */}
+                    {/* Home/Team button - show when not on homepage */}
                     {!isHomePage && (
                         <Link
                             href={pathname.includes('/pages/team/2025/') ? '/pages/team' : '/'}
@@ -255,57 +203,60 @@ export default function GlassyNavbar() {
                             <span>{pathname.includes('/pages/team/2025/') ? 'Team' : 'Home'}</span>
                         </Link>
                     )}
+
+                    {user ? (
+                        <button
+                            onClick={handleLogout}
+                            className={`flex items-center gap-2 text-sm font-medium text-white bg-red-500/20 hover:bg-red-500/30 rounded-full transition-all duration-300 border border-red-500/30 hover:border-red-500/50 whitespace-nowrap ${isHomePage ? 'px-4 py-2' : 'w-10 h-10 justify-center'}`}
+                            title="Logout"
+                        >
+                            <LogOut size={18} />
+                            {isHomePage && <span>Logout</span>}
+                        </button>
+                    ) : (
+                        <div className="relative" ref={dropdownRef}>
+                            <button
+                                onClick={() => setShowLoginOptions(!showLoginOptions)}
+                                className={`flex items-center gap-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap ${isHomePage ? 'px-4 py-2' : 'w-10 h-10 justify-center'}`}
+                                title="Login"
+                            >
+                                <LogIn size={18} />
+                                {isHomePage && <span>Login</span>}
+                            </button>
+
+                            {/* Login Options Dropdown */}
+                            {showLoginOptions && (
+                                <div className="absolute top-full right-0 mt-3 w-48 py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1001] animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <button
+                                        onClick={() => {
+                                            setShowLoginModal(true);
+                                            setShowLoginOptions(false);
+                                        }}
+                                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-[#2f8d46]/20 flex items-center justify-center text-[#2f8d46]">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                        </div>
+                                        <span>User Login</span>
+                                    </button>
+                                    <Link
+                                        href="/login"
+                                        onClick={() => setShowLoginOptions(false)}
+                                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        </div>
+                                        <span>Admin Login</span>
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Mobile Menu Button - Show below 1100px */}
                 <div className="custom-desktop:hidden flex items-center gap-4">
-                    {isHomePage && (
-                        user ? (
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
-                                title="Logout"
-                            >
-                                <LogOut size={18} />
-                            </button>
-                        ) : (
-                            <div className="relative">
-                                <button
-                                    onClick={() => setShowLoginOptions(!showLoginOptions)}
-                                    className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
-                                    title="Login"
-                                >
-                                    <LogIn size={18} />
-                                </button>
-
-                                {showLoginOptions && (
-                                    <div className="absolute top-full right-0 mt-3 w-40 py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1001]">
-                                        <button
-                                            onClick={() => {
-                                                setShowLoginModal(true);
-                                                setShowLoginOptions(false);
-                                            }}
-                                            className="w-full text-left px-4 py-3 text-xs text-white border-b border-white/5"
-                                        >
-                                            User Login
-                                        </button>
-                                        <Link
-                                            href="/login"
-                                            onClick={() => {
-                                                setShowLoginOptions(false);
-                                                setIsMobileMenuOpen(false);
-                                            }}
-                                            className="w-full text-left px-4 py-3 text-xs text-white block"
-                                        >
-                                            Admin Login
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-                        )
-
-                    )}
-
                     {/* Home button on mobile - show when not on homepage */}
                     {!isHomePage && (
                         <Link
@@ -316,6 +267,51 @@ export default function GlassyNavbar() {
                             <FiArrowLeft size={20} />
                         </Link>
                     )}
+
+                    {user ? (
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center justify-center w-10 h-10 text-white bg-red-500/20 hover:bg-red-500/30 rounded-full transition-all duration-300 border border-red-500/30"
+                            title="Logout"
+                        >
+                            <LogOut size={18} />
+                        </button>
+                    ) : (
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowLoginOptions(!showLoginOptions)}
+                                className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
+                                title="Login"
+                            >
+                                <LogIn size={18} />
+                            </button>
+
+                            {showLoginOptions && (
+                                <div className="absolute top-full right-0 mt-3 w-40 py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1001]">
+                                    <button
+                                        onClick={() => {
+                                            setShowLoginModal(true);
+                                            setShowLoginOptions(false);
+                                        }}
+                                        className="w-full text-left px-4 py-3 text-xs text-white border-b border-white/5"
+                                    >
+                                        User Login
+                                    </button>
+                                    <Link
+                                        href="/login"
+                                        onClick={() => {
+                                            setShowLoginOptions(false);
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="w-full text-left px-4 py-3 text-xs text-white block"
+                                    >
+                                        Admin Login
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         className="text-white p-2 focus:outline-none"
