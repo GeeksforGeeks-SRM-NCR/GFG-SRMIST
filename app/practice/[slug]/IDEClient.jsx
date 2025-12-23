@@ -6,6 +6,8 @@ import ConsoleOutput from '@/components/ConsoleOutput';
 import { Play, Send, ChevronDown, Code2, BookOpen, ListChecks, ArrowLeft, Maximize2, Minimize2, Timer, TrendingUp } from 'lucide-react';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import UserLoginModal from '@/components/UserLoginModal';
 
 const IDEClient = ({ problem, initialCode }) => {
     const [code, setCode] = useState(initialCode);
@@ -16,6 +18,51 @@ const IDEClient = ({ problem, initialCode }) => {
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('description'); // description | hints | submissions
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    // Check authentication status
+    useEffect(() => {
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setIsLoggedIn(!!session?.user);
+        };
+        
+        checkAuth();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setIsLoggedIn(!!session?.user);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    // Block copy/paste/cut events
+    useEffect(() => {
+        const preventCopyPaste = (e) => {
+            e.preventDefault();
+            return false;
+        };
+
+        const preventContextMenu = (e) => {
+            e.preventDefault();
+            return false;
+        };
+
+        // Add event listeners
+        document.addEventListener('copy', preventCopyPaste);
+        document.addEventListener('cut', preventCopyPaste);
+        document.addEventListener('paste', preventCopyPaste);
+        document.addEventListener('contextmenu', preventContextMenu);
+
+        return () => {
+            // Cleanup
+            document.removeEventListener('copy', preventCopyPaste);
+            document.removeEventListener('cut', preventCopyPaste);
+            document.removeEventListener('paste', preventCopyPaste);
+            document.removeEventListener('contextmenu', preventContextMenu);
+        };
+    }, []);
 
     // Reset scroll position when component mounts
     useEffect(() => {
@@ -46,6 +93,12 @@ const IDEClient = ({ problem, initialCode }) => {
     };
 
     const handleRun = async (isSubmit = false) => {
+        // Check if user is logged in
+        if (!isLoggedIn) {
+            setShowLoginModal(true);
+            return;
+        }
+
         setIsRunning(true);
         setExecutionResult(null);
         setError(null);
@@ -110,7 +163,7 @@ const IDEClient = ({ problem, initialCode }) => {
     const descriptionText = getDescriptionText(problem.fields.description);
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-black text-white select-none" style={{ userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none' }}>
             {/* Top Navigation Bar */}
             <div className="fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
@@ -286,7 +339,13 @@ const IDEClient = ({ problem, initialCode }) => {
                     <div className="flex-1 flex flex-col min-h-0 w-full">
                         <div className="flex-1 min-h-0 min-w-0 relative">
                             {/* Absolute positioned wrapper to ensure full expansion */}
-                            <div className="absolute inset-0 w-full h-full">
+                            <div 
+                                className="absolute inset-0 w-full h-full"
+                                onCopy={(e) => e.preventDefault()}
+                                onCut={(e) => e.preventDefault()}
+                                onPaste={(e) => e.preventDefault()}
+                                onContextMenu={(e) => e.preventDefault()}
+                            >
                                 <CodeEditor
                                     code={code}
                                     language={language === 'c++' ? 'cpp' : language}
@@ -307,6 +366,14 @@ const IDEClient = ({ problem, initialCode }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Login Modal */}
+            {showLoginModal && (
+                <UserLoginModal 
+                    isOpen={showLoginModal}
+                    onClose={() => setShowLoginModal(false)}
+                />
+            )}
         </div>
     );
 };
