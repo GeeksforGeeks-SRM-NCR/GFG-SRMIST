@@ -193,18 +193,10 @@ import path from 'path';
 
 const execAsync = promisify(exec);
 
+import { getLanguageConfig } from '@/lib/piston-languages';
+
 // Piston API Configuration
 const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
-
-const LANGUAGE_MAP: Record<string, { language: string; version: string }> = {
-    javascript: { language: 'javascript', version: '18.15.0' },
-    python: { language: 'python', version: '3.10.0' },
-    cpp: { language: 'c++', version: '10.2.0' },
-    js: { language: 'javascript', version: '18.15.0' },
-    py: { language: 'python', version: '3.10.0' },
-    'c++': { language: 'c++', version: '10.2.0' },
-    java: { language: 'java', version: '15.0.2' },
-};
 
 /**
  * Count non-empty, non-comment lines of code
@@ -213,12 +205,12 @@ function countLinesOfCode(code: string, language: string): number {
     if (!code) return 0;
     const lines = code.trim().split('\n');
     let count = 0;
-    
+
     for (const line of lines) {
         const stripped = line.trim();
         // Skip empty lines and comments
-        if (stripped && 
-            !stripped.startsWith('//') && 
+        if (stripped &&
+            !stripped.startsWith('//') &&
             !stripped.startsWith('#') &&
             !stripped.startsWith('/*') &&
             !stripped.startsWith('*')) {
@@ -260,16 +252,16 @@ async function calculateAdvancedScore(submissionData: {
         if (stderr) {
             console.warn('Python script stderr:', stderr);
         }
-        
+
         const result = JSON.parse(stdout);
         return result;
     } catch (error: any) {
         console.error('Grading algorithm error:', error);
-        
+
         // Fallback to basic scoring if Python script fails
-        const fallbackScore = submissionData.difficulty === 'easy' ? 10 : 
-                             submissionData.difficulty === 'medium' ? 20 : 30;
-        
+        const fallbackScore = submissionData.difficulty === 'easy' ? 10 :
+            submissionData.difficulty === 'medium' ? 20 : 30;
+
         return {
             total_score: fallbackScore,
             max_marks: fallbackScore,
@@ -303,7 +295,7 @@ async function updateAllRankings(supabase: any): Promise<void> {
             for (let i = 0; i < allUsers.length; i++) {
                 const { error: updateError } = await supabase
                     .from('profiles')
-                    .update({ 
+                    .update({
                         rank: `#${i + 1}`
                     })
                     .eq('id', allUsers[i].id);
@@ -336,15 +328,15 @@ export async function POST(request: Request) {
 
         // 2. Input Validation
         if (!code || !language || !problemSlug) {
-            return NextResponse.json({ 
-                error: 'Missing required fields: code, language, and problemSlug are required' 
+            return NextResponse.json({
+                error: 'Missing required fields: code, language, and problemSlug are required'
             }, { status: 400 });
         }
 
-        const langConfig = LANGUAGE_MAP[language.toLowerCase()];
+        const langConfig = getLanguageConfig(language);
         if (!langConfig) {
-            return NextResponse.json({ 
-                error: `Unsupported language: ${language}. Supported languages: ${Object.keys(LANGUAGE_MAP).join(', ')}` 
+            return NextResponse.json({
+                error: `Unsupported language: ${language}.`
             }, { status: 400 });
         }
 
@@ -356,8 +348,8 @@ export async function POST(request: Request) {
         });
 
         if (response.items.length === 0) {
-            return NextResponse.json({ 
-                error: `Problem not found: ${problemSlug}` 
+            return NextResponse.json({
+                error: `Problem not found: ${problemSlug}`
             }, { status: 404 });
         }
 
@@ -380,16 +372,29 @@ export async function POST(request: Request) {
 
         for (let i = 0; i < testCases.length; i++) {
             const testCase = testCases[i];
+            // Determine file name based on language for better Piston support (especially Java)
+            let fileName = 'main';
+            if (langConfig.language === 'java') fileName = 'Main.java';
+            else if (langConfig.language === 'c++') fileName = 'main.cpp';
+            else if (langConfig.language === 'c') fileName = 'main.c';
+            else if (langConfig.language === 'go') fileName = 'main.go';
+            else if (langConfig.language === 'rust') fileName = 'main.rs';
+            else if (langConfig.language === 'python') fileName = 'main.py';
+            else if (langConfig.language === 'javascript') fileName = 'main.js';
+
             const pistonPayload = {
                 language: langConfig.language,
                 version: langConfig.version,
-                files: [{ content: code }],
+                files: [{
+                    name: fileName,
+                    content: code
+                }],
                 stdin: testCase.input || "",
             };
 
             try {
                 const startTime = Date.now();
-                
+
                 const runRes = await fetch(PISTON_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -440,7 +445,7 @@ export async function POST(request: Request) {
         }
 
         // 5. Calculate execution statistics
-        const avgRuntime = executionTimes.length > 0 
+        const avgRuntime = executionTimes.length > 0
             ? Math.round(executionTimes.reduce((a, b) => a + b, 0) / executionTimes.length)
             : 0;
 
@@ -448,7 +453,7 @@ export async function POST(request: Request) {
         let scoreResult;
         if (allPassed) {
             const actualLOC = countLinesOfCode(code, language);
-            
+
             const submissionData = {
                 difficulty: difficulty,
                 execution_time_ms: avgRuntime,
@@ -567,7 +572,7 @@ export async function POST(request: Request) {
 
     } catch (error: any) {
         console.error('Execution API Global Error:', error);
-        return NextResponse.json({ 
+        return NextResponse.json({
             success: false,
             error: error.message || 'Internal Server Error',
             details: error.stack

@@ -69,12 +69,10 @@ export default function UserLoginModal({ isOpen, onClose }) {
         setError(res.error);
       } else {
         setSuccess('Login successful!');
-        // Small delay to show success
-        setTimeout(() => {
-          onClose();
-          router.refresh();
-          router.push('/practice');
-        }, 1000);
+        // Close modal
+        onClose();
+        // Hard refresh the page to load user data
+        window.location.href = '/practice';
       }
     } catch (err) {
       setError('Verification failed.');
@@ -129,7 +127,6 @@ export default function UserLoginModal({ isOpen, onClose }) {
                   required
                   disabled={loading}
                 />
-                <Mail className="icon" size={20} />
               </div>
               {error && <p className="error-msg">{error}</p>}
               <button type="submit" className="btn" disabled={loading}>
@@ -147,7 +144,6 @@ export default function UserLoginModal({ isOpen, onClose }) {
                   required
                   disabled={loading}
                 />
-                <Key className="icon" size={20} />
               </div>
               {error && <p className="error-msg">{error}</p>}
               {success && <p className="success-msg">{success}</p>}
@@ -175,25 +171,52 @@ export default function UserLoginModal({ isOpen, onClose }) {
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0, 0, 0, 0.85);
-          backdrop-filter: blur(8px);
+          background: rgba(0, 0, 0, 0.75);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
           z-index: 2000;
           display: flex;
           justify-content: center;
           align-items: center;
           padding: 20px;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
 
         .auth-container {
           position: relative;
           width: 100%;
-          max-width: 480px;
-          background: rgba(10, 10, 10, 0.95);
+          max-width: 420px;
+          background: rgba(15, 15, 15, 0.85);
+          backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 20px;
-          box-shadow: 0 0 40px rgba(32, 140, 41, 0.2);
-          padding: 3rem 2rem;
+          border-radius: 24px;
+          box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.8),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+          padding: 2.5rem 2rem;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
         }
 
         .content-wrapper {
@@ -206,22 +229,25 @@ export default function UserLoginModal({ isOpen, onClose }) {
         .title {
             color: white;
             font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.9rem;
             margin-bottom: 2rem;
-            max-width: 80%;
+            max-width: 90%;
+            line-height: 1.5;
+            font-weight: 400;
         }
 
         .auth-form {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.25rem;
         }
 
         .input-field {
@@ -231,66 +257,82 @@ export default function UserLoginModal({ isOpen, onClose }) {
 
         .input-field input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            padding: 1rem 1rem 1rem 3rem;
+            padding: 1rem;
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             outline: none;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            font-weight: 400;
         }
 
         .input-field input:focus {
-            border-color: rgba(32, 140, 41, 0.5);
-            background: rgba(32, 140, 41, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
         }
 
-        .input-field .icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
+        .input-field input::placeholder {
             color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
         }
 
         .btn {
-            background: #2f8d46;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             color: white;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 1rem;
             border-radius: 12px;
             font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             margin-top: 0.5rem;
         }
 
         .btn:hover:not(:disabled) {
-            background: #267a3a;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(32, 140, 41, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0px);
         }
 
         .btn:disabled {
-            opacity: 0.7;
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
         .error-msg {
-            color: #ff4444;
+            color: #ff6b6b;
             font-size: 0.85rem;
-            background: rgba(255, 68, 68, 0.1);
-            padding: 0.5rem;
-            border-radius: 8px;
+            background: rgba(255, 107, 107, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            font-weight: 400;
         }
 
         .success-msg {
-            color: #4caf50;
+            color: #51cf66;
             font-size: 0.85rem;
-            background: rgba(76, 175, 80, 0.1);
-            padding: 0.5rem;
-            border-radius: 8px;
+            background: rgba(81, 207, 102, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(81, 207, 102, 0.2);
+            font-weight: 400;
         }
 
         .back-link {
@@ -300,16 +342,26 @@ export default function UserLoginModal({ isOpen, onClose }) {
             font-size: 0.85rem;
             cursor: pointer;
             text-decoration: underline;
+            margin-top: 0.5rem;
+            transition: color 0.2s;
+            font-weight: 400;
         }
 
         .back-link:hover {
-            color: white;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .note {
             margin-top: 2rem;
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-weight: 400;
         }
 
         .hidden {

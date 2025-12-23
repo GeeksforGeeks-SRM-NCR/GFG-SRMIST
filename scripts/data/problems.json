@@ -1,0 +1,383 @@
+[
+    {
+        "title": "Two Sum",
+        "slug": "two-sum",
+        "difficulty": "Easy",
+        "description": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nInput Format:\nFirst line contains N, the number of elements.\nSecond line contains N space-separated integers.\nThird line contains the target.\n\nOutput Format:\nTwo space-separated indices in increasing order.",
+        "starterCode": {
+            "javascript": "// Read from stdin\nconst fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\n\nconst n = parseInt(input[0]);\nconst nums = input[1].split(' ').map(Number);\nconst target = parseInt(input[2]);\n\n// Write your solution here\n// console.log(index1 + ' ' + index2);",
+            "python": "import sys\n\ndef solve():\n    lines = sys.stdin.read().splitlines()\n    n = int(lines[0])\n    nums = list(map(int, lines[1].split()))\n    target = int(lines[2])\n    \n    # Your code here\n    # print(f\"{i} {j}\")\n\nsolve()",
+            "java": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        int[] nums = new int[n];\n        for(int i=0; i<n; i++) nums[i] = sc.nextInt();\n        int target = sc.nextInt();\n        \n        // Your solver code here\n    }\n}",
+            "cpp": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    int n;\n    cin >> n;\n    vector<int> nums(n);\n    for(int i=0; i<n; i++) cin >> nums[i];\n    int target;\n    cin >> target;\n    \n    // Your code here\n    \n    return 0;\n}",
+            "c": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int n;\n    scanf(\"%d\", &n);\n    int *nums = (int*)malloc(n * sizeof(int));\n    for(int i=0; i<n; i++) scanf(\"%d\", &nums[i]);\n    int target;\n    scanf(\"%d\", &target);\n    \n    // Your code here\n    \n    return 0;\n}",
+            "go": "package main\nimport \"fmt\"\n\nfunc main() {\n    var n int\n    fmt.Scan(&n)\n    nums := make([]int, n)\n    for i := 0; i < n; i++ {\n        fmt.Scan(&nums[i])\n    }\n    var target int\n    fmt.Scan(&target)\n    \n    // Your code here\n}",
+            "rust": "use std::io::{self, Read};\n\nfn main() {\n    let mut input = String::new();\n    io::stdin().read_to_string(&mut input).unwrap();\n    let mut words = input.split_whitespace();\n    \n    let n: usize = words.next().unwrap().parse().unwrap();\n    let nums: Vec<i32> = (0..n).map(|_| words.next().unwrap().parse().unwrap()).collect();\n    let target: i32 = words.next().unwrap().parse().unwrap();\n    \n    // Your code here\n}"
+        },
+        "testCases": [
+            {
+                "input": "4\n2 7 11 15\n9",
+                "output": "0 1"
+            },
+            {
+                "input": "3\n3 2 4\n6",
+                "output": "1 2"
+            },
+            {
+                "input": "2\n3 3\n6",
+                "output": "0 1"
+            }
+        ]
+    },
+    {
+        "title": "Valid Palindrome",
+        "slug": "valid-palindrome",
+        "difficulty": "Easy",
+        "description": "Given a string S, output \"true\" if it is a palindrome, or \"false\" otherwise. Considering only alphanumeric characters and ignoring cases.\n\nInput Format:\nA single line containing the string S.\n\nOutput Format:\n\"true\" or \"false\"",
+        "starterCode": {
+            "python": "import sys\n\ns = sys.stdin.read().strip()\n# Your code here",
+            "cpp": "#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string s;\n    getline(cin, s);\n    // Your code here\n    return 0;\n}",
+            "java": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String s = sc.nextLine();\n        // Your code here\n    }\n}"
+        },
+        "testCases": [
+            {
+                "input": "A man, a plan, a canal: Panama",
+                "output": "true"
+            },
+            {
+                "input": "race a car",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "title": "Sum of Array",
+        "slug": "sum-of-array",
+        "difficulty": "Easy",
+        "description": "Given an array of integers, find the sum of its elements.\n\nInput Format:\nLine 1: N (size of array)\nLine 2: N space separated integers\n\nOutput Format:\nSingle integer representing the sum.",
+        "starterCode": {
+            "python": "import sys\ninput = sys.stdin.read\ndata = input().split()\nN = int(data[0])\narr = map(int, data[1:])\nprint(sum(arr))",
+            "cpp": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    long long sum = 0;\n    for(int i=0; i<n; i++) {\n        int x; cin >> x;\n        sum += x;\n    }\n    cout << sum << endl;\n    return 0;\n}"
+        },
+        "testCases": [
+            {
+                "input": "3\n1 2 3",
+                "output": "6"
+            },
+            {
+                "input": "4\n10 20 30 40",
+                "output": "100"
+            }
+        ]
+    },
+    {
+        "title": "Factorial",
+        "slug": "factorial",
+        "difficulty": "Easy",
+        "description": "Calculate the factorial of a non-negative integer N.\n\nInput Format:\nA single integer N.\n\nOutput Format:\nThe factorial of N.",
+        "starterCode": {
+            "python": "n = int(input())\n# Code here",
+            "javascript": "const fs = require('fs');\nconst n = parseInt(fs.readFileSync(0, 'utf-8'));\n// Code here"
+        },
+        "testCases": [
+            {
+                "input": "5",
+                "output": "120"
+            },
+            {
+                "input": "0",
+                "output": "1"
+            },
+            {
+                "input": "1",
+                "output": "1"
+            }
+        ]
+    },
+    {
+        "title": "Reverse String",
+        "slug": "reverse-string",
+        "difficulty": "Easy",
+        "description": "Write a program that takes a string as input and prints the reverse of the string.\n\nInput Format:\nA single string.\n\nOutput Format:\nThe reversed string.",
+        "starterCode": {
+            "python": "s = input().strip()\nprint(s[::-1])",
+            "cpp": "#include <iostream>\n#include <string>\n#include <algorithm>\nusing namespace std;\nint main(){\n string s; cin>>s;\n reverse(s.begin(), s.end());\n cout<<s;\n return 0;\n}"
+        },
+        "testCases": [
+            {
+                "input": "hello",
+                "output": "olleh"
+            },
+            {
+                "input": "Geeks",
+                "output": "skeeG"
+            }
+        ]
+    },
+    {
+        "title": "Check Odd or Even",
+        "slug": "odd-even",
+        "difficulty": "Easy",
+        "description": "Given an integer N, print \"Odd\" if it is odd, and \"Even\" if it is even.\n\nInput:\nSingle integer N.\n\nOutput:\n\"Odd\" or \"Even\".",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "2",
+                "output": "Even"
+            },
+            {
+                "input": "5",
+                "output": "Odd"
+            }
+        ]
+    },
+    {
+        "title": "Maximum of Two Numbers",
+        "slug": "max-two",
+        "difficulty": "Easy",
+        "description": "Given two integers A and B, print the maximum of the two.\n\nInput:\nTwo space separated integers A and B.\n\nOutput:\nThe maximum value.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "10 20",
+                "output": "20"
+            },
+            {
+                "input": "50 10",
+                "output": "50"
+            }
+        ]
+    },
+    {
+        "title": "Fibonacci Number",
+        "slug": "fibonacci",
+        "difficulty": "Easy",
+        "description": "The Fibonacci numbers, commonly denoted F(n) form a sequence, called the Fibonacci sequence, such that each number is the sum of the two preceding ones, starting from 0 and 1. Calculate F(n).\n\nInput:\nInteger n.\n\nOutput:\nInteger F(n).",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "2",
+                "output": "1"
+            },
+            {
+                "input": "3",
+                "output": "2"
+            },
+            {
+                "input": "4",
+                "output": "3"
+            }
+        ]
+    },
+    {
+        "title": "Prime Checker",
+        "slug": "prime-check",
+        "difficulty": "Easy",
+        "description": "Check if a number N is prime. Print \"Yes\" if prime, \"No\" otherwise.\n\nInput:\nInteger N.\n\nOutput:\n\"Yes\" or \"No\".",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "7",
+                "output": "Yes"
+            },
+            {
+                "input": "10",
+                "output": "No"
+            }
+        ]
+    },
+    {
+        "title": "FizzBuzz",
+        "slug": "fizzbuzz",
+        "difficulty": "Easy",
+        "description": "Given an integer n, for every integer i from 1 to n, print:\n\"FizzBuzz\" if i is divisible by 3 and 5.\n\"Fizz\" if i is divisible by 3.\n\"Buzz\" if i is divisible by 5.\nOtherwise print i.\nPrint each on a new line.\n\nInput:\nInteger n.\n\nOutput:\nCheck description.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "3",
+                "output": "1\n2\nFizz"
+            },
+            {
+                "input": "5",
+                "output": "1\n2\nFizz\n4\nBuzz"
+            }
+        ]
+    },
+    {
+        "title": "Power of Two",
+        "slug": "power-of-two",
+        "difficulty": "Easy",
+        "description": "Given an integer n, return \"true\" if it is a power of two. Otherwise, return \"false\".\n\nInput:\nInteger n.\n\nOutput:\n\"true\" or \"false\".",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "1",
+                "output": "true"
+            },
+            {
+                "input": "16",
+                "output": "true"
+            },
+            {
+                "input": "3",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "title": "Missing Number",
+        "slug": "missing-number",
+        "difficulty": "Easy",
+        "description": "Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.\n\nInput:\nLine 1: n\nLine 2: n space separated integers\n\nOutput:\nThe missing integer.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "3\n3 0 1",
+                "output": "2"
+            },
+            {
+                "input": "2\n0 1",
+                "output": "2"
+            }
+        ]
+    },
+    {
+        "title": "Linear Search",
+        "slug": "linear-search",
+        "difficulty": "Easy",
+        "description": "Given an array and a target value x, print the index of x if found, else -1.\n\nInput:\nLine 1: n (size)\nLine 2: n integers\nLine 3: target x\n\nOutput:\nIndex or -1.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "5\n10 20 30 40 50\n30",
+                "output": "2"
+            },
+            {
+                "input": "3\n1 2 3\n5",
+                "output": "-1"
+            }
+        ]
+    },
+    {
+        "title": "Binary Search",
+        "slug": "binary-search",
+        "difficulty": "Medium",
+        "description": "Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return -1. Time complexity should be O(log n).\n\nInput:\nLine 1: N\nLine 2: N sorted integers\nLine 3: Target\n\nOutput:\nIndex or -1.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "6\n-1 0 3 5 9 12\n9",
+                "output": "4"
+            },
+            {
+                "input": "6\n-1 0 3 5 9 12\n2",
+                "output": "-1"
+            }
+        ]
+    },
+    {
+        "title": "Valid Parentheses",
+        "slug": "valid-parentheses",
+        "difficulty": "Medium",
+        "description": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.\n\nInput:\nString s.\n\nOutput:\n\"true\" or \"false\".",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "()",
+                "output": "true"
+            },
+            {
+                "input": "()[]{}",
+                "output": "true"
+            },
+            {
+                "input": "(]",
+                "output": "false"
+            }
+        ]
+    },
+    {
+        "title": "Climbing Stairs",
+        "slug": "climbing-stairs",
+        "difficulty": "Easy",
+        "description": "You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?\n\nInput:\nInteger n.\n\nOutput:\nWays.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "2",
+                "output": "2"
+            },
+            {
+                "input": "3",
+                "output": "3"
+            }
+        ]
+    },
+    {
+        "title": "Single Number",
+        "slug": "single-number",
+        "difficulty": "Easy",
+        "description": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.\n\nInput:\nLine 1: n\nLine 2: n integers\n\nOutput:\nThe single number.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "3\n2 2 1",
+                "output": "1"
+            },
+            {
+                "input": "5\n4 1 2 1 2",
+                "output": "4"
+            }
+        ]
+    },
+    {
+        "title": "Majority Element",
+        "slug": "majority-element",
+        "difficulty": "Easy",
+        "description": "Given an array `nums` of size `n`, return the majority element. The majority element is the element that appears more than `⌊n / 2⌋` times.\n\nInput:\nLine 1: n\nLine 2: n integers\n\nOutput:\nMajority Element.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "3\n3 2 3",
+                "output": "3"
+            },
+            {
+                "input": "7\n2 2 1 1 1 2 2",
+                "output": "2"
+            }
+        ]
+    },
+    {
+        "title": "Best Time to Buy and Sell Stock",
+        "slug": "buy-sell-stock",
+        "difficulty": "Medium",
+        "description": "You are given an array prices where prices[i] is the price of a given stock on the ith day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock. Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.\n\nInput:\nLine 1: n\nLine 2: n prices\n\nOutput:\nMax profit.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "6\n7 1 5 3 6 4",
+                "output": "5"
+            },
+            {
+                "input": "5\n7 6 4 3 1",
+                "output": "0"
+            }
+        ]
+    },
+    {
+        "title": "Length of Last Word",
+        "slug": "length-last-word",
+        "difficulty": "Easy",
+        "description": "Given a string s consisting of words and spaces, return the length of the last word in the string.\n\nInput:\nString s.\n\nOutput:\nLength.",
+        "starterCode": {},
+        "testCases": [
+            {
+                "input": "Hello World",
+                "output": "5"
+            },
+            {
+                "input": "   fly me   to   the moon  ",
+                "output": "4"
+            }
+        ]
+    }
+]

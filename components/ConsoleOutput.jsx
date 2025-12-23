@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { CheckCircle, XCircle, Terminal, Loader2, AlertCircle } from 'lucide-react';
 
 const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) => {
@@ -135,6 +136,13 @@ const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) 
                         </span>
                     </div>
                 </div>
+                {status === 'Passed' && (
+                    <div className="mt-3 pt-3 border-t border-green-500/20">
+                        <p className="text-xs text-green-300/80">
+                            ✨ Problem solved! Go back to <Link href="/practice" className="underline hover:text-green-200 font-semibold">Practice Page</Link> to see your updated stats and checkmark.
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Results */}

@@ -28,7 +28,7 @@ async function getSolvedProblems(userId) {
     try {
         const supabase = await createClient();
         const { data } = await supabase
-            .from('submissions')
+            .from('user_submissions')
             .select('problem_slug')
             .eq('user_id', userId)
             .eq('status', 'Passed');
@@ -93,6 +93,17 @@ export default async function PracticePage() {
     let problems = await getProblems();
     const solvedProblems = await getSolvedProblems(user?.id);
     const leaderboard = await getLeaderboard();
+
+    // Fetch user profile if logged in
+    let userProfile = null;
+    if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('username, full_name, avatar_url, total_points, rank')
+            .eq('id', user.id)
+            .single();
+        userProfile = profile;
+    }
 
     // Fallback if no problems found (setup issue or empty contentful)
     const usingMock = problems.length === 0;
@@ -175,6 +186,7 @@ export default async function PracticePage() {
                         progressPercentage={progressPercentage}
                         leaderboard={leaderboard}
                         userRank={userRank}
+                        initialUserProfile={userProfile}
                     />
 
                     {/* Main Content */}
