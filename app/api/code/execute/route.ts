@@ -193,10 +193,18 @@ import path from 'path';
 
 const execAsync = promisify(exec);
 
-import { getLanguageConfig } from '@/lib/piston-languages';
-
 // Piston API Configuration
 const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
+
+const LANGUAGE_MAP: Record<string, { language: string; version: string }> = {
+    javascript: { language: 'javascript', version: '18.15.0' },
+    python: { language: 'python', version: '3.10.0' },
+    cpp: { language: 'c++', version: '10.2.0' },
+    js: { language: 'javascript', version: '18.15.0' },
+    py: { language: 'python', version: '3.10.0' },
+    'c++': { language: 'c++', version: '10.2.0' },
+    java: { language: 'java', version: '15.0.2' },
+};
 
 /**
  * Count non-empty, non-comment lines of code
@@ -205,12 +213,12 @@ function countLinesOfCode(code: string, language: string): number {
     if (!code) return 0;
     const lines = code.trim().split('\n');
     let count = 0;
-
+    
     for (const line of lines) {
         const stripped = line.trim();
         // Skip empty lines and comments
-        if (stripped &&
-            !stripped.startsWith('//') &&
+        if (stripped && 
+            !stripped.startsWith('//') && 
             !stripped.startsWith('#') &&
             !stripped.startsWith('/*') &&
             !stripped.startsWith('*')) {
@@ -252,16 +260,16 @@ async function calculateAdvancedScore(submissionData: {
         if (stderr) {
             console.warn('Python script stderr:', stderr);
         }
-
+        
         const result = JSON.parse(stdout);
         return result;
     } catch (error: any) {
         console.error('Grading algorithm error:', error);
-
+        
         // Fallback to basic scoring if Python script fails
-        const fallbackScore = submissionData.difficulty === 'easy' ? 10 :
-            submissionData.difficulty === 'medium' ? 20 : 30;
-
+        const fallbackScore = submissionData.difficulty === 'easy' ? 10 : 
+                             submissionData.difficulty === 'medium' ? 20 : 30;
+        
         return {
             total_score: fallbackScore,
             max_marks: fallbackScore,
@@ -295,7 +303,7 @@ async function updateAllRankings(supabase: any): Promise<void> {
             for (let i = 0; i < allUsers.length; i++) {
                 const { error: updateError } = await supabase
                     .from('profiles')
-                    .update({
+                    .update({ 
                         rank: `#${i + 1}`
                     })
                     .eq('id', allUsers[i].id);
@@ -328,15 +336,15 @@ export async function POST(request: Request) {
 
         // 2. Input Validation
         if (!code || !language || !problemSlug) {
-            return NextResponse.json({
-                error: 'Missing required fields: code, language, and problemSlug are required'
+            return NextResponse.json({ 
+                error: 'Missing required fields: code, language, and problemSlug are required' 
             }, { status: 400 });
         }
 
-        const langConfig = getLanguageConfig(language);
+        const langConfig = LANGUAGE_MAP[language.toLowerCase()];
         if (!langConfig) {
-            return NextResponse.json({
-                error: `Unsupported language: ${language}.`
+            return NextResponse.json({ 
+                error: `Unsupported language: ${language}. Supported languages: ${Object.keys(LANGUAGE_MAP).join(', ')}` 
             }, { status: 400 });
         }
 
@@ -348,8 +356,8 @@ export async function POST(request: Request) {
         });
 
         if (response.items.length === 0) {
-            return NextResponse.json({
-                error: `Problem not found: ${problemSlug}`
+            return NextResponse.json({ 
+                error: `Problem not found: ${problemSlug}` 
             }, { status: 404 });
         }
 
@@ -372,29 +380,16 @@ export async function POST(request: Request) {
 
         for (let i = 0; i < testCases.length; i++) {
             const testCase = testCases[i];
-            // Determine file name based on language for better Piston support (especially Java)
-            let fileName = 'main';
-            if (langConfig.language === 'java') fileName = 'Main.java';
-            else if (langConfig.language === 'c++') fileName = 'main.cpp';
-            else if (langConfig.language === 'c') fileName = 'main.c';
-            else if (langConfig.language === 'go') fileName = 'main.go';
-            else if (langConfig.language === 'rust') fileName = 'main.rs';
-            else if (langConfig.language === 'python') fileName = 'main.py';
-            else if (langConfig.language === 'javascript') fileName = 'main.js';
-
             const pistonPayload = {
                 language: langConfig.language,
                 version: langConfig.version,
-                files: [{
-                    name: fileName,
-                    content: code
-                }],
+                files: [{ content: code }],
                 stdin: testCase.input || "",
             };
 
             try {
                 const startTime = Date.now();
-
+                
                 const runRes = await fetch(PISTON_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -445,7 +440,7 @@ export async function POST(request: Request) {
         }
 
         // 5. Calculate execution statistics
-        const avgRuntime = executionTimes.length > 0
+        const avgRuntime = executionTimes.length > 0 
             ? Math.round(executionTimes.reduce((a, b) => a + b, 0) / executionTimes.length)
             : 0;
 
@@ -453,7 +448,7 @@ export async function POST(request: Request) {
         let scoreResult;
         if (allPassed) {
             const actualLOC = countLinesOfCode(code, language);
-
+            
             const submissionData = {
                 difficulty: difficulty,
                 execution_time_ms: avgRuntime,
@@ -483,24 +478,43 @@ export async function POST(request: Request) {
 
         // 7. Handle submission and score update
         if (allPassed) {
-            // Fetch previous best score BEFORE inserting current submission
-            const { data: previousScores, error: prevScoreError } = await supabase
+
+            // Fetch all previous PASSED submissions for this problem
+            const { data: previousSubs, error: prevErr } = await supabase
                 .from('user_submissions')
-                .select('points_awarded')
+                .select('code, runtime')
                 .eq('user_id', user.id)
                 .eq('problem_slug', problemSlug)
-                .gt('points_awarded', 0); // ✅ FIX HERE
+                .eq('status', 'Passed');
+
+            if (prevErr) {
+                console.error('Error fetching previous submissions:', prevErr);
+            }
 
             let previousBestScore = 0;
 
-            if (prevScoreError) {
-                console.error('Error fetching previous scores:', prevScoreError);
-            }
+            // Recompute previous best score using Python grader (in-memory)
+            if (previousSubs && previousSubs.length > 0) {
+                for (const sub of previousSubs) {
+                    const submissionData = {
+                        difficulty: difficulty,
+                        execution_time_ms: sub.runtime,
+                        code: sub.code,
+                        optimal_loc: optimalLOC,
+                        expected_complexity: expectedComplexity,
+                        user_complexity: expectedComplexity,
+                    };
 
-            if (previousScores && previousScores.length > 0) {
-                previousBestScore = Math.max(
-                    ...previousScores.map(s => s.points_awarded || 0)
-                );
+                    try {
+                        const result = await calculateAdvancedScore(submissionData);
+                        previousBestScore = Math.max(
+                            previousBestScore,
+                            result.total_score || 0
+                        );
+                    } catch (e) {
+                        console.error('Error recalculating previous score:', e);
+                    }
+                }
             }
 
             const pointsToAdd = Math.max(roundedScore - previousBestScore, 0);
@@ -514,14 +528,13 @@ export async function POST(request: Request) {
                     .single();
 
                 if (profileError) {
-                    console.error('Error fetching profile for update:', profileError);
+                    console.error('Error fetching profile:', profileError);
                 } else {
-                    const currentPoints = profile?.total_points || 0;
-                    const newTotalPoints = currentPoints + pointsToAdd;
+                    const newTotal = (profile?.total_points || 0) + pointsToAdd;
 
                     const { error: updateError } = await supabase
                         .from('profiles')
-                        .update({ total_points: newTotalPoints })
+                        .update({ total_points: newTotal })
                         .eq('id', user.id);
 
                     if (updateError) {
@@ -532,7 +545,7 @@ export async function POST(request: Request) {
                 }
             }
 
-            // Insert submission AFTER score calculation
+            // Insert submission AFTER score update
             await supabase.from('user_submissions').insert({
                 user_id: user.id,
                 problem_slug: problemSlug,
@@ -540,11 +553,10 @@ export async function POST(request: Request) {
                 language: language,
                 status: 'Passed',
                 runtime: avgRuntime,
-                points_awarded: roundedScore,
             });
 
         } else {
-            // For failed submissions, just insert the record
+            // Failed submissions
             await supabase.from('user_submissions').insert({
                 user_id: user.id,
                 problem_slug: problemSlug,
@@ -552,7 +564,6 @@ export async function POST(request: Request) {
                 language: language,
                 status: 'Failed',
                 runtime: avgRuntime,
-                points_awarded: 0,
             });
         }
 
@@ -572,7 +583,7 @@ export async function POST(request: Request) {
 
     } catch (error: any) {
         console.error('Execution API Global Error:', error);
-        return NextResponse.json({
+        return NextResponse.json({ 
             success: false,
             error: error.message || 'Internal Server Error',
             details: error.stack
