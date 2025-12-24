@@ -365,13 +365,74 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
 
                         {/* Top 3 Podium - Only show if we have at least 1 user */}
                         {leaderboard.length > 0 && (
-                            <div className="bg-gradient-to-b from-white/5 to-transparent p-8 pt-24 border-b border-white/10">
-                                <div className="flex items-end justify-center gap-8 flex-wrap">
+                            <div className="bg-gradient-to-b from-white/5 to-transparent p-4 md:p-8 pt-12 md:pt-24 border-b border-white/10">
+                                {/* Mobile View: Stack vertically with 1st on top */}
+                                <div className="md:hidden flex flex-col items-center gap-8">
+                                    {/* 1st Place (Top on mobile) */}
+                                    <div className="flex flex-col items-center w-full">
+                                        <Crown className="text-yellow-400 mb-3 animate-bounce" size={32} />
+                                        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 overflow-hidden">
+                                            <img src={getAvatar(leaderboard[0])} alt="1st place" className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/60 rounded-2xl px-6 py-8 text-center w-full max-w-[280px]">
+                                            <div className="text-6xl mb-3">🥇</div>
+                                            <h3 className="text-white font-bold text-xl mb-2 truncate">{getDisplayName(leaderboard[0])}</h3>
+                                            <div className="text-3xl font-bold text-white mb-2">{leaderboard[0].total_points}</div>
+                                            <p className="text-base text-yellow-100 mb-2">points</p>
+                                            <div className="mt-2 px-4 py-1 bg-yellow-600/50 rounded-full text-sm font-bold text-yellow-50">
+                                                👑 Champion
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-center gap-4 w-full">
+                                        {/* 2nd Place */}
+                                        {leaderboard.length >= 2 && (
+                                            <div className="flex flex-col items-center flex-1 max-w-[140px]">
+                                                <Medal className="text-gray-400 mb-3" size={24} />
+                                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40 overflow-hidden">
+                                                    <img src={getAvatar(leaderboard[1])} alt="2nd place" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-2xl px-4 py-6 text-center w-full">
+                                                    <div className="text-4xl mb-2">🥈</div>
+                                                    <h3 className="text-white font-bold text-base mb-1 truncate">{getDisplayName(leaderboard[1])}</h3>
+                                                    <div className="text-xl font-bold text-white mb-1">{leaderboard[1].total_points}</div>
+                                                    <p className="text-xs text-gray-300 mb-2">points</p>
+                                                    <div className="mt-2 px-2 py-1 bg-gray-600/50 rounded-full text-xs text-gray-200">
+                                                        Rank #{leaderboard[1].currentRank}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* 3rd Place */}
+                                        {leaderboard.length >= 3 && (
+                                            <div className="flex flex-col items-center flex-1 max-w-[140px]">
+                                                <Award className="text-amber-600 mb-3" size={24} />
+                                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-xl font-bold mb-4 shadow-2xl border-4 border-amber-700/40 overflow-hidden">
+                                                    <img src={getAvatar(leaderboard[2])} alt="3rd place" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="bg-gradient-to-b from-amber-600/30 to-amber-800/30 backdrop-blur-md border border-amber-700/40 rounded-2xl px-4 py-6 text-center w-full">
+                                                    <div className="text-4xl mb-2">🥉</div>
+                                                    <h3 className="text-white font-bold text-base mb-1 truncate">{getDisplayName(leaderboard[2])}</h3>
+                                                    <div className="text-xl font-bold text-white mb-1">{leaderboard[2].total_points}</div>
+                                                    <p className="text-xs text-amber-200 mb-2">points</p>
+                                                    <div className="mt-2 px-2 py-1 bg-amber-700/50 rounded-full text-xs text-amber-100">
+                                                        Rank #{leaderboard[2].currentRank}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Desktop View: Original horizontal layout */}
+                                <div className="hidden md:flex items-end justify-center gap-6 lg:gap-8">
                                     {/* 2nd Place - Only show if we have at least 2 users */}
                                     {leaderboard.length >= 2 && (
                                         <div className="flex flex-col items-center">
                                             <Medal className="text-gray-400 mb-3" size={36} />
-                                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40  overflow-hidden">
+                                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40 overflow-hidden">
                                                 <img src={getAvatar(leaderboard[1])} alt="2nd place" className="w-full h-full object-cover" />
                                             </div>
                                             <div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-t-2xl px-6 py-10 text-center min-w-[160px]">
@@ -387,17 +448,17 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                     )}
 
                                     {/* 1st Place - Always show if we have at least 1 user */}
-                                    <div className="flex flex-col items-center -mt-16">
+                                    <div className="flex flex-col items-center md:-mt-12 lg:-mt-16">
                                         <Crown className="text-yellow-400 mb-3 animate-bounce" size={48} />
-                                        <div className="w-40 h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-5xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 overflow-hidden">
+                                        <div className="w-36 h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-4xl lg:text-5xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 overflow-hidden">
                                             <img src={getAvatar(leaderboard[0])} alt="1st place" className="w-full h-full object-cover" />
                                         </div>
-                                        <div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/60 rounded-t-2xl px-8 py-12 text-center min-w-[180px]">
-                                            <div className="text-7xl mb-4">🥇</div>
-                                            <h3 className="text-white font-bold text-2xl mb-3 truncate max-w-[160px]">{getDisplayName(leaderboard[0])}</h3>
-                                            <div className="text-4xl font-bold text-white mb-2">{leaderboard[0].total_points}</div>
-                                            <p className="text-base text-yellow-100 mb-2">points</p>
-                                            <div className="mt-3 px-4 py-1 bg-yellow-600/50 rounded-full text-sm font-bold text-yellow-50">
+                                        <div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/60 rounded-t-2xl px-6 lg:px-8 py-10 lg:py-12 text-center min-w-[160px] lg:min-w-[180px]">
+                                            <div className="text-6xl lg:text-7xl mb-3 lg:mb-4">🥇</div>
+                                            <h3 className="text-white font-bold text-xl lg:text-2xl mb-2 lg:mb-3 truncate max-w-[140px] lg:max-w-[160px]">{getDisplayName(leaderboard[0])}</h3>
+                                            <div className="text-3xl lg:text-4xl font-bold text-white mb-2">{leaderboard[0].total_points}</div>
+                                            <p className="text-sm lg:text-base text-yellow-100 mb-2">points</p>
+                                            <div className="mt-3 px-3 lg:px-4 py-1 bg-yellow-600/50 rounded-full text-xs lg:text-sm font-bold text-yellow-50">
                                                 👑 Champion
                                             </div>
                                         </div>
