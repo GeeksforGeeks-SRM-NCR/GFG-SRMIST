@@ -214,22 +214,114 @@ export async function POST(request: Request) {
         const gradingResult = await runGradingScript(gradingPayload);
 
         // --------------------------------------------------
-        // SAVE SUBMISSION (UNCHANGED)
+        // SAVE SUBMISSION (UPDATED LOGIC)
         // --------------------------------------------------
 
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            await supabase.from('user_submissions').insert({
-                user_id: user.id,
-                problem_slug: problemSlug,
-                code,
-                language,
-                status: 'Passed',
-                runtime: mockExecutionTime,
-                points_awarded: Math.floor(gradingResult.total_score || 0),
-            });
+            const newPoints = Math.floor(gradingResult.total_score || 0);
+
+            // Check if user has already submitted for this problem
+            const { data: existingSubmission, error: fetchError } = await supabase
+                .from('submissions')
+                .select('points_awarded')
+                .eq('user_id', user.id)
+                .eq('problem_slug', problemSlug)
+                .single();
+
+            if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "not found"
+                throw new Error('Error fetching existing submission: ' + fetchError.message);
+            }
+
+            if (existingSubmission) {
+                // User has submitted before
+                const previousPoints = existingSubmission.points_awarded || 0;
+                if (newPoints > previousPoints) {
+                    // Update the submission with new code and points
+                    const { error: updateError } = await supabase
+                        .from('submissions')
+                        .update({
+                            code,
+                            language,
+                            status: 'Passed',
+                            runtime: mockExecutionTime,
+                            points_awarded: newPoints,
+                        })
+                        .eq('user_id', user.id)
+                        .eq('problem_slug', problemSlug);
+
+                    if (updateError) {
+                        throw new Error('Error updating submission: ' + updateError.message);
+                    }
+
+                    // Update total_points: add the difference
+                    const pointsDifference = newPoints - previousPoints;
+                    const { data: profile, error: fetchProfileError } = await supabase
+                        .from('profiles')
+                        .select('total_points')
+                        .eq('id', user.id)
+                        .single();
+
+                    if (fetchProfileError) {
+                        throw new Error('Error fetching profile: ' + fetchProfileError.message);
+                    }
+
+                    const currentPoints = profile?.total_points || 0;
+                    const newTotalPoints = currentPoints + pointsDifference;
+
+                    const { error: profileUpdateError } = await supabase
+                        .from('profiles')
+                        .update({ total_points: newTotalPoints })
+                        .eq('id', user.id);
+
+                    if (profileUpdateError) {
+                        throw new Error('Error updating profile points: ' + profileUpdateError.message);
+                    }
+                }
+                // If newPoints <= previousPoints, do nothing
+            } else {
+                // First submission for this problem
+                const { error: insertError } = await supabase
+                    .from('submissions')
+                    .insert({
+                        user_id: user.id,
+                        problem_slug: problemSlug,
+                        code,
+                        language,
+                        status: 'Passed',
+                        runtime: mockExecutionTime,
+                        points_awarded: newPoints,
+                    });
+
+                if (insertError) {
+                    throw new Error('Error inserting submission: ' + insertError.message);
+                }
+
+                // Add points to total_points
+                const { data: profile, error: fetchProfileError } = await supabase
+                    .from('profiles')
+                    .select('total_points')
+                    .eq('id', user.id)
+                    .single();
+
+                if (fetchProfileError) {
+                    throw new Error('Error fetching profile: ' + fetchProfileError.message);
+                }
+
+                const currentPoints = profile?.total_points || 0;
+                const newTotalPoints = currentPoints + newPoints;
+
+                const { error: profileUpdateError } = await supabase
+                    .from('profiles')
+                    .update({ total_points: newTotalPoints })
+                    .eq('id', user.id);
+
+                if (profileUpdateError) {
+                    throw new Error('Error updating profile points: ' + profileUpdateError.message);
+                }
+            }
         }
 
         return NextResponse.json({
