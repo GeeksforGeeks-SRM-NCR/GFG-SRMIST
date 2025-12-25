@@ -30,9 +30,20 @@ const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) 
                     <p className={`text-sm ${isSuccess ? 'text-gray-300' : 'text-red-300'}`}>
                         {submissionResult.message}
                     </p>
-                    
+
+                    {isSuccess && (
+                        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+                            <p className="text-sm text-green-300 mb-2">
+                                🎉 <span className="font-bold">Submission Successful!</span> Your solution has been saved and points awarded.
+                            </p>
+                            <p className="text-xs text-green-300/80">
+                                Go back to <Link href="/practice" className="underline hover:text-green-200 font-semibold">Practice Page</Link> to see your updated stats and checkmark.
+                            </p>
+                        </div>
+                    )}
+
                     {isSuccess && grading && (
-                         <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4">
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-lg font-bold text-white">Grading Result</h3>
                                 <div className="text-2xl font-bold text-green-400">
@@ -139,7 +150,7 @@ const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) 
                 {status === 'Passed' && (
                     <div className="mt-3 pt-3 border-t border-green-500/20">
                         <p className="text-xs text-green-300/80">
-                            ✨ Problem solved! Go back to <Link href="/practice" className="underline hover:text-green-200 font-semibold">Practice Page</Link> to see your updated stats and checkmark.
+                            ✅ All test cases passed! Click <span className="font-bold text-green-400">Submit</span> to save your solution and earn points.
                         </p>
                     </div>
                 )}
@@ -149,26 +160,22 @@ const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) 
             <div className="flex-1 overflow-auto p-4">
                 <div className="space-y-3">
                     {results && results.map((res, idx) => (
-                        <div 
-                            key={idx} 
-                            className={`rounded-xl border ${
-                                res.passed 
-                                    ? 'border-green-500/30 bg-green-500/5' 
-                                    : 'border-red-500/30 bg-red-500/5'
-                            } overflow-hidden transition-all hover:shadow-lg ${
-                                res.passed ? 'hover:shadow-green-500/20' : 'hover:shadow-red-500/20'
-                            }`}
+                        <div
+                            key={idx}
+                            className={`rounded-xl border ${res.passed
+                                ? 'border-green-500/30 bg-green-500/5'
+                                : 'border-red-500/30 bg-red-500/5'
+                                } overflow-hidden transition-all hover:shadow-lg ${res.passed ? 'hover:shadow-green-500/20' : 'hover:shadow-red-500/20'
+                                }`}
                         >
                             {/* Test Case Header */}
-                            <div className={`px-4 py-2 flex items-center justify-between ${
-                                res.passed ? 'bg-green-500/10' : 'bg-red-500/10'
-                            }`}>
-                                <span className="text-xs font-semibold text-white">Test Case {idx + 1}</span>
-                                <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                                    res.passed 
-                                        ? 'bg-green-500/20 text-green-400' 
-                                        : 'bg-red-500/20 text-red-400'
+                            <div className={`px-4 py-2 flex items-center justify-between ${res.passed ? 'bg-green-500/10' : 'bg-red-500/10'
                                 }`}>
+                                <span className="text-xs font-semibold text-white">Test Case {idx + 1}</span>
+                                <span className={`text-xs font-bold px-2 py-0.5 rounded ${res.passed
+                                    ? 'bg-green-500/20 text-green-400'
+                                    : 'bg-red-500/20 text-red-400'
+                                    }`}>
                                     {res.passed ? "✓ PASSED" : "✗ FAILED"}
                                 </span>
                             </div>
@@ -195,11 +202,10 @@ const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) 
                                     <div className="text-xs text-gray-400 mb-1.5 font-medium">
                                         {res.passed ? 'Output:' : 'Your Output:'}
                                     </div>
-                                    <div className={`border rounded-lg p-3 font-mono text-xs ${
-                                        res.passed 
-                                            ? 'bg-white/5 border-white/10 text-gray-300' 
-                                            : 'bg-red-500/10 border-red-500/30 text-red-300'
-                                    }`}>
+                                    <div className={`border rounded-lg p-3 font-mono text-xs ${res.passed
+                                        ? 'bg-white/5 border-white/10 text-gray-300'
+                                        : 'bg-red-500/10 border-red-500/30 text-red-300'
+                                        }`}>
                                         {res.actual}
                                     </div>
                                 </div>

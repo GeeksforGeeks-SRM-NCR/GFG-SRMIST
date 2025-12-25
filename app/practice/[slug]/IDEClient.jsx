@@ -29,7 +29,7 @@ const IDEClient = ({ problem, initialCode }) => {
             const { data: { session } } = await supabase.auth.getSession();
             setIsLoggedIn(!!session?.user);
         };
-        
+
         checkAuth();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -159,13 +159,6 @@ const IDEClient = ({ problem, initialCode }) => {
             setExecutionResult(null);
             setExecutionStatus(data.status);
 
-            // If the submission was successful, trigger a score recalculation
-            // This is a fire-and-forget call to fix the total score in the background
-            if (data.status === 'Success') {
-                fetch('/api/user/recalculate-score', { method: 'POST' });
-            }
-
-
         } catch (err) {
             setError(err.message);
         } finally {
@@ -185,7 +178,7 @@ const IDEClient = ({ problem, initialCode }) => {
     const getDescriptionText = (desc) => {
         if (!desc) return 'Solve this problem by implementing the required algorithm.';
         if (typeof desc === 'string') return desc;
-        
+
         if (desc.content && Array.isArray(desc.content)) {
             const texts = [];
             const extractText = (node) => {
@@ -198,7 +191,7 @@ const IDEClient = ({ problem, initialCode }) => {
             desc.content.forEach(extractText);
             return texts.join(' ').trim() || 'Solve this problem by implementing the required algorithm.';
         }
-        
+
         return 'Solve this problem by implementing the required algorithm.';
     };
 
@@ -209,8 +202,8 @@ const IDEClient = ({ problem, initialCode }) => {
             {/* Top Navigation Bar */}
             <div className="fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
-                    <Link 
-                        href="/practice" 
+                    <Link
+                        href="/practice"
                         className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
                     >
                         <ArrowLeft size={20} />
@@ -242,22 +235,20 @@ const IDEClient = ({ problem, initialCode }) => {
                     <div className="flex border-b border-white/10 bg-white/5">
                         <button
                             onClick={() => setActiveTab('description')}
-                            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
-                                activeTab === 'description'
+                            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${activeTab === 'description'
                                     ? 'text-green-400 border-b-2 border-green-400 bg-green-500/10'
                                     : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
+                                }`}
                         >
                             <BookOpen size={16} />
                             Description
                         </button>
                         <button
                             onClick={() => setActiveTab('submissions')}
-                            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
-                                activeTab === 'submissions'
+                            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${activeTab === 'submissions'
                                     ? 'text-green-400 border-b-2 border-green-400 bg-green-500/10'
                                     : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
+                                }`}
                         >
                             <ListChecks size={16} />
                             Submissions
@@ -387,7 +378,7 @@ const IDEClient = ({ problem, initialCode }) => {
                     <div className="flex-1 flex flex-col min-h-0 w-full">
                         <div className="flex-1 min-h-0 min-w-0 relative">
                             {/* Absolute positioned wrapper to ensure full expansion */}
-                            <div 
+                            <div
                                 className="absolute inset-0 w-full h-full"
                                 onCopy={(e) => e.preventDefault()}
                                 onCut={(e) => e.preventDefault()}
@@ -418,7 +409,7 @@ const IDEClient = ({ problem, initialCode }) => {
 
             {/* Login Modal */}
             {showLoginModal && (
-                <UserLoginModal 
+                <UserLoginModal
                     isOpen={showLoginModal}
                     onClose={() => setShowLoginModal(false)}
                 />
