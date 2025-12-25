@@ -43,12 +43,18 @@ const CodeEditor = ({ code, language, onChange, theme = 'vs-dark' }) => {
     };
 
     return (
-        <div 
+        <div
             className="h-full w-full rounded-md overflow-hidden border border-border bg-card/50 backdrop-blur-sm"
             onCopy={(e) => e.preventDefault()}
             onCut={(e) => e.preventDefault()}
             onPaste={(e) => e.preventDefault()}
             onContextMenu={(e) => e.preventDefault()}
+            onDrag={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
+            onDragOver={(e) => e.preventDefault()}
+            onDragEnter={(e) => e.preventDefault()}
+            onDragLeave={(e) => e.preventDefault()}
+            onDrop={(e) => e.preventDefault()}
         >
             <Editor
                 height="100%"
@@ -65,6 +71,8 @@ const CodeEditor = ({ code, language, onChange, theme = 'vs-dark' }) => {
                     padding: { top: 16 },
                     contextmenu: false, // Disable right-click menu
                     quickSuggestions: false, // Disable auto-suggestions that might help copying
+                    dragAndDrop: false,
+                    dropIntoEditor: { enabled: false },
                 }}
             />
         </div>
