@@ -245,7 +245,7 @@ export default function TeamPage() {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        padding: "clamp(120px, 20vh, 150px) clamp(30px, 5vw, 40px) 740px",
+                        padding: "clamp(120px, 20vh, 150px) clamp(30px, 5vw, 40px) 100px",
                         color: "white",
                         minHeight: "100vh",
                     }}
@@ -270,10 +270,10 @@ export default function TeamPage() {
                                     }}>
                                         FACULTY <span style={{ color: "#46b94e" }}>COORDINATOR</span>
                                     </h2>
-                                    <div style={{ 
-                                        display: "flex", 
-                                        flexWrap: "wrap", 
-                                        justifyContent: "center", 
+                                    <div style={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                        justifyContent: "center",
                                         gap: "clamp(20px, 4vw, 60px)",
                                         padding: "0 clamp(10px, 3vw, 20px)"
                                     }}>

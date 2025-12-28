@@ -446,7 +446,7 @@ export default function DomeGallery({
         z-index: 9999;
         border-radius: ${openedImageBorderRadius};
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,.35);
+        overflow: hidden;
         transition: all ${enlargeTransitionMs}ms ease-out;
         pointer-events: none;
         margin: 0;
@@ -457,7 +457,7 @@ export default function DomeGallery({
       const originalImg = overlay.querySelector('img');
       if (originalImg) {
         const img = originalImg.cloneNode();
-        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+        img.style.cssText = 'width: 100%; height: 100%; object-fit: contain;';
         animatingOverlay.appendChild(img);
       }
 
@@ -594,7 +594,7 @@ export default function DomeGallery({
     overlay.style.transition = `transform ${enlargeTransitionMs}ms ease, opacity ${enlargeTransitionMs}ms ease`;
     overlay.style.borderRadius = openedImageBorderRadius;
     overlay.style.overflow = 'hidden';
-    overlay.style.boxShadow = '0 10px 30px rgba(0,0,0,.35)';
+    overlay.style.overflow = 'hidden';
 
     const rawSrc = parent.dataset.src || el.querySelector('img')?.src || '';
     const rawAlt = parent.dataset.alt || el.querySelector('img')?.alt || '';
@@ -603,8 +603,102 @@ export default function DomeGallery({
     img.alt = rawAlt;
     img.style.width = '100%';
     img.style.height = '100%';
-    img.style.objectFit = 'cover';
+    img.style.objectFit = 'contain';
     img.style.filter = enlargedGrayscale ? 'grayscale(1)' : 'none';
+    img.style.transformOrigin = 'center center';
+    img.style.willChange = 'transform';
+
+    // --- Zoom & Pan Logic ---
+    let currentScale = 1;
+    let currentTranslateX = 0;
+    let currentTranslateY = 0;
+    let startDist = 0;
+    let startScale = 1;
+    let startPoint = { x: 0, y: 0 };
+    let isDragging = false;
+    let lastPanPoint = { x: 0, y: 0 };
+
+    const updateTransform = () => {
+      img.style.transform = `translate(${currentTranslateX}px, ${currentTranslateY}px) scale(${currentScale})`;
+    };
+
+    // Wheel Zoom
+    overlay.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const delta = e.deltaY * -0.01;
+      const newScale = Math.min(Math.max(1, currentScale + delta), 5);
+      currentScale = newScale;
+      if (currentScale === 1) {
+        currentTranslateX = 0;
+        currentTranslateY = 0;
+      }
+      updateTransform();
+    }, {
+      passive: false
+    });
+
+    // Touch Handling
+    overlay.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        // Pinch start
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        startDist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+        startScale = currentScale;
+      } else if (e.touches.length === 1 && currentScale > 1) {
+        e.preventDefault();
+        // Pan start
+        isDragging = true;
+        lastPanPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    }, {
+      passive: false
+    });
+
+    overlay.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        // Pinch move
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+        if (startDist > 0) {
+          const scaleChange = dist / startDist;
+          currentScale = Math.min(Math.max(1, startScale * scaleChange), 5);
+          if (currentScale === 1) {
+            currentTranslateX = 0;
+            currentTranslateY = 0;
+          }
+          updateTransform();
+        }
+      } else if (e.touches.length === 1 && isDragging && currentScale > 1) {
+        e.preventDefault();
+        // Pan move
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - lastPanPoint.x;
+        const deltaY = touch.clientY - lastPanPoint.y;
+
+        currentTranslateX += deltaX;
+        currentTranslateY += deltaY;
+        lastPanPoint = { x: touch.clientX, y: touch.clientY };
+
+        updateTransform();
+      }
+    }, {
+      passive: false
+    });
+
+    overlay.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) {
+        startDist = 0;
+      }
+      if (e.touches.length === 0) {
+        isDragging = false;
+      }
+    });
+
     overlay.appendChild(img);
     viewerRef.current.appendChild(overlay);
 

@@ -16,7 +16,8 @@ export default function GlassyNavbar() {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showLoginOptions, setShowLoginOptions] = useState(false);
     const [user, setUser] = useState(null);
-    const dropdownRef = useRef(null);
+    const desktopDropdownRef = useRef(null);
+    const mobileDropdownRef = useRef(null);
 
     const pathname = usePathname();
     const router = useRouter();
@@ -36,7 +37,10 @@ export default function GlassyNavbar() {
 
         // Handle click outside to close login dropdown
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            const isClickInsideDesktop = desktopDropdownRef.current && desktopDropdownRef.current.contains(event.target);
+            const isClickInsideMobile = mobileDropdownRef.current && mobileDropdownRef.current.contains(event.target);
+
+            if (!isClickInsideDesktop && !isClickInsideMobile) {
                 setShowLoginOptions(false);
             }
         };
@@ -214,7 +218,7 @@ export default function GlassyNavbar() {
                             {isHomePage && <span>Logout</span>}
                         </button>
                     ) : (
-                        <div className="relative z-[1001]" ref={dropdownRef}>
+                        <div className="relative z-[1001]" ref={desktopDropdownRef}>
                             <button
                                 onClick={() => setShowLoginOptions(!showLoginOptions)}
                                 className={`relative z-[1002] flex items-center gap-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap ${isHomePage ? 'px-4 py-2' : 'w-10 h-10 justify-center'}`}
@@ -277,7 +281,7 @@ export default function GlassyNavbar() {
                             <LogOut size={18} />
                         </button>
                     ) : (
-                        <div className="relative z-[1002]" ref={dropdownRef}>
+                        <div className="relative z-[1002]" ref={mobileDropdownRef}>
                             <button
                                 onClick={() => setShowLoginOptions(!showLoginOptions)}
                                 className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
