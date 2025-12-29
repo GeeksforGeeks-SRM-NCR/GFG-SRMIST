@@ -595,7 +595,7 @@ export default function AboutPage() {
                                     gap: "10px",
                                 }}
                             >
-                                Register Now
+                                Apply Now
                                 <ArrowRight size={20} />
                             </motion.button>
                         </Link>
