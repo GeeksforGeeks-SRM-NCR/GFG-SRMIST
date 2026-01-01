@@ -4,6 +4,7 @@ import { useActionState, useState, useEffect } from 'react'
 import { sendOtp, verifyOtp } from './actions'
 import { Mail, Loader2, ArrowRight, KeyRound } from 'lucide-react'
 import Link from 'next/link'
+import { vibrateLightClick } from '@/lib/vibration'
 
 const initialSendState = {
     success: false,
@@ -27,6 +28,14 @@ export default function LoginPage() {
             setStep('otp')
         }
     }, [sendState])
+
+    const handleSendOtp = (e) => {
+        vibrateLightClick();
+    }
+
+    const handleVerifyOtp = (e) => {
+        vibrateLightClick();
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
@@ -78,6 +87,7 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={isSending}
+                                onClick={handleSendOtp}
                                 className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {isSending ? (
@@ -118,6 +128,7 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={isVerifying}
+                                onClick={handleVerifyOtp}
                                 className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {isVerifying ? (
@@ -131,7 +142,10 @@ export default function LoginPage() {
 
                             <button
                                 type="button"
-                                onClick={() => setStep('email')}
+                                onClick={() => {
+                                    vibrateLightClick();
+                                    setStep('email');
+                                }}
                                 className="w-full text-sm text-white/40 hover:text-white transition-colors"
                             >
                                 Change Email
@@ -140,7 +154,7 @@ export default function LoginPage() {
                     )}
 
                     <div className="mt-8 pt-6 border-t border-white/5 text-center">
-                        <Link href="/" className="text-xs text-white/20 hover:text-white/60 transition-colors">
+                        <Link href="/" onClick={() => vibrateLightClick()} className="text-xs text-white/20 hover:text-white/60 transition-colors">
                             Back to Home
                         </Link>
                     </div>

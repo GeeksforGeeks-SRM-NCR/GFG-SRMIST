@@ -5,6 +5,7 @@ import { useState } from "react";
 import DecryptedText from "./DecryptedText";
 import { FiMenu, FiX, FiArrowLeft } from "react-icons/fi";
 import { usePathname } from "next/navigation";
+import { vibrateLightClick } from "@/lib/vibration";
 
 export default function GlassyNavbar() {
     const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -34,6 +35,7 @@ export default function GlassyNavbar() {
                         <Link
                             key={index}
                             href={item.href}
+                            onClick={() => vibrateLightClick()}
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
                             className={`
@@ -65,6 +67,7 @@ export default function GlassyNavbar() {
 
                     <Link
                         href="/pages/team"
+                        onClick={() => vibrateLightClick()}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
                     >
                         <FiArrowLeft />
@@ -78,13 +81,17 @@ export default function GlassyNavbar() {
 
                     <Link
                         href="/pages/team"
+                        onClick={() => vibrateLightClick()}
                         className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
                     >
                         <FiArrowLeft size={20} />
                     </Link>
 
                     <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        onClick={() => {
+                            vibrateLightClick();
+                            setIsMobileMenuOpen(!isMobileMenuOpen);
+                        }}
                         className="text-white p-2 focus:outline-none"
                     >
                         {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
@@ -100,7 +107,10 @@ export default function GlassyNavbar() {
                             <Link
                                 key={index}
                                 href={item.href}
-                                onClick={() => setIsMobileMenuOpen(false)}
+                                onClick={() => {
+                                    vibrateLightClick();
+                                    setIsMobileMenuOpen(false);
+                                }}
                                 className="text-2xl font-roboto-slab font-medium text-white hover:text-[#2f8d46] transition-colors"
                             >
                                 {item.label}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getProfile, updateProfile, uploadAvatar } from './actions';
 import { User, Mail, Award, Clock, Code, Camera, Loader2, Save } from 'lucide-react';
+import { vibrateLightClick } from '@/lib/vibration';
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -297,6 +298,7 @@ export default function ProfilePage() {
                                     <button
                                         type="submit"
                                         disabled={saving}
+                                        onClick={() => vibrateLightClick()}
                                         className="flex-1 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl font-bold flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/40 hover:scale-[1.02]"
                                     >
                                         {saving ? (
@@ -313,7 +315,10 @@ export default function ProfilePage() {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => router.back()}
+                                        onClick={() => {
+                                            vibrateLightClick();
+                                            router.back();
+                                        }}
                                         className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl font-bold transition-all"
                                     >
                                         Cancel

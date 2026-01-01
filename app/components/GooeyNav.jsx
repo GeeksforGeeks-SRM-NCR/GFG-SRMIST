@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useEffect, useState } from 'react';
+import { vibrateLightClick } from '@/lib/vibration';
 
 const GooeyNav = ({
   items,
@@ -87,6 +88,7 @@ const GooeyNav = ({
   const handleClick = (e, index) => {
     const liEl = e.currentTarget;
     if (activeIndex === index) return;
+    vibrateLightClick();
     setActiveIndex(index);
     updateEffectPosition(liEl);
     if (filterRef.current) {
