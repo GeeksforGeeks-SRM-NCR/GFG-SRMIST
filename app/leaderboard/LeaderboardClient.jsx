@@ -304,7 +304,7 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                         </div>
 
                         <h1 className="font-sf-pro" style={{
-                            fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
+                            fontSize: "clamp(2.5rem, 6vw, 6.5rem)",
                             fontWeight: "800",
                             color: "#fff",
                             marginBottom: "25px",
@@ -324,7 +324,9 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                 <Star className="text-green-400" size={24} />
                                 <div className="text-left">
                                     <p className="text-sm text-gray-400">Your Rank</p>
-                                    <p className="text-2xl font-bold text-white">#{currentUserRank.actualRank}</p>
+                                    <p className="text-2xl font-bold text-white">
+                                        {currentUserRank.total_points > 0 ? `#${currentUserRank.actualRank}` : 'N/A'}
+                                    </p>
                                 </div>
                                 <div className="h-12 w-px bg-white/20"></div>
                                 <div className="text-left">

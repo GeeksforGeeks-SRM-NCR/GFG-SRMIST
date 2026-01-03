@@ -359,7 +359,9 @@ export default function PracticeClient({
 
                                     {/* Rank */}
                                     <p className="text-gray-400 text-lg flex items-center gap-2 mb-1">
-                                        Current Rank: <span className="text-yellow-400 font-bold text-2xl">#{userRank}</span>
+                                        Current Rank: <span className="text-yellow-400 font-bold text-2xl">
+                                            {(userProfile?.total_points || 0) > 0 ? `#${userRank}` : 'N/A'}
+                                        </span>
                                     </p>
 
                                     {/* Score */}
@@ -439,7 +441,7 @@ export default function PracticeClient({
 
                     <div className="relative z-10">
                         {/* Leaderboard Title */}
-                        <h2 className="text-4xl font-black text-center mb-8 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 bg-clip-text text-transparent" style={{ fontFamily: 'SF Pro Display, -apple-system, sans-serif', letterSpacing: '2px' }}>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-center mb-8 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 bg-clip-text text-transparent" style={{ fontFamily: 'SF Pro Display, -apple-system, sans-serif', letterSpacing: '2px' }}>
                             LEADERBOARD
                         </h2>
 
