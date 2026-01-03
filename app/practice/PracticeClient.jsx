@@ -4,6 +4,7 @@ import { Trophy, Target, TrendingUp, Crown, User, LogIn, Medal, Award, Settings,
 import { useRouter } from 'next/navigation';
 import UserLoginModal from '../../components/UserLoginModal';
 import { supabase } from '@/lib/supabase';
+import { vibrateLightClick } from '@/lib/vibration';
 
 
 // Demo credentials
@@ -309,7 +310,10 @@ export default function PracticeClient({
                     {(isLoggedIn || isUserLoggedIn) && (
                         <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
                             <button
-                                onClick={handleLogout}
+                                onClick={() => {
+                                    vibrateLightClick();
+                                    handleLogout();
+                                }}
                                 className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 p-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-110 border border-red-500/30"
                                 title="Logout"
                             >
@@ -325,7 +329,10 @@ export default function PracticeClient({
                                 <div className="flex flex-col items-center mb-8">
                                     <div 
                                         className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-5xl font-bold mb-4 shadow-2xl border-4 border-white/20 overflow-hidden cursor-pointer hover:scale-105 transition-transform" 
-                                        onClick={() => router.push('/practice/profile')}
+                                        onClick={() => {
+                                            vibrateLightClick();
+                                            router.push('/practice/profile');
+                                        }}
                                     >
                                         {userProfile?.avatar_url ? (
                                             <img 
@@ -381,7 +388,10 @@ export default function PracticeClient({
                                 </div>
 
                                 <button
-                                    onClick={() => router.push('/practice/profile')}
+                                    onClick={() => {
+                                        vibrateLightClick();
+                                        router.push('/practice/profile');
+                                    }}
                                     className="mt-8 w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"
                                 >
                                     <User size={16} />
@@ -404,7 +414,10 @@ export default function PracticeClient({
                                     Sign in to monitor your coding journey and compete on leaderboards
                                 </p>
                                 <button
-                                    onClick={() => setShowLoginModal(true)}
+                                    onClick={() => {
+                                        vibrateLightClick();
+                                        setShowLoginModal(true);
+                                    }}
                                     className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-green-500/50"
                                 >
                                     <LogIn size={20} />
@@ -499,7 +512,10 @@ export default function PracticeClient({
                 {/* See Full Leaderboard Button */}
                 <div className="text-center">
                     <button
-                        onClick={() => router.push('/leaderboard')}
+                        onClick={() => {
+                            vibrateLightClick();
+                            router.push('/leaderboard');
+                        }}
                         className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-black font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-yellow-500/50 hover:scale-105"
                     >
                         See Full Leaderboard
@@ -614,14 +630,17 @@ export default function PracticeClient({
                                             onChange={handleProfilePhotoChange}
                                             className="hidden"
                                         />
-                                        <div className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-xl transition-all shadow-lg hover:scale-105">
+                                        <div onClick={() => vibrateLightClick()} className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-xl transition-all shadow-lg hover:scale-105">
                                             <Camera size={20} />
                                             Choose Photo
                                         </div>
                                     </label>
                                     {tempProfilePhoto && (
                                         <button
-                                            onClick={handleSaveProfilePhoto}
+                                            onClick={() => {
+                                                vibrateLightClick();
+                                                handleSaveProfilePhoto();
+                                            }}
                                             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg hover:scale-105"
                                         >
                                             Save

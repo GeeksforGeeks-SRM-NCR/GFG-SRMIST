@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, Mail, Key } from 'lucide-react';
 import { sendOtp, verifyOtp } from '@/app/actions/user-auth';
 import { useRouter } from 'next/navigation';
+import { vibrateLightClick } from '@/lib/vibration';
 
 export default function UserLoginModal({ isOpen, onClose }) {
   const [step, setStep] = useState(1); // 1: Email, 2: OTP
@@ -48,6 +49,7 @@ export default function UserLoginModal({ isOpen, onClose }) {
     e.preventDefault();
     if (!emailPrefix) return;
 
+    vibrateLightClick();
     setLoading(true);
     setError('');
     setSuccess('');
@@ -72,6 +74,7 @@ export default function UserLoginModal({ isOpen, onClose }) {
     e.preventDefault();
     if (!otp) return;
 
+    vibrateLightClick();
     setLoading(true);
     setError('');
 
