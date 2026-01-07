@@ -225,7 +225,7 @@
 
 
 "use client";
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Trophy, Crown, Medal, Award, TrendingUp, ArrowLeft, Users, Code, CheckCircle, Star } from 'lucide-react';
 import Squares from '../components/Squares';
 import { Logo } from "../logo/logo";
@@ -245,6 +245,17 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
     const getDisplayName = (user) => {
         return user.full_name || user.username || 'Anonymous';
     };
+
+    // Filter out users with 0 points for the top podium
+    const topPerformers = useMemo(() => {
+        return leaderboard.filter(user => user.total_points > 0).slice(0, 3);
+    }, [leaderboard]);
+
+    // Remaining users show up in the list (including 0 point users who would otherwise be in top 3)
+    const listUsers = useMemo(() => {
+        const topPerformerIds = new Set(topPerformers.map(p => p.id));
+        return leaderboard.filter(user => !topPerformerIds.has(user.id));
+    }, [leaderboard, topPerformers]);
 
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -293,7 +304,7 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                         </div>
 
                         <h1 className="font-sf-pro" style={{
-                            fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
+                            fontSize: "clamp(2.5rem, 6vw, 6.5rem)",
                             fontWeight: "800",
                             color: "#fff",
                             marginBottom: "25px",
@@ -313,7 +324,9 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                 <Star className="text-green-400" size={24} />
                                 <div className="text-left">
                                     <p className="text-sm text-gray-400">Your Rank</p>
-                                    <p className="text-2xl font-bold text-white">#{currentUserRank.actualRank}</p>
+                                    <p className="text-2xl font-bold text-white">
+                                        {currentUserRank.total_points > 0 ? `#${currentUserRank.actualRank}` : 'N/A'}
+                                    </p>
                                 </div>
                                 <div className="h-12 w-px bg-white/20"></div>
                                 <div className="text-left">
@@ -359,12 +372,11 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                 <div className="w-48">
                                     <Logo2 />
                                 </div>
-
                             </div>
                         </div>
 
-                        {/* Top 3 Podium - Only show if we have at least 1 user */}
-                        {leaderboard.length > 0 && (
+                        {/* Top 3 Podium - Only show if we have qualified top performers */}
+                        {topPerformers.length > 0 ? (
                             <div className="bg-gradient-to-b from-white/5 to-transparent p-4 md:p-8 pt-12 md:pt-24 border-b border-white/10">
                                 {/* Mobile View: Stack vertically with 1st on top */}
                                 <div className="md:hidden flex flex-col items-center gap-8">
@@ -372,12 +384,12 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                     <div className="flex flex-col items-center w-full">
                                         <Crown className="text-yellow-400 mb-3 animate-bounce" size={32} />
                                         <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 overflow-hidden">
-                                            <img src={getAvatar(leaderboard[0])} alt="1st place" className="w-full h-full object-cover" />
+                                            <img src={getAvatar(topPerformers[0])} alt="1st place" className="w-full h-full object-cover" />
                                         </div>
                                         <div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/60 rounded-2xl px-6 py-8 text-center w-full max-w-[280px]">
                                             <div className="text-6xl mb-3">🥇</div>
-                                            <h3 className="text-white font-bold text-xl mb-2 truncate">{getDisplayName(leaderboard[0])}</h3>
-                                            <div className="text-3xl font-bold text-white mb-2">{leaderboard[0].total_points}</div>
+                                            <h3 className="text-white font-bold text-xl mb-2 truncate">{getDisplayName(topPerformers[0])}</h3>
+                                            <div className="text-3xl font-bold text-white mb-2">{topPerformers[0].total_points}</div>
                                             <p className="text-base text-yellow-100 mb-2">points</p>
                                             <div className="mt-2 px-4 py-1 bg-yellow-600/50 rounded-full text-sm font-bold text-yellow-50">
                                                 👑 Champion
@@ -387,38 +399,38 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
 
                                     <div className="flex justify-center gap-4 w-full">
                                         {/* 2nd Place */}
-                                        {leaderboard.length >= 2 && (
+                                        {topPerformers.length >= 2 && (
                                             <div className="flex flex-col items-center flex-1 max-w-[140px]">
                                                 <Medal className="text-gray-400 mb-3" size={24} />
                                                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40 overflow-hidden">
-                                                    <img src={getAvatar(leaderboard[1])} alt="2nd place" className="w-full h-full object-cover" />
+                                                    <img src={getAvatar(topPerformers[1])} alt="2nd place" className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-2xl px-4 py-6 text-center w-full">
                                                     <div className="text-4xl mb-2">🥈</div>
-                                                    <h3 className="text-white font-bold text-base mb-1 truncate">{getDisplayName(leaderboard[1])}</h3>
-                                                    <div className="text-xl font-bold text-white mb-1">{leaderboard[1].total_points}</div>
+                                                    <h3 className="text-white font-bold text-base mb-1 truncate">{getDisplayName(topPerformers[1])}</h3>
+                                                    <div className="text-xl font-bold text-white mb-1">{topPerformers[1].total_points}</div>
                                                     <p className="text-xs text-gray-300 mb-2">points</p>
                                                     <div className="mt-2 px-2 py-1 bg-gray-600/50 rounded-full text-xs text-gray-200">
-                                                        Rank #{leaderboard[1].currentRank}
+                                                        Rank #{topPerformers[1].currentRank}
                                                     </div>
                                                 </div>
                                             </div>
                                         )}
 
                                         {/* 3rd Place */}
-                                        {leaderboard.length >= 3 && (
+                                        {topPerformers.length >= 3 && (
                                             <div className="flex flex-col items-center flex-1 max-w-[140px]">
                                                 <Award className="text-amber-600 mb-3" size={24} />
                                                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-xl font-bold mb-4 shadow-2xl border-4 border-amber-700/40 overflow-hidden">
-                                                    <img src={getAvatar(leaderboard[2])} alt="3rd place" className="w-full h-full object-cover" />
+                                                    <img src={getAvatar(topPerformers[2])} alt="3rd place" className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="bg-gradient-to-b from-amber-600/30 to-amber-800/30 backdrop-blur-md border border-amber-700/40 rounded-2xl px-4 py-6 text-center w-full">
                                                     <div className="text-4xl mb-2">🥉</div>
-                                                    <h3 className="text-white font-bold text-base mb-1 truncate">{getDisplayName(leaderboard[2])}</h3>
-                                                    <div className="text-xl font-bold text-white mb-1">{leaderboard[2].total_points}</div>
+                                                    <h3 className="text-white font-bold text-base mb-1 truncate">{getDisplayName(topPerformers[2])}</h3>
+                                                    <div className="text-xl font-bold text-white mb-1">{topPerformers[2].total_points}</div>
                                                     <p className="text-xs text-amber-200 mb-2">points</p>
                                                     <div className="mt-2 px-2 py-1 bg-amber-700/50 rounded-full text-xs text-amber-100">
-                                                        Rank #{leaderboard[2].currentRank}
+                                                        Rank #{topPerformers[2].currentRank}
                                                     </div>
                                                 </div>
                                             </div>
@@ -429,19 +441,19 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                 {/* Desktop View: Original horizontal layout */}
                                 <div className="hidden md:flex items-end justify-center gap-6 lg:gap-8">
                                     {/* 2nd Place - Only show if we have at least 2 users */}
-                                    {leaderboard.length >= 2 && (
+                                    {topPerformers.length >= 2 && (
                                         <div className="flex flex-col items-center">
                                             <Medal className="text-gray-400 mb-3" size={36} />
                                             <div className="w-28 h-28 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40 overflow-hidden">
-                                                <img src={getAvatar(leaderboard[1])} alt="2nd place" className="w-full h-full object-cover" />
+                                                <img src={getAvatar(topPerformers[1])} alt="2nd place" className="w-full h-full object-cover" />
                                             </div>
                                             <div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-t-2xl px-6 py-10 text-center min-w-[160px]">
                                                 <div className="text-6xl mb-3">🥈</div>
-                                                <h3 className="text-white font-bold text-xl mb-2 truncate max-w-[140px]">{getDisplayName(leaderboard[1])}</h3>
-                                                <div className="text-3xl font-bold text-white mb-2">{leaderboard[1].total_points}</div>
+                                                <h3 className="text-white font-bold text-xl mb-2 truncate max-w-[140px]">{getDisplayName(topPerformers[1])}</h3>
+                                                <div className="text-3xl font-bold text-white mb-2">{topPerformers[1].total_points}</div>
                                                 <p className="text-sm text-gray-300 mb-2">points</p>
                                                 <div className="mt-3 px-3 py-1 bg-gray-600/50 rounded-full text-xs text-gray-200">
-                                                    Rank #{leaderboard[1].currentRank}
+                                                    Rank #{topPerformers[1].currentRank}
                                                 </div>
                                             </div>
                                         </div>
@@ -451,12 +463,12 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                     <div className="flex flex-col items-center md:-mt-12 lg:-mt-16">
                                         <Crown className="text-yellow-400 mb-3 animate-bounce" size={48} />
                                         <div className="w-36 h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-4xl lg:text-5xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 overflow-hidden">
-                                            <img src={getAvatar(leaderboard[0])} alt="1st place" className="w-full h-full object-cover" />
+                                            <img src={getAvatar(topPerformers[0])} alt="1st place" className="w-full h-full object-cover" />
                                         </div>
                                         <div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/60 rounded-t-2xl px-6 lg:px-8 py-10 lg:py-12 text-center min-w-[160px] lg:min-w-[180px]">
                                             <div className="text-6xl lg:text-7xl mb-3 lg:mb-4">🥇</div>
-                                            <h3 className="text-white font-bold text-xl lg:text-2xl mb-2 lg:mb-3 truncate max-w-[140px] lg:max-w-[160px]">{getDisplayName(leaderboard[0])}</h3>
-                                            <div className="text-3xl lg:text-4xl font-bold text-white mb-2">{leaderboard[0].total_points}</div>
+                                            <h3 className="text-white font-bold text-xl lg:text-2xl mb-2 lg:mb-3 truncate max-w-[140px] lg:max-w-[160px]">{getDisplayName(topPerformers[0])}</h3>
+                                            <div className="text-3xl lg:text-4xl font-bold text-white mb-2">{topPerformers[0].total_points}</div>
                                             <p className="text-sm lg:text-base text-yellow-100 mb-2">points</p>
                                             <div className="mt-3 px-3 lg:px-4 py-1 bg-yellow-600/50 rounded-full text-xs lg:text-sm font-bold text-yellow-50">
                                                 👑 Champion
@@ -465,35 +477,46 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                     </div>
 
                                     {/* 3rd Place - Only show if we have at least 3 users */}
-                                    {leaderboard.length >= 3 && (
+                                    {topPerformers.length >= 3 && (
                                         <div className="flex flex-col items-center">
                                             <Award className="text-amber-600 mb-3" size={36} />
                                             <div className="w-28 h-28 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-amber-700/40 overflow-hidden">
-                                                <img src={getAvatar(leaderboard[2])} alt="3rd place" className="w-full h-full object-cover" />
+                                                <img src={getAvatar(topPerformers[2])} alt="3rd place" className="w-full h-full object-cover" />
                                             </div>
                                             <div className="bg-gradient-to-b from-amber-600/30 to-amber-800/30 backdrop-blur-md border border-amber-700/40 rounded-t-2xl px-6 py-10 text-center min-w-[160px]">
                                                 <div className="text-6xl mb-3">🥉</div>
-                                                <h3 className="text-white font-bold text-xl mb-2 truncate max-w-[140px]">{getDisplayName(leaderboard[2])}</h3>
-                                                <div className="text-3xl font-bold text-white mb-2">{leaderboard[2].total_points}</div>
+                                                <h3 className="text-white font-bold text-xl mb-2 truncate max-w-[140px]">{getDisplayName(topPerformers[2])}</h3>
+                                                <div className="text-3xl font-bold text-white mb-2">{topPerformers[2].total_points}</div>
                                                 <p className="text-sm text-amber-200 mb-2">points</p>
                                                 <div className="mt-3 px-3 py-1 bg-amber-700/50 rounded-full text-xs text-amber-100">
-                                                    Rank #{leaderboard[2].currentRank}
+                                                    Rank #{topPerformers[2].currentRank}
                                                 </div>
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
+                        ) : leaderboard.length > 0 && (
+                            // Fallback when we have users but none qualified for top 3 (all 0 points)
+                            <div className="bg-gradient-to-b from-white/5 to-transparent p-12 border-b border-white/10 text-center">
+                                <Trophy className="mx-auto mb-4 text-gray-600 opacity-50" size={48} />
+                                <p className="text-gray-400 text-lg">No top performers yet.</p>
+                                <p className="text-yellow-500/60 text-sm mt-2">Earn points to take the lead!</p>
+                            </div>
                         )}
 
                         {/* Scrollable Rankings List */}
                         <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
                             <div className="p-6 space-y-3">
-                                {/* Show remaining users after top 3, or all users in list if less than 3 */}
-                                {leaderboard.length > 3 ? (
-                                    // Show users from 4th place onwards
-                                    leaderboard.slice(3).map((user, idx) => {
-                                        const actualRank = user.currentRank;
+                                {/* Show list users (rest of the leaderboard or all of them if 0 points) */}
+                                {listUsers.length > 0 ? (
+                                    listUsers.map((user, idx) => {
+                                        // If user has 0 points, visually shift their rank to start after the podium (Rank 4+)
+                                        // effectively reserving ranks 1, 2, 3 for >0 point users only
+                                        const actualRank = user.total_points > 0
+                                            ? user.currentRank
+                                            : user.currentRank + (3 - topPerformers.length);
+
                                         const isCurrentUser = currentUserRank && user.id === currentUserRank.user_id;
 
                                         return (
@@ -551,10 +574,10 @@ export default function LeaderboardClient({ leaderboard, stats, currentUserRank 
                                         <p className="text-gray-600 text-sm mt-2">Start solving problems to appear on the leaderboard!</p>
                                     </div>
                                 ) : (
-                                    // 1-3 users total - show message that they're on the podium
+                                    // Users exist but none in listUsers -> means all are in topPerformers
                                     <div className="text-center py-16">
                                         <Trophy className="mx-auto mb-4 text-green-400" size={48} />
-                                        <p className="text-gray-400 text-lg">Top {leaderboard.length} competitors shown above!</p>
+                                        <p className="text-gray-400 text-lg">Top {topPerformers.length} competitors shown above!</p>
                                         <p className="text-gray-500 text-sm mt-2">Keep solving to climb the ranks 🚀</p>
                                     </div>
                                 )}

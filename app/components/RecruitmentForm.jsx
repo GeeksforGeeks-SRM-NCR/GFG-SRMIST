@@ -240,10 +240,13 @@ export default function RecruitmentForm() {
                     <div className="relative">
                         <select {...register("team_preference", { required: true })} className={`${inputClasses} appearance-none cursor-pointer text-lg`}>
                             <option value="" className="text-black">Select a Team</option>
-                            <option value="Technical" className="text-black">Technical</option>
-                            <option value="Events" className="text-black">Events</option>
-                            <option value="Corporate" className="text-black">Corporate / PR</option>
-                            <option value="Creatives" className="text-black">Creatives / Design</option>
+                            <option value="Technical" className="text-black">Technical Team</option>
+                            <option value="Events" className="text-black">Events Mangement Team</option>
+                            <option value="Corporate" className="text-black">PR Team</option>
+                            <option value="Creatives" className="text-black">Design & Branding Team</option>
+                            <option value="Marketing" className="text-black">Marketing Team</option>
+                            <option value="Social Media" className="text-black">Social Media Team</option>
+                            <option value="Photography" className="text-black">Photography Team</option>
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#46b94e] pointer-events-none" size={24} />
                     </div>
