@@ -2,7 +2,7 @@
 
 # 🚀 GeeksforGeeks SRMIST Chapter
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/815be4ff-7e8a-4752-8325-a81373c7a947/deploy-status)](https://app.netlify.com/projects/gfg-srmncr/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/06c79013-1001-4e43-9675-48bbf7587db5/deploy-status)](https://app.netlify.com/projects/gfg-srmncr/deploys)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org)
@@ -163,26 +163,6 @@ A modern, feature-rich community platform built with **Next.js 16** and the **Ap
 - **Supabase** for real-time data
 - **Contentful** for static content
 
-## 🚀 Deployment
-
-### Recommended Platforms
-
-<div align="center">
-
-[![Vercel](https://img.shields.io/badge/Vercel-Recommended-000000?logo=vercel&logoColor=white)](https://vercel.com)
-[![Netlify](https://img.shields.io/badge/Netlify-Active-00C7B7?logo=netlify&logoColor=white)](https://netlify.com)
-
-</div>
-
-### Deployment Steps
-
-1. **Fork** this repository
-2. **Connect** to your preferred platform
-3. **Configure** environment variables
-4. **Deploy** with one click!
-
-> **⚠️ Important**: Ensure all environment variables are properly configured in your hosting platform.
-
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
@@ -223,8 +203,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **Built with ❤️ by the GeeksforGeeks SRMIST Student Body**
 
-[![GitHub stars](https://img.shields.io/github/stars/your-org/GEEKSFORGEEKS-SRMIST?style=social)](https://github.com/gitcomit8/GEEKSFORGEEKS-SRMIST/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/your-org/GEEKSFORGEEKS-SRMIST?style=social)](https://github.com/gitcomit8/GEEKSFORGEEKS-SRMIST/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/GeeksforGeeks-SRM-NCR/GFG-SRMIST?style=social)](https://github.com/GeeksforGeeks-SRM-NCR/GFG-SRMIST/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/GeeksforGeeks-SRM-NCR/GFG-SRMIST?style=social)](https://github.com/GeeksforGeeks-SRM-NCR/GFG-SRMIST/network/members)
 
 </div>
 
