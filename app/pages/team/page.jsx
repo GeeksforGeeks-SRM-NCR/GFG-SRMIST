@@ -468,35 +468,7 @@ export default function TeamPage() {
                                     </div>
 
                                     {/* Team Stats Summary */}
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 30 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 0.6, delay: 0.3 }}
-                                        className="mt-16 max-w-6xl mx-auto bg-black/30 backdrop-blur-sm border border-white/10 rounded-2xl p-8"                                    >
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                                            <div>
-                                                <div className="text-4xl font-bold text-white mb-2">
-                                                    {teamsWithMembers.reduce((acc, team) => acc + team.memberList.length, 0)}
-                                                </div>
-                                                <p className="text-gray-400 text-sm">Total Team Members</p>
-                                            </div>
 
-                                            <div>
-                                                <div className="text-4xl font-bold text-white mb-2">
-                                                    {teamsWithMembers.length}
-                                                </div>
-                                                <p className="text-gray-400 text-sm">Active Departments</p>
-                                            </div>
-
-                                            <div>
-                                                <div className="text-4xl font-bold text-white mb-2">
-                                                    {leadership.length + coreTeam.length}
-                                                </div>
-                                                <p className="text-gray-400 text-sm">Core Leadership</p>
-                                            </div>
-                                        </div>
-                                    </motion.div>
                                 </motion.div>
                             )}
                         </div>

@@ -351,24 +351,6 @@ export default function AboutPage() {
                             viewport={{ once: true }}
                             style={{ textAlign: "center", marginBottom: "80px" }}
                         >
-                            <div style={{
-                                display: "inline-block",
-                                padding: "6px 16px",
-                                background: "rgba(255, 255, 255, 0.05)",
-                                border: "1px solid rgba(255, 255, 255, 0.1)",
-                                borderRadius: "50px",
-                                marginBottom: "20px",
-                            }}>
-                                <span style={{
-                                    fontSize: "0.85rem",
-                                    color: "rgba(255, 255, 255, 0.6)",
-                                    fontWeight: "500",
-                                    letterSpacing: "1.5px",
-                                    textTransform: "uppercase",
-                                }}>
-                                    By The Numbers
-                                </span>
-                            </div>
 
                             <h2 className="font-sf-pro" style={{
                                 fontSize: "clamp(2.5rem, 6vw, 4rem)",
