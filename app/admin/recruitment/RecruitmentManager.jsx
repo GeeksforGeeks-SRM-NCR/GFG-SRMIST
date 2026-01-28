@@ -137,6 +137,7 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
             ['Technical Skills', applicant.techincal_skills || 'N/A'],
             ['Design Skills', applicant.design_skills || 'N/A'],
             ['Description', applicant.description || 'N/A'],
+            ['Resume Link', applicant.resume_link || 'N/A'],
             ['Applied Date', new Date(applicant.created_at).toLocaleString()]
         ]
 
