@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { contentfulClient } from '@/lib/contentful';
 import moment from 'moment';
 import GlassyNavbar from '../../components/GlassyNavbar';
 import Squares from '../../components/Squares';
 import Link from 'next/link';
-import { Calendar, User, ArrowRight } from 'lucide-react';
-import NewsletterSubsribe from '../../components/NewsletterSubsribe';
+import { Calendar, User, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
+import NewsletterSubscribe from '../../components/NewsletterSubscribe';
 
 export default function BlogPage() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [notification, setNotification] = useState(null);
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -31,6 +34,33 @@ export default function BlogPage() {
         fetchPosts();
     }, []);
 
+    useEffect(() => {
+        // Check for URL parameters
+        const confirmed = searchParams.get('confirmed');
+        const error = searchParams.get('error');
+
+        if (confirmed === 'true') {
+            setNotification({
+                type: 'success',
+                message: '✓ Email confirmed! You\'re now subscribed to our newsletter.'
+            });
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => setNotification(null), 5000);
+        } else if (error) {
+            let errorMessage = 'Something went wrong. Please try again.';
+            if (error === 'invalid_token') {
+                errorMessage = 'Invalid or expired confirmation link.';
+            } else if (error === 'server_error') {
+                errorMessage = 'Server error. Please try again later.';
+            }
+            setNotification({
+                type: 'error',
+                message: errorMessage
+            });
+            setTimeout(() => setNotification(null), 5000);
+        }
+    }, [searchParams]);
+
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden">
             {/* Background */}
@@ -48,6 +78,28 @@ export default function BlogPage() {
             <div className="relative z-10 p-8 pt-40">
                 <GlassyNavbar />
                 <div className="max-w-7xl mx-auto">
+                    {/* Notification Banner */}
+                    {notification && (
+                        <div className={`mb-8 backdrop-blur-xl rounded-2xl border p-4 flex items-center gap-3 ${
+                            notification.type === 'success' 
+                                ? 'bg-green-500/10 border-green-500/30 text-green-400' 
+                                : 'bg-red-500/10 border-red-500/30 text-red-400'
+                        }`}>
+                            {notification.type === 'success' ? (
+                                <CheckCircle size={20} />
+                            ) : (
+                                <XCircle size={20} />
+                            )}
+                            <p className="flex-1">{notification.message}</p>
+                            <button 
+                                onClick={() => setNotification(null)}
+                                className="text-white/60 hover:text-white transition-colors"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    )}
+
                     {/* Header */}
                     <div className="text-center mb-16">
                         <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
@@ -58,7 +110,7 @@ export default function BlogPage() {
                         </p>
                     </div>
                     <div className="mb-12">
-                        <NewsletterSubsribe/>
+                        <NewsletterSubscribe/>
                     </div>
 
                     {/* Posts Grid */}

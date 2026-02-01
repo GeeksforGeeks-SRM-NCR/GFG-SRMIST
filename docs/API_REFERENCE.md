@@ -58,6 +58,37 @@ ORDER BY created_at DESC;
 
 ---
 
+### Table: `newsletter_subscribers`
+
+Stores newsletter subscribers with double opt-in email confirmation.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `id` | `uuid` | PRIMARY KEY, DEFAULT `gen_random_uuid()` | Unique identifier |
+| `email` | `text` | NOT NULL, UNIQUE | Subscriber email address |
+| `is_active` | `boolean` | NOT NULL, DEFAULT `true` | Whether subscription is active |
+| `confirmed` | `boolean` | NOT NULL, DEFAULT `false` | Whether email has been confirmed |
+| `unsubscribe_token` | `text` | NOT NULL, UNIQUE | Unique token for confirmation/unsubscribe |
+| `created_at` | `timestamptz` | DEFAULT `now()` | Initial subscription timestamp |
+| `confirmed_at` | `timestamptz` | NULLABLE | When subscription was confirmed |
+| `unsubscribed_at` | `timestamptz` | NULLABLE | When user unsubscribed |
+
+**Workflow:**
+1. User subscribes → `confirmed: false`, `is_active: true`
+2. Confirmation email sent with link containing `unsubscribe_token`
+3. User clicks link → `confirmed: true`, `confirmed_at` set
+4. User unsubscribes → `is_active: false`, `unsubscribed_at` set
+
+**Example Query:**
+```sql
+-- Get all active confirmed subscribers
+SELECT email FROM newsletter_subscribers 
+WHERE is_active = true AND confirmed = true
+ORDER BY created_at DESC;
+```
+
+---
+
 ### Table: `registrations`
 
 Stores event registration submissions (team-based registrations).
@@ -151,6 +182,52 @@ const response = await contentfulClient.getEntries({
   content_type: 'event',
   order: 'fields.date',
 });
+```
+
+---
+
+### Type: `blogPost`
+
+Represents a blog article/post.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `title` | Short Text | ✅ | Blog post title |
+| `slug` | Short Text | ✅ | URL-friendly identifier (unique) |
+| `excerpt` | Long Text | ❌ | Short summary/preview text |
+| `content` | Rich Text | ✅ | Full blog post content |
+| `author` | Short Text | ❌ | Author name |
+| `publishDate` | Date & Time | ✅ | Publication date (ISO 8601) |
+| `featuredImage` | Media (Asset) | ❌ | Header/thumbnail image |
+| `tags` | Short Text (Multiple) | ❌ | Array of category tags |
+
+**Fetching Blog Posts:**
+```javascript
+const response = await contentfulClient.getEntries({
+  content_type: 'blogPost',
+  order: '-fields.publishDate', // Most recent first
+});
+```
+
+**API Response Example:**
+```json
+{
+  "sys": { "id": "post123" },
+  "fields": {
+    "title": "Getting Started with React",
+    "slug": "getting-started-react",
+    "excerpt": "Learn the basics of React...",
+    "author": "John Doe",
+    "publishDate": "2025-02-01T00:00:00Z",
+    "featuredImage": {
+      "fields": {
+        "file": {
+          "url": "//images.ctfassets.net/..."
+        }
+      }
+    }
+  }
+}
 ```
 
 ---
@@ -429,6 +506,97 @@ interface RecruitmentFormData {
 
 ---
 
+### Newsletter Management
+
+#### `POST /api/newsletter/subscribe`
+
+**Location:** `/app/api/newsletter/subscribe/route.ts`
+
+Subscribes an email to the newsletter with double opt-in confirmation.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Success Response:**
+```json
+{
+  "message": "Success! Please check your email to confirm your subscription."
+}
+```
+
+**Error Responses:**
+```json
+// Already subscribed
+{
+  "error": "This email is already subscribed!"
+}
+
+// Invalid email
+{
+  "error": "Valid email is required"
+}
+
+// Server error
+{
+  "error": "Failed to subscribe. Please try again."
+}
+```
+
+**Flow:**
+1. Validates email format
+2. Checks if email already exists in database
+3. If exists and confirmed → return error
+4. If exists but unconfirmed → resend confirmation email
+5. If new → insert record and send confirmation email
+6. Confirmation email contains link: `{SITE_URL}/api/newsletter/confirm?token={unsubscribe_token}`
+
+---
+
+#### `GET /api/newsletter/confirm?token={token}`
+
+**Location:** `/app/api/newsletter/confirm/route.ts`
+
+Confirms email subscription via unique token link.
+
+**Query Parameters:**
+- `token` (required): The `unsubscribe_token` from database
+
+**On Success:** Redirects to `/pages/blog?confirmed=true`
+
+**On Error:** Redirects to `/pages/blog?error=invalid_token`
+
+**Flow:**
+1. Validates token exists
+2. Finds subscriber by `unsubscribe_token`
+3. Updates `confirmed: true`, `is_active: true`
+4. Redirects to blog page with success message
+
+---
+
+#### `GET /api/newsletter/unsubscribe?token={token}`
+
+**Location:** `/app/api/newsletter/unsubscribe/route.ts`
+
+Unsubscribes user from newsletter.
+
+**Query Parameters:**
+- `token` (required): The `unsubscribe_token` from database
+
+**On Success:** Displays HTML confirmation page with glassmorphism styling
+
+**On Error:** Displays HTML error page
+
+**Flow:**
+1. Validates token exists
+2. Updates `is_active: false` for matching subscriber
+3. Returns styled HTML success page
+
+---
+
 ## Environment Variables
 
 Required environment variables for the API:
@@ -447,6 +615,12 @@ CONTENTFUL_ENVIRONMENT_ID=master  # Optional, defaults to 'master'
 
 # Auth
 ALLOWED_ADMIN_EMAILS=admin@club.com,lead1@club.com,lead2@club.com
+
+# Newsletter (Resend)
+RESEND_API_KEY=re_xxx  # Resend API key for sending emails
+NEXT_PUBLIC_SITE_URL=https://gfgsrmncr.com  # Base URL for confirmation links
+NEWSLETTER_FROM_EMAIL=mailer.gfgsrmncr@gmail.com  # Sender email address
+NEWSLETTER_FROM_NAME=GFG SRMIST  # Sender display name
 ```
 
 ---

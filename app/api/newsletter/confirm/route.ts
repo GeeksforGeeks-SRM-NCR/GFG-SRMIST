@@ -33,7 +33,11 @@ export async function GET(request: Request) {
         // Update to confirmed
         await supabase
             .from('newsletter_subscribers')
-            .update({ confirmed: true, is_active: true })
+            .update({ 
+                confirmed: true, 
+                is_active: true,
+                confirmed_at: new Date().toISOString()
+            })
             .eq('unsubscribe_token', token);
 
         return NextResponse.redirect(

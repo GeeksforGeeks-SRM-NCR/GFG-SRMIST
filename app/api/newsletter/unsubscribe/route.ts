@@ -28,7 +28,10 @@ export async function GET(request: Request) {
         // Update subscriber status
         const { error } = await supabase
             .from('newsletter_subscribers')
-            .update({ is_active: false })
+            .update({ 
+                is_active: false,
+                unsubscribed_at: new Date().toISOString()
+            })
             .eq('unsubscribe_token', token);
 
         if (error) {
