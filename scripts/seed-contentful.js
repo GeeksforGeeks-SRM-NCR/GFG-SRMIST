@@ -7,7 +7,7 @@ require('dotenv').config({ path: '.env' });
 
 const MANAGEMENT_TOKEN = process.env.NEXT_PUBLIC_CONTENTFUL_PAT;
 const SPACE_ID = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID; // Your Space ID
-const ENVIRONMENT_ID = 'master'; // Usually 'master'
+const ENVIRONMENT_ID = process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID; // Usually 'master'
 
 if (!MANAGEMENT_TOKEN || !SPACE_ID) {
     console.error('Error: Please set CONTENTFUL_MANAGEMENT_TOKEN and CONTENTFUL_SPACE_ID environment variables.');
