@@ -43,7 +43,7 @@ async function seed() {
     });
 
     const spaceId = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
-    const environmentId = process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID || 'master';
+    const environmentId = process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID;
 
     try {
         const space = await client.getSpace(spaceId);
