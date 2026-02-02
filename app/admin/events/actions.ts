@@ -34,6 +34,14 @@ function createRichTextDocument(text: string) {
     }
 }
 
+// Helper function to generate slug from title
+function generateSlug(title: string): string {
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+}
+
 async function getEnvironment() {
     const space = await contentfulManagementClient.getSpace(SPACE_ID)
     return space.getEnvironment(ENVIRONMENT_ID)
@@ -50,11 +58,15 @@ export async function createEvent(formData: FormData) {
         throw new Error('Title and Date are required')
     }
 
+    // Auto-generate slug from title
+    const slug = generateSlug(title)
+
     const environment = await getEnvironment()
 
     const entry = await environment.createEntry('event', {
         fields: {
             title: { 'en-US': title },
+            slug: { 'en-US': slug },
             date: { 'en-US': date },
             venue: { 'en-US': venue },
             registrationLink: { 'en-US': createRichTextDocument(registrationLink) },

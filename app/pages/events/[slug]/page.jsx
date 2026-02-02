@@ -189,7 +189,10 @@ export default function EventDetailsPage() {
                             <div className="bg-white/5 border border-white/10 rounded-[20px] md:rounded-[25px] p-5 md:p-8 backdrop-blur-md relative overflow-hidden group hover:border-[#46b94e]/30 transition-colors duration-500">
                                 <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-[#46b94e] font-sf-pro">About Event</h2>
                                 <div className="prose prose-invert prose-sm md:prose-lg max-w-none text-gray-300 font-sf-pro leading-relaxed">
-                                    {documentToReactComponents(description)}
+                                    {description && description.content && description.content.length > 0
+                                        ? documentToReactComponents(description)
+                                        : <p className="text-gray-400 italic">No description available.</p>
+                                    }
                                 </div>
                             </div>
                         </motion.div>
