@@ -2,13 +2,11 @@
 
 import React, { useEffect, useRef } from 'react';
 import {
-    LayoutDashboard, Calendar, Users, Settings, HelpCircle, Shield,
-    Search, Bell, ChevronDown, TrendingUp, TrendingDown,
-    ArrowUpRight, UserCog, FileText, LucideIcon
+    LayoutDashboard, Calendar, Users, Settings, UserCog, FileText, LucideIcon,
+    ArrowUpRight, TrendingUp, TrendingDown
 } from 'lucide-react';
 import gsap from 'gsap';
 import { useRouter } from 'next/navigation';
-import { Sidebar } from './components/Sidebar';
 
 // --- TYPES ---
 interface DashboardItem {
@@ -69,62 +67,7 @@ const DASHBOARD_ITEMS: DashboardItem[] = [
     },
 ];
 
-const ADMIN_MAPPING: { [key: string]: string } = {
-    'dk5389@srmist.edu.in': 'Darshil Kumar',
-    'ayaanmirza788@gmail.com': 'Ayaan Mirza',
-    'sahilrajdubey@gmail.com': 'Sahil Raj Dubey',
-    'taryan54@gmail.com': 'Aryan Tiwari',
-    'nidhip@srmist.edu.in': 'Ms. Nidhi Pandey',
-    'bhartiv@srmist.edu.in': 'Ms. Bharti Vidhury',
-    'sarawatadrika@gmail.com': 'Adrika Sarawat',
-};
-
 // --- COMPONENTS ---
-
-
-
-const TopBar: React.FC<{ userEmail: string }> = ({ userEmail }) => {
-    const displayName = ADMIN_MAPPING[userEmail] || userEmail.split('@')[0] || 'Admin';
-    const displayInitials = displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-
-    return (
-        <header className="header-anim flex items-center justify-between py-6 mb-8">
-            <div className="flex flex-col">
-                <h2 className="text-2xl font-bold text-white">Dashboard Overview</h2>
-                <p className="text-sm text-gray-400">Welcome back, here's what's happening today.</p>
-            </div>
-
-            <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center rounded-full border border-white/5 bg-[#121214] px-4 py-2 focus-within:border-white/20 transition-colors">
-                    <Search className="h-4 w-4 text-gray-500 mr-2" />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="bg-transparent border-none outline-none text-sm text-gray-300 placeholder-gray-600 w-48"
-                    />
-                </div>
-
-                <button className="relative rounded-full border border-white/5 bg-[#121214] p-2.5 text-gray-400 hover:bg-white/5 hover:text-white transition-colors">
-                    <Bell className="h-5 w-5" />
-                    <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-red-500 border border-[#121214]"></span>
-                </button>
-
-                <div className="flex items-center gap-3 pl-4 border-l border-white/5">
-                    <div className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white border border-white/10 shadow-lg shadow-indigo-500/20">
-                        {displayInitials}
-                    </div>
-                    <div className="hidden md:flex flex-col items-start min-w-[100px]">
-                        <span className="text-xs font-semibold text-white leading-none mb-1 truncate w-full">
-                            {displayName}
-                        </span>
-                        <span className="text-[10px] text-gray-500 leading-none">Admin</span>
-                    </div>
-                    <ChevronDown className="h-4 w-4 text-gray-500 hidden md:block" />
-                </div>
-            </div>
-        </header>
-    );
-};
 
 const StatCard: React.FC<{ stat: StatItem }> = ({ stat }) => {
     return (
@@ -242,22 +185,6 @@ const DashboardCard: React.FC<{ item: DashboardItem; index: number }> = ({ item 
     );
 };
 
-const Footer: React.FC = () => {
-    return (
-        <div className="footer-anim mt-12 w-full rounded-2xl border border-white/5 bg-[#121214]/50 py-6 text-center backdrop-blur-sm">
-            <div className="flex flex-col items-center justify-center gap-2">
-                <div className="flex items-center gap-2 text-white/20">
-                    <Shield className="h-4 w-4" />
-                    <span className="text-xs font-bold uppercase tracking-widest">GFG Secure System</span>
-                </div>
-                <p className="text-[10px] font-medium text-gray-600">
-                    Authorized Access Only · {new Date().getFullYear()} GFG Student Chapter
-                </p>
-            </div>
-        </div>
-    );
-};
-
 // --- MAIN APP COMPONENT ---
 
 interface AdminDashboardProps {
@@ -278,21 +205,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ userEmail, totalEvents,
         { id: 's4', label: 'Registered Candidates', value: totalRecruitments.toString(), trend: '+5.2%', trendUp: true },
     ];
 
-    const navItems = [
-        { icon: LayoutDashboard, label: 'Overview', active: true, link: '/admin' },
-        { icon: Calendar, label: 'Schedule', active: false, link: '/admin/events' },
-        { icon: Users, label: 'Members', active: false, link: '/admin/members' },
-        { icon: Settings, label: 'Settings', active: false, link: '/admin/settings' },
-    ];
-
     useEffect(() => {
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-            tl.from('.header-anim', { y: -20, opacity: 0, duration: 0.6, delay: 0.2 })
-                .from('.stat-card-anim', { y: 20, opacity: 0, duration: 0.5, stagger: 0.1 }, "-=0.3")
-                .from('.dashboard-card-anim', { y: 30, opacity: 0, duration: 0.6, stagger: 0.08 }, "-=0.3")
-                .from('.footer-anim', { opacity: 0, duration: 0.5 }, "-=0.2");
+            // Removed header and footer animations since they are now in layout
+            tl.from('.stat-card-anim', { y: 20, opacity: 0, duration: 0.5, stagger: 0.1, delay: 0.1 })
+                .from('.dashboard-card-anim', { y: 30, opacity: 0, duration: 0.6, stagger: 0.08 }, "-=0.3");
 
         }, containerRef);
 
@@ -300,48 +219,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ userEmail, totalEvents,
     }, []);
 
     return (
-        <div className="flex min-h-screen w-full bg-[#050505] text-white overflow-hidden selection:bg-indigo-500/30 font-sans">
+        <div ref={containerRef} className="w-full">
+            {/* Stats Row */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+                {stats.map((stat) => (
+                    <StatCard key={stat.id} stat={stat} />
+                ))}
+            </div>
 
-            <Sidebar />
+            <div className="mb-8 flex items-end justify-between">
+                <h3 className="text-lg font-semibold text-white tracking-tight">Quick Actions</h3>
+                <button className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+                    Customize Layout
+                </button>
+            </div>
 
-            <main className="flex-1 h-screen overflow-y-auto relative no-scrollbar">
-                {/* Added ml-64 to match sidebar width, plus extra padding effectively shifting content right */}
-                <div ref={containerRef} className="mx-auto max-w-7xl px-8 py-8 md:px-12 md:py-10 lg:px-16 ml-0 md:ml-72">
-
-                    <TopBar userEmail={userEmail} />
-
-                    {/* Stats Row */}
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
-                        {stats.map((stat) => (
-                            <StatCard key={stat.id} stat={stat} />
-                        ))}
-                    </div>
-
-                    <div className="mb-8 flex items-end justify-between">
-                        <h3 className="text-lg font-semibold text-white tracking-tight">Quick Actions</h3>
-                        <button className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
-                            Customize Layout
-                        </button>
-                    </div>
-
-                    {/* Main Dashboard Grid */}
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:gap-8">
-                        {DASHBOARD_ITEMS.map((item, index) => (
-                            <DashboardCard
-                                key={item.id}
-                                item={item}
-                                index={index}
-                            />
-                        ))}
-                    </div>
-
-                    <Footer />
-
-                    {/* Background Ambient Effects */}
-                    <div className="fixed top-0 right-0 h-[500px] w-[500px] rounded-full bg-indigo-900/10 blur-[120px] pointer-events-none mix-blend-screen" />
-                    <div className="fixed bottom-0 left-64 h-[400px] w-[400px] rounded-full bg-emerald-900/5 blur-[100px] pointer-events-none mix-blend-screen" />
-                </div>
-            </main>
+            {/* Main Dashboard Grid */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:gap-8">
+                {DASHBOARD_ITEMS.map((item, index) => (
+                    <DashboardCard
+                        key={item.id}
+                        item={item}
+                        index={index}
+                    />
+                ))}
+            </div>
         </div>
     );
 };

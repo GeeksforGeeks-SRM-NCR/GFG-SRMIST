@@ -26,7 +26,7 @@ export const Sidebar: React.FC = () => {
         { icon: LayoutDashboard, label: 'Overview', link: '/admin' },
         { icon: Calendar, label: 'Schedule', link: '/admin/events' },
         { icon: Users, label: 'Members', link: '/admin/members' },
-        { icon: Settings, label: 'Settings', link: '/admin/settings' },
+        { icon: Settings, label: 'Settings', link: '/admin/settings', disabled: true },
     ];
 
     const isActive = (link: string) => {
@@ -53,14 +53,17 @@ export const Sidebar: React.FC = () => {
                     return (
                         <button
                             key={idx}
-                            onClick={() => router.push(item.link)}
+                            onClick={() => !item.disabled && router.push(item.link)}
+                            disabled={item.disabled}
                             className={`nav-item group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300
                             ${active
                                     ? 'bg-white/10 text-white shadow-lg shadow-white/5'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                    : item.disabled
+                                        ? 'text-gray-600 cursor-not-allowed opacity-50'
+                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                 }`}
                         >
-                            <item.icon className={`h-5 w-5 transition-transform duration-300 ${active ? '' : 'group-hover:scale-110'}`} />
+                            <item.icon className={`h-5 w-5 transition-transform duration-300 ${active || item.disabled ? '' : 'group-hover:scale-110'}`} />
                             {item.label}
                             {active && (
                                 <div className="ml-auto h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
