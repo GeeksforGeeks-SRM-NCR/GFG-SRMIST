@@ -4,6 +4,36 @@ import { contentfulManagementClient, SPACE_ID, ENVIRONMENT_ID } from '@/lib/cont
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+// Helper function to convert plain text to RichText format
+function createRichTextDocument(text: string) {
+    if (!text || text.trim() === '') {
+        return {
+            nodeType: 'document',
+            data: {},
+            content: []
+        }
+    }
+
+    return {
+        nodeType: 'document',
+        data: {},
+        content: [
+            {
+                nodeType: 'paragraph',
+                data: {},
+                content: [
+                    {
+                        nodeType: 'text',
+                        value: text,
+                        marks: [],
+                        data: {}
+                    }
+                ]
+            }
+        ]
+    }
+}
+
 async function getEnvironment() {
     const space = await contentfulManagementClient.getSpace(SPACE_ID)
     return space.getEnvironment(ENVIRONMENT_ID)
@@ -27,8 +57,8 @@ export async function createEvent(formData: FormData) {
             title: { 'en-US': title },
             date: { 'en-US': date },
             venue: { 'en-US': venue },
-            registrationLink: { 'en-US': registrationLink },
-            description: { 'en-US': description },
+            registrationLink: { 'en-US': createRichTextDocument(registrationLink) },
+            description: { 'en-US': createRichTextDocument(description) },
             galleryImages: { 'en-US': [] }
         }
     })
@@ -54,8 +84,8 @@ export async function updateEventDetails(formData: FormData) {
     entry.fields.title['en-US'] = title
     entry.fields.date['en-US'] = date
     entry.fields.venue['en-US'] = venue
-    entry.fields.registrationLink['en-US'] = registrationLink
-    entry.fields.description['en-US'] = description
+    entry.fields.registrationLink['en-US'] = createRichTextDocument(registrationLink)
+    entry.fields.description['en-US'] = createRichTextDocument(description)
 
     const updatedEntry = await entry.update()
     await updatedEntry.publish()

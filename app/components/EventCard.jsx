@@ -5,12 +5,41 @@ import TiltedCard from './TiltedCard';
 import PixelCard from './PixelCard';
 import ShapeBlur from './ShapeBlur';
 
+// Helper function to extract plain text from RichText document
+function extractTextFromRichText(richText) {
+    if (!richText || typeof richText === 'string') {
+        return richText || '';
+    }
+
+    if (richText.content && Array.isArray(richText.content)) {
+        return richText.content
+            .map(node => {
+                if (node.content && Array.isArray(node.content)) {
+                    return node.content
+                        .map(textNode => textNode.value || '')
+                        .join('');
+                }
+                return '';
+            })
+            .join('\n');
+    }
+
+    return '';
+}
+
 export default function EventCard({ event }) {
-    const { title, slug, date, venue, coverImage } = event.fields;
+    const { title, slug, date, venue, coverImage, registrationLink } = event.fields;
     const imageUrl = coverImage?.fields?.file?.url ? `https:${coverImage.fields.file.url}` : '/placeholder.jpg';
 
     const isCompleted = moment(date).isBefore(moment());
     const isUpcoming = moment(date).isAfter(moment());
+
+    // Extract registration link from RichText
+    const regLink = extractTextFromRichText(registrationLink);
+    const hasExternalLink = regLink && regLink.trim() !== '';
+    const registrationUrl = hasExternalLink
+        ? regLink
+        : `/pages/events/team-register?event=${encodeURIComponent(title)}&slug=${slug}`;
 
     return (
         <div className="block relative group w-full" style={{ maxWidth: '380px', minWidth: '320px' }}>
@@ -77,7 +106,9 @@ export default function EventCard({ event }) {
 
                                 {isUpcoming && (
                                     <Link
-                                        href={`/pages/events/team-register?event=${encodeURIComponent(title)}&slug=${slug}`}
+                                        href={registrationUrl}
+                                        target={hasExternalLink ? "_blank" : undefined}
+                                        rel={hasExternalLink ? "noopener noreferrer" : undefined}
                                         className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#46b94e] to-[#3da544] text-black font-bold py-2.5 rounded-xl hover:brightness-110 transition-all shadow-[0_0_15px_rgba(70,185,78,0.3)] font-sf-pro text-sm"
                                     >
                                         Register Now

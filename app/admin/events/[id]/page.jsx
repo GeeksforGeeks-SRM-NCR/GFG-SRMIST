@@ -6,6 +6,28 @@ import { notFound } from 'next/navigation'
 // Disable caching so data is always fresh
 export const dynamic = 'force-dynamic'
 
+// Helper function to extract plain text from RichText document
+function extractTextFromRichText(richText) {
+    if (!richText || typeof richText === 'string') {
+        return richText || ''
+    }
+
+    if (richText.content && Array.isArray(richText.content)) {
+        return richText.content
+            .map(node => {
+                if (node.content && Array.isArray(node.content)) {
+                    return node.content
+                        .map(textNode => textNode.value || '')
+                        .join('')
+                }
+                return ''
+            })
+            .join('\n')
+    }
+
+    return ''
+}
+
 async function getEvent(id) {
     try {
         const entry = await contentfulClient.getEntry(id)
@@ -24,6 +46,10 @@ export default async function EditEventPage({ params }) {
     }
 
     const { title, date, venue, registrationLink, description, galleryImages } = event.fields
+
+    // Extract plain text from RichText fields
+    const registrationLinkText = extractTextFromRichText(registrationLink)
+    const descriptionText = extractTextFromRichText(description)
 
     return (
         <div className="min-h-screen bg-black text-white p-8">
@@ -80,7 +106,7 @@ export default async function EditEventPage({ params }) {
                                 <input
                                     type="url"
                                     name="registrationLink"
-                                    defaultValue={registrationLink}
+                                    defaultValue={registrationLinkText}
                                     className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                                 />
                             </div>
@@ -91,7 +117,7 @@ export default async function EditEventPage({ params }) {
                             <textarea
                                 name="description"
                                 rows={4}
-                                defaultValue={description}
+                                defaultValue={descriptionText}
                                 className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                             />
                         </div>
