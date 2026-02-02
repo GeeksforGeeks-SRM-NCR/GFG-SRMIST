@@ -41,12 +41,25 @@ export default function NewEventPage() {
                     </div>
 
                     <div>
+                        <label className="block text-sm font-medium text-white/60 mb-2">Cover Image</label>
+                        <input
+                            type="file"
+                            name="coverImage"
+                            accept="image/*"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700"
+                        />
+                        <p className="text-xs text-white/40 mt-1">Upload a cover image for the event</p>
+                    </div>
+
+                    <div>
                         <label className="block text-sm font-medium text-white/60 mb-2">Registration Link</label>
                         <input
                             type="url"
                             name="registrationLink"
+                            placeholder="https://example.com/register"
                             className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                         />
+                        <p className="text-xs text-white/40 mt-1">Leave empty to use internal registration form</p>
                     </div>
 
                     <div>
@@ -56,6 +69,19 @@ export default function NewEventPage() {
                             rows={4}
                             className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                         />
+                    </div>
+
+                    <div className="flex items-center gap-3 bg-black/30 p-4 rounded-xl border border-white/10">
+                        <input
+                            type="checkbox"
+                            name="isRegOpen"
+                            id="isRegOpen"
+                            value="true"
+                            className="w-5 h-5 rounded bg-black/50 border-white/10 text-purple-600 focus:ring-purple-500 focus:ring-offset-0"
+                        />
+                        <label htmlFor="isRegOpen" className="text-sm font-medium text-white cursor-pointer">
+                            Registration Open
+                        </label>
                     </div>
 
                     <button
