@@ -13,6 +13,28 @@ import LightRays from '../../../components/LightRays';
 
 import ShapeBlur from '../../../components/ShapeBlur';
 
+// Helper function to extract plain text from RichText document
+function extractTextFromRichText(richText) {
+    if (!richText || typeof richText === 'string') {
+        return richText || '';
+    }
+
+    if (richText.content && Array.isArray(richText.content)) {
+        return richText.content
+            .map(node => {
+                if (node.content && Array.isArray(node.content)) {
+                    return node.content
+                        .map(textNode => textNode.value || '')
+                        .join('');
+                }
+                return '';
+            })
+            .join('\n');
+    }
+
+    return '';
+}
+
 export default function EventDetailsPage() {
     const { slug } = useParams();
     const [event, setEvent] = useState(null);
@@ -58,7 +80,14 @@ export default function EventDetailsPage() {
         );
     }
 
-    const { title, date, venue, coverImage, description, galleryImages, isRegistrationOpen } = event.fields;
+    const { title, date, venue, coverImage, description, galleryImages, isRegistrationOpen, registrationLink } = event.fields;
+
+    // Extract registration link from RichText
+    const regLink = extractTextFromRichText(registrationLink);
+    const hasExternalLink = regLink && regLink.trim() !== '';
+    const registrationUrl = hasExternalLink
+        ? regLink
+        : `/pages/events/${slug}/register`;
 
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -160,7 +189,10 @@ export default function EventDetailsPage() {
                             <div className="bg-white/5 border border-white/10 rounded-[20px] md:rounded-[25px] p-5 md:p-8 backdrop-blur-md relative overflow-hidden group hover:border-[#46b94e]/30 transition-colors duration-500">
                                 <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-[#46b94e] font-sf-pro">About Event</h2>
                                 <div className="prose prose-invert prose-sm md:prose-lg max-w-none text-gray-300 font-sf-pro leading-relaxed">
-                                    {documentToReactComponents(description)}
+                                    {description && description.content && description.content.length > 0
+                                        ? documentToReactComponents(description)
+                                        : <p className="text-gray-400 italic">No description available.</p>
+                                    }
                                 </div>
                             </div>
                         </motion.div>
@@ -178,7 +210,9 @@ export default function EventDetailsPage() {
                                     <h3 className="text-xl md:text-2xl font-bold mb-2 font-sf-pro relative z-10">Registration Open!</h3>
                                     <p className="text-gray-400 mb-5 md:mb-8 text-xs md:text-sm font-sf-pro relative z-10">Secure your spot for this event now. Limited seats available.</p>
                                     <Link
-                                        href={`/pages/events/${slug}/register`}
+                                        href={registrationUrl}
+                                        target={hasExternalLink ? "_blank" : undefined}
+                                        rel={hasExternalLink ? "noopener noreferrer" : undefined}
                                         className="relative z-10 w-full flex items-center justify-center gap-2 md:gap-3 bg-[#46b94e] text-black font-bold py-3 md:py-4 rounded-xl hover:bg-[#3da544] transition-all hover:scale-[1.02] shadow-lg shadow-green-500/20 font-sf-pro text-base md:text-lg"
                                     >
                                         <Ticket size={18} className="md:w-[22px] md:h-[22px]" />
