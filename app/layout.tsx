@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto_Slab } from "next/font/google";
 import "./globals.css";
 import TopLoader from './components/TopLoader';
+import SmoothScroll from './components/SmoothScroll';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,7 +66,8 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${robotoSlab.variable} font-sf-pro antialiased`}
       >
-        <TopLoader/>
+        <SmoothScroll />
+        <TopLoader />
         <RecruitmentNotification isRecruitmentOpen={isRecruitmentOpen} />
         {children}
       </body>
