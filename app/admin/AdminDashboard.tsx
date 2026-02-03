@@ -209,7 +209,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ userEmail, totalEvents,
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-            // Removed header and footer animations since they are now in layout
+            // Start the animation sequence with stat cards so key metrics appear first, then animate dashboard cards
             tl.from('.stat-card-anim', { y: 20, opacity: 0, duration: 0.5, stagger: 0.1, delay: 0.1 })
                 .from('.dashboard-card-anim', { y: 30, opacity: 0, duration: 0.6, stagger: 0.08 }, "-=0.3");
 

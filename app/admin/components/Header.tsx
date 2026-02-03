@@ -9,7 +9,6 @@ export const Header: React.FC<{ userEmail: string }> = ({ userEmail }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
-    // const supabase = createClient(); // Removed as we import the instance directly
 
     // --- Configuration: User Mapping ---
     // Add more IDs here as needed
