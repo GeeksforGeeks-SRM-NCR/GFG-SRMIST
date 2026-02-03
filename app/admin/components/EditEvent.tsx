@@ -161,7 +161,7 @@ export const EditEvent: React.FC<EditEventProps> = ({
                                                 value={formData.date}
                                                 onChange={handleChange}
                                                 required
-                                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all pl-10"
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all pl-10 [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:opacity-50"
                                             />
                                             <Calendar className="absolute left-3 top-3.5 h-4 w-4 text-gray-600 group-focus-within/input:text-purple-500 transition-colors" />
                                         </div>

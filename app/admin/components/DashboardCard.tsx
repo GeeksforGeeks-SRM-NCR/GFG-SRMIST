@@ -17,39 +17,39 @@ interface DashboardCardProps {
     onClick?: () => void;
 }
 
-export const DashboardCard: React.FC<DashboardCardProps> = ({ item, index, onClick }) => {
-    const cardRef = useRef<HTMLDivElement>(null);
+const themeConfig = {
+    purple: {
+        accent: 'bg-purple-500',
+        glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(168,85,247,0.3)]',
+        text: 'text-purple-400',
+        gradient: 'from-purple-500/20 to-transparent',
+        border: 'group-hover:border-purple-500/30'
+    },
+    emerald: {
+        accent: 'bg-emerald-500',
+        glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]',
+        text: 'text-emerald-400',
+        gradient: 'from-emerald-500/20 to-transparent',
+        border: 'group-hover:border-emerald-500/30'
+    },
+    blue: {
+        accent: 'bg-blue-500',
+        glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.3)]',
+        text: 'text-blue-400',
+        gradient: 'from-blue-500/20 to-transparent',
+        border: 'group-hover:border-blue-500/30'
+    },
+    orange: {
+        accent: 'bg-orange-500',
+        glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)]',
+        text: 'text-orange-400',
+        gradient: 'from-orange-500/20 to-transparent',
+        border: 'group-hover:border-orange-500/30'
+    },
+};
 
-    const themeConfig = {
-        purple: {
-            accent: 'bg-purple-500',
-            glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(168,85,247,0.3)]',
-            text: 'text-purple-400',
-            gradient: 'from-purple-500/20 to-transparent',
-            border: 'group-hover:border-purple-500/30'
-        },
-        emerald: {
-            accent: 'bg-emerald-500',
-            glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]',
-            text: 'text-emerald-400',
-            gradient: 'from-emerald-500/20 to-transparent',
-            border: 'group-hover:border-emerald-500/30'
-        },
-        blue: {
-            accent: 'bg-blue-500',
-            glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.3)]',
-            text: 'text-blue-400',
-            gradient: 'from-blue-500/20 to-transparent',
-            border: 'group-hover:border-blue-500/30'
-        },
-        orange: {
-            accent: 'bg-orange-500',
-            glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)]',
-            text: 'text-orange-400',
-            gradient: 'from-orange-500/20 to-transparent',
-            border: 'group-hover:border-orange-500/30'
-        },
-    };
+export const DashboardCard: React.FC<DashboardCardProps> = ({ item, index, onClick }) => {
+    const cardRef = useRef<HTMLButtonElement>(null);
 
     const theme = themeConfig[item.theme];
 
@@ -74,14 +74,15 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({ item, index, onCli
     };
 
     return (
-        <div
+        <button
+            type="button"
             ref={cardRef}
             onClick={onClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={`
         dashboard-card-anim group relative flex flex-col justify-between overflow-hidden rounded-3xl 
-        bg-[#121214] border border-white/5 p-7 cursor-pointer
+        bg-[#121214] border border-white/5 p-7 cursor-pointer text-left w-full
         transition-colors duration-300 ${theme.border} ${theme.glow}
       `}
         >
@@ -107,6 +108,6 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({ item, index, onCli
             </div>
 
             <div className={`absolute bottom-0 left-0 h-1 w-0 ${theme.accent} transition-all duration-500 ease-out group-hover:w-full`} />
-        </div>
+        </button>
     );
 };
