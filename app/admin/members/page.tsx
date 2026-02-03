@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Github, Linkedin, Instagram, Mail, Loader2, ShieldAlert, Search, X, Calendar, User, Plus, Trash2, Edit2, Save, AlertTriangle, CheckCircle, Lock } from 'lucide-react';
 import gsap from 'gsap';
-import { Sidebar } from '../components/Sidebar';
+
 
 // --- CONFIGURATION ---
 
@@ -276,7 +276,8 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
     const [confirmStep, setConfirmStep] = useState<0 | 1 | 2>(0);
     const [actionType, setActionType] = useState<'save' | 'delete'>('save');
 
-    const styles = getTeamStyle(formData.team, formData.category);
+    // Recalculate styles when team or category changes
+    const styles = useMemo(() => getTeamStyle(formData.team, formData.category), [formData.team, formData.category]);
 
     // Dropdown Options
     const roleOptions = ["Faculty Coordinator", "Chairperson", "Vice Chairperson", "Lead", "Co-Lead", "Member"];
@@ -382,6 +383,8 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
             <div ref={modalRef} onClick={handleClose} className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" />
 
             <div ref={contentRef} className="relative w-full max-w-2xl bg-[#0a0a0c] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                {/* Colored gradient glow header */}
+                <div className={`absolute top-0 left-0 right-0 h-40 bg-gradient-to-b ${styles.glow} to-transparent opacity-50 pointer-events-none z-0`} />
 
                 {/* Double Confirmation Overlay */}
                 {confirmStep > 0 && (
@@ -395,7 +398,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
                 )}
 
                 {/* Header - Minimal overlay for controls */}
-                <div className="relative h-24 flex-shrink-0">
+                <div className="relative h-16 flex-shrink-0 z-10">
                     <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
                         {!isEditing && (
                             <button
@@ -416,10 +419,10 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar relative z-10">
 
                     {/* Photo Upload Section */}
-                    <div className="relative -mt-20 mb-8 flex flex-col items-center">
+                    <div className="relative -mt-7 mb-8 flex flex-col items-center">
                         <div className="group/photo relative h-32 w-32 rounded-full border-4 border-[#0a0a0c] shadow-xl overflow-hidden bg-[#18181b]">
                             {previewUrl ? (
                                 <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
@@ -1232,11 +1235,8 @@ export default function MembersPage() {
     if (loading) {
         // Replicating loading state but with Sidebar wrap
         return (
-            <div className="flex min-h-screen w-full bg-[#050505] text-white overflow-hidden font-sans">
-                <Sidebar />
-                <div className="flex-1 h-screen flex items-center justify-center relative no-scrollbar">
-                    <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-                </div>
+            <div className="flex-1 h-screen flex items-center justify-center relative">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
             </div>
         );
     }
@@ -1244,150 +1244,137 @@ export default function MembersPage() {
     if (error) {
         // Replicating error state but with Sidebar wrap
         return (
-            <div className="flex min-h-screen w-full bg-[#050505] text-white overflow-hidden font-sans">
-                <Sidebar />
-                <div className="flex-1 h-screen flex flex-col items-center justify-center text-red-400 relative no-scrollbar">
-                    <ShieldAlert className="mb-2 h-10 w-10" />
-                    <p>{error}</p>
-                </div>
+            <div className="flex-1 h-screen flex flex-col items-center justify-center text-red-400 relative">
+                <ShieldAlert className="mb-2 h-10 w-10" />
+                <p>{error}</p>
             </div>
         );
     }
 
     return (
-        <div className="flex min-h-screen w-full bg-[#050505] text-white overflow-hidden font-sans">
-            <Sidebar />
-
-            <div className="flex-1 h-screen overflow-y-auto relative no-scrollbar">
-                {/* Background Elements */}
-                <div className="fixed top-0 left-0 w-full h-full bg-[url('/grid.svg')] opacity-20 z-0 pointer-events-none" />
-                <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[128px] pointer-events-none animate-pulse" />
-                <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-[128px] pointer-events-none animate-pulse" />
-
-                <div className="relative z-10 p-4 md:p-8 ml-0 md:ml-64">
-                    <div ref={containerRef} className="pb-20 min-h-[80vh] max-w-7xl mx-auto">
-                        {/* Header & Search */}
-                        <div className="sticky top-0 z-40 mb-10 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 py-4 px-4 -mx-4">
-                            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between max-w-7xl mx-auto">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-white tracking-tight">Team Directory</h2>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <div className="relative group w-full md:w-auto">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-indigo-400 transition-colors" />
-                                        <input
-                                            type="text"
-                                            placeholder="Search members..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="h-10 w-full md:w-64 rounded-full border border-white/10 bg-[#121214] pl-10 pr-4 text-sm text-white placeholder-gray-500 outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-                                        />
-                                    </div>
-                                    <button
-                                        onClick={startAddNew}
-                                        className="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:bg-indigo-500 transition-all"
-                                    >
-                                        <Plus className="h-4 w-4" />
-                                        <span className="hidden sm:inline">Add Member</span>
-                                    </button>
-                                </div>
-                            </div>
+        <>
+            <div ref={containerRef} className="pb-20 min-h-[80vh] w-full">
+                {/* Header & Search */}
+                <div className="sticky top-0 z-40 mb-10 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 py-4 px-4 -mx-4">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between max-w-7xl mx-auto">
+                        <div>
+                            <h2 className="text-2xl font-bold text-white tracking-tight">Team Directory</h2>
                         </div>
 
-                        {isSearching ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                {filteredMembers.map(renderCard)}
+                        <div className="flex items-center gap-3">
+                            <div className="relative group w-full md:w-auto">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-indigo-400 transition-colors" />
+                                <input
+                                    type="text"
+                                    placeholder="Search members..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="h-10 w-full md:w-64 rounded-full border border-white/10 bg-[#121214] pl-10 pr-4 text-sm text-white placeholder-gray-500 outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                                />
                             </div>
-                        ) : (
-                            <div className="space-y-16">
-
-                                {/* GLOBAL FACULTY SECTION */}
-                                {structuredData!.faculty.length > 0 && (
-                                    <section>
-                                        <div className="fade-in mb-6 flex items-center gap-2">
-                                            <div className="h-6 w-1 bg-indigo-500 rounded-full" />
-                                            <h3 className="text-xl font-bold text-white tracking-tight">Faculty Coordinators</h3>
-                                        </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                            {structuredData!.faculty.map(renderCard)}
-                                        </div>
-                                    </section>
-                                )}
-
-                                {/* YEAR GROUPS */}
-                                {structuredData!.yearGroups.map((group) => (
-                                    <div key={group.year} className="relative pt-8 border-t border-white/5">
-
-                                        {/* Year Header */}
-                                        <div className="fade-in mb-10">
-                                            <h2 className="text-4xl md:text-5xl font-bold text-white/20 tracking-tighter">
-                                                {group.year}
-                                            </h2>
-                                        </div>
-
-                                        <div className="space-y-12 pl-0 md:pl-4">
-
-                                            {/* 1. Executive */}
-                                            {group.executive.length > 0 && (
-                                                <section>
-                                                    <h4 className="fade-in text-xs font-bold uppercase tracking-widest text-purple-400 mb-4 opacity-80">Executive Board</h4>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                                        {group.executive.map(renderCard)}
-                                                    </div>
-                                                </section>
-                                            )}
-
-                                            {/* 2. Leads */}
-                                            {group.leads.length > 0 && (
-                                                <section>
-                                                    <h4 className="fade-in text-xs font-bold uppercase tracking-widest text-white/60 mb-4 opacity-80">Leads</h4>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                                        {group.leads.map(renderCard)}
-                                                    </div>
-                                                </section>
-                                            )}
-
-                                            {/* 3. Co-Leads */}
-                                            {group.coLeads.length > 0 && (
-                                                <section>
-                                                    <h4 className="fade-in text-xs font-bold uppercase tracking-widest text-white/50 mb-4 opacity-80">Co-Leads</h4>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                                        {group.coLeads.map(renderCard)}
-                                                    </div>
-                                                </section>
-                                            )}
-
-                                            {/* 4. General Members (Grouped by Team) */}
-                                            {group.generalByTeam.length > 0 && (
-                                                <section>
-                                                    <h4 className="fade-in text-xs font-bold uppercase tracking-widest text-gray-500 mb-6 opacity-80">General Members</h4>
-
-                                                    <div className="space-y-8">
-                                                        {group.generalByTeam.map((teamGroup) => (
-                                                            <div key={teamGroup.team} className="fade-in">
-                                                                <div className="flex items-center gap-2 mb-3">
-                                                                    <div className="h-px w-4 bg-white/10"></div>
-                                                                    <h5 className="text-[11px] font-bold uppercase tracking-wider text-gray-400/80">
-                                                                        {teamGroup.team.replace(/ Team$/i, '')} Team
-                                                                    </h5>
-                                                                    <div className="h-px flex-1 bg-white/5"></div>
-                                                                </div>
-                                                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                                                                    {teamGroup.members.map(renderCard)}
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </section>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                            <button
+                                onClick={startAddNew}
+                                className="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:bg-indigo-500 transition-all"
+                            >
+                                <Plus className="h-4 w-4" />
+                                <span className="hidden sm:inline">Add Member</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                {isSearching ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {filteredMembers.map(renderCard)}
+                    </div>
+                ) : (
+                    <div className="space-y-16">
+
+                        {/* GLOBAL FACULTY SECTION */}
+                        {structuredData!.faculty.length > 0 && (
+                            <section>
+                                <div className="fade-in mb-6 flex items-center gap-2">
+                                    <div className="h-6 w-1 bg-indigo-500 rounded-full" />
+                                    <h3 className="text-xl font-bold text-white tracking-tight">Faculty Coordinators</h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {structuredData!.faculty.map(renderCard)}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* YEAR GROUPS */}
+                        {structuredData!.yearGroups.map((group) => (
+                            <div key={group.year} className="relative pt-8 border-t border-white/5">
+
+                                {/* Year Header */}
+                                <div className="fade-in mb-10">
+                                    <h2 className="text-4xl md:text-5xl font-bold text-white/20 tracking-tighter">
+                                        {group.year}
+                                    </h2>
+                                </div>
+
+                                <div className="space-y-12 pl-0 md:pl-4">
+
+                                    {/* 1. Executive */}
+                                    {group.executive.length > 0 && (
+                                        <section>
+                                            <h4 className="fade-in text-xs font-bold uppercase tracking-widest text-purple-400 mb-4 opacity-80">Executive Board</h4>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                {group.executive.map(renderCard)}
+                                            </div>
+                                        </section>
+                                    )}
+
+                                    {/* 2. Leads */}
+                                    {group.leads.length > 0 && (
+                                        <section>
+                                            <h4 className="fade-in text-xs font-bold uppercase tracking-widest text-white/60 mb-4 opacity-80">Leads</h4>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                {group.leads.map(renderCard)}
+                                            </div>
+                                        </section>
+                                    )}
+
+                                    {/* 3. Co-Leads */}
+                                    {group.coLeads.length > 0 && (
+                                        <section>
+                                            <h4 className="fade-in text-xs font-bold uppercase tracking-widest text-white/50 mb-4 opacity-80">Co-Leads</h4>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                {group.coLeads.map(renderCard)}
+                                            </div>
+                                        </section>
+                                    )}
+
+                                    {/* 4. General Members (Grouped by Team) */}
+                                    {group.generalByTeam.length > 0 && (
+                                        <section>
+                                            <h4 className="fade-in text-xs font-bold uppercase tracking-widest text-gray-500 mb-6 opacity-80">General Members</h4>
+
+                                            <div className="space-y-8">
+                                                {group.generalByTeam.map((teamGroup) => (
+                                                    <div key={teamGroup.team} className="fade-in">
+                                                        <div className="flex items-center gap-2 mb-3">
+                                                            <div className="h-px w-4 bg-white/10"></div>
+                                                            <h5 className="text-[11px] font-bold uppercase tracking-wider text-gray-400/80">
+                                                                {teamGroup.team.replace(/ Team$/i, '')} Team
+                                                            </h5>
+                                                            <div className="h-px flex-1 bg-white/5"></div>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                                                            {teamGroup.members.map(renderCard)}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
             </div>
 
             {selectedMember && (
@@ -1399,6 +1386,6 @@ export default function MembersPage() {
                     onDelete={handleDeleteMember}
                 />
             )}
-        </div>
+        </>
     );
 };

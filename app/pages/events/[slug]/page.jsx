@@ -80,7 +80,7 @@ export default function EventDetailsPage() {
         );
     }
 
-    const { title, date, venue, coverImage, description, galleryImages, isRegistrationOpen, registrationLink } = event.fields;
+    const { title, date, venue, coverImage, description, galleryImages, isRegOpen, registrationLink } = event.fields;
 
     // Extract registration link from RichText
     const regLink = extractTextFromRichText(registrationLink);
@@ -204,7 +204,7 @@ export default function EventDetailsPage() {
                             transition={{ duration: 0.6, delay: 0.4 }}
                             className="space-y-4 md:space-y-6"
                         >
-                            {isRegistrationOpen && (
+                            {isRegOpen && (
                                 <div className="bg-gradient-to-br from-[#46b94e]/10 to-emerald-900/10 border border-[#46b94e]/30 rounded-[20px] md:rounded-[25px] p-5 md:p-8 backdrop-blur-md relative overflow-hidden group">
                                     <div className="absolute inset-0 bg-[#46b94e]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                     <h3 className="text-xl md:text-2xl font-bold mb-2 font-sf-pro relative z-10">Registration Open!</h3>

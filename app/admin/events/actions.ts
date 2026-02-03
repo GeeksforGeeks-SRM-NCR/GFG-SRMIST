@@ -47,21 +47,61 @@ async function getEnvironment() {
     return space.getEnvironment(ENVIRONMENT_ID)
 }
 
+// Helper function to upload an asset to Contentful
+async function uploadAsset(environment: any, file: File) {
+    const arrayBuffer = await file.arrayBuffer()
+
+    const upload = await environment.createUpload({ file: arrayBuffer })
+
+    let asset = await environment.createAsset({
+        fields: {
+            title: { 'en-US': file.name },
+            file: {
+                'en-US': {
+                    fileName: file.name,
+                    contentType: file.type,
+                    uploadFrom: {
+                        sys: { type: 'Link', linkType: 'Upload', id: upload.sys.id }
+                    }
+                }
+            }
+        }
+    })
+
+    asset = await asset.processForAllLocales()
+
+    const MAX_RETRIES = 10
+    for (let i = 0; i < MAX_RETRIES; i++) {
+        await new Promise(r => setTimeout(r, 1000))
+        asset = await environment.getAsset(asset.sys.id)
+        if (asset.fields.file['en-US'].url) break
+    }
+
+    asset = await asset.publish()
+    return asset
+}
+
 export async function createEvent(formData: FormData) {
     const title = formData.get('title') as string
     const date = formData.get('date') as string
     const venue = formData.get('venue') as string
     const registrationLink = formData.get('registrationLink') as string
     const description = formData.get('description') as string
+    const isRegOpen = formData.get('isRegOpen') === 'true'
+    const coverImageFile = formData.get('coverImage') as File | null
 
     if (!title || !date) {
         throw new Error('Title and Date are required')
     }
 
-    // Auto-generate slug from title
     const slug = generateSlug(title)
-
     const environment = await getEnvironment()
+
+    let coverImageLink = null
+    if (coverImageFile && coverImageFile.size > 0) {
+        const asset = await uploadAsset(environment, coverImageFile)
+        coverImageLink = { sys: { type: 'Link', linkType: 'Asset', id: asset.sys.id } }
+    }
 
     const entry = await environment.createEntry('event', {
         fields: {
@@ -69,9 +109,11 @@ export async function createEvent(formData: FormData) {
             slug: { 'en-US': slug },
             date: { 'en-US': date },
             venue: { 'en-US': venue },
+            isRegOpen: { 'en-US': isRegOpen },
             registrationLink: { 'en-US': createRichTextDocument(registrationLink) },
             description: { 'en-US': createRichTextDocument(description) },
-            galleryImages: { 'en-US': [] }
+            galleryImages: { 'en-US': [] },
+            ...(coverImageLink && { coverImage: { 'en-US': coverImageLink } })
         }
     })
 
@@ -87,17 +129,42 @@ export async function updateEventDetails(formData: FormData) {
     const venue = formData.get('venue') as string
     const registrationLink = formData.get('registrationLink') as string
     const description = formData.get('description') as string
+    const isRegOpen = formData.get('isRegOpen') === 'true'
+    const coverImageFile = formData.get('coverImage') as File | null
 
     if (!eventId) throw new Error('Event ID is required')
 
     const environment = await getEnvironment()
     const entry = await environment.getEntry(eventId)
 
+    // Handle Title, Date, Venue
     entry.fields.title['en-US'] = title
     entry.fields.date['en-US'] = date
     entry.fields.venue['en-US'] = venue
+
+    // Handle Registration Status
+    if (!entry.fields.isRegOpen) entry.fields.isRegOpen = {}
+    entry.fields.isRegOpen['en-US'] = isRegOpen
+
+    // Handle Rich Text Fields
     entry.fields.registrationLink['en-US'] = createRichTextDocument(registrationLink)
     entry.fields.description['en-US'] = createRichTextDocument(description)
+
+    // Handle Cover Image Upload
+    if (coverImageFile && coverImageFile.size > 0) {
+        // Upload the new asset
+        const asset = await uploadAsset(environment, coverImageFile)
+
+        // Link it to the entry
+        if (!entry.fields.coverImage) entry.fields.coverImage = {}
+        entry.fields.coverImage['en-US'] = {
+            sys: {
+                type: 'Link',
+                linkType: 'Asset',
+                id: asset.sys.id
+            }
+        }
+    }
 
     const updatedEntry = await entry.update()
     await updatedEntry.publish()
@@ -209,6 +276,46 @@ export async function deleteEventImage(eventId: string, imageId: string) {
     // Optionally delete the asset itself? The prompt says "unlink it".
     // "Delete Feature: Click an image to remove it from the gallery (unlink it)."
     // So I will just unlink.
+
+    revalidatePath(`/admin/events/${eventId}`)
+}
+
+export async function uploadCoverImage(eventId: string, formData: FormData) {
+    const file = formData.get('file') as File
+    if (!file) throw new Error('No file provided')
+
+    const environment = await getEnvironment()
+    const asset = await uploadAsset(environment, file)
+
+    const entry = await environment.getEntry(eventId)
+
+    if (!entry.fields.coverImage) {
+        entry.fields.coverImage = {}
+    }
+    entry.fields.coverImage['en-US'] = {
+        sys: {
+            type: 'Link',
+            linkType: 'Asset',
+            id: asset.sys.id
+        }
+    }
+
+    const updatedEntry = await entry.update()
+    await updatedEntry.publish()
+
+    revalidatePath(`/admin/events/${eventId}`)
+}
+
+export async function deleteCoverImage(eventId: string) {
+    const environment = await getEnvironment()
+    const entry = await environment.getEntry(eventId)
+
+    if (entry.fields.coverImage) {
+        delete entry.fields.coverImage['en-US']
+    }
+
+    const updatedEntry = await entry.update()
+    await updatedEntry.publish()
 
     revalidatePath(`/admin/events/${eventId}`)
 }
