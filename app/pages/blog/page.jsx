@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { contentfulClient } from '@/lib/contentful';
 import moment from 'moment';
@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Calendar, User, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
 import NewsletterSubscribe from '../../components/NewsletterSubscribe';
 
-export default function BlogPage() {
+function BlogContent() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [notification, setNotification] = useState(null);
@@ -80,18 +80,17 @@ export default function BlogPage() {
                 <div className="max-w-7xl mx-auto">
                     {/* Notification Banner */}
                     {notification && (
-                        <div className={`mb-8 backdrop-blur-xl rounded-2xl border p-4 flex items-center gap-3 ${
-                            notification.type === 'success' 
-                                ? 'bg-green-500/10 border-green-500/30 text-green-400' 
+                        <div className={`mb-8 backdrop-blur-xl rounded-2xl border p-4 flex items-center gap-3 ${notification.type === 'success'
+                                ? 'bg-green-500/10 border-green-500/30 text-green-400'
                                 : 'bg-red-500/10 border-red-500/30 text-red-400'
-                        }`}>
+                            }`}>
                             {notification.type === 'success' ? (
                                 <CheckCircle size={20} />
                             ) : (
                                 <XCircle size={20} />
                             )}
                             <p className="flex-1">{notification.message}</p>
-                            <button 
+                            <button
                                 onClick={() => setNotification(null)}
                                 className="text-white/60 hover:text-white transition-colors"
                             >
@@ -110,7 +109,7 @@ export default function BlogPage() {
                         </p>
                     </div>
                     <div className="mb-12">
-                        <NewsletterSubscribe/>
+                        <NewsletterSubscribe />
                     </div>
 
                     {/* Posts Grid */}
@@ -137,10 +136,22 @@ export default function BlogPage() {
     );
 }
 
+export default function BlogPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black text-white flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#46b94e]"></div>
+            </div>
+        }>
+            <BlogContent />
+        </Suspense>
+    );
+}
+
 function BlogCard({ post }) {
     const { title, slug, excerpt, author, publishDate, featuredImage } = post.fields;
-    const imageUrl = featuredImage?. fields?.file?.url 
-        ? `https: ${featuredImage.fields.file.url}` 
+    const imageUrl = featuredImage?.fields?.file?.url
+        ? `https: ${featuredImage.fields.file.url}`
         : '/placeholder-blog. jpg';
 
     return (
@@ -148,8 +159,8 @@ function BlogCard({ post }) {
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:shadow-2xl hover:shadow-green-500/20 cursor-pointer h-full flex flex-col">
                 {/* Featured Image */}
                 <div className="relative h-48 overflow-hidden">
-                    <img 
-                        src={imageUrl} 
+                    <img
+                        src={imageUrl}
                         alt={title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
