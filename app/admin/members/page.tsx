@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Github, Linkedin, Instagram, Mail, Loader2, ShieldAlert, Search, X, Calendar, User, Plus, Trash2, Edit2, Save, AlertTriangle, CheckCircle, Lock } from 'lucide-react';
 import gsap from 'gsap';
 
@@ -295,7 +296,10 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
     ];
 
     useEffect(() => {
+        const main = document.querySelector('main');
+        if (main) main.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
+
         const tl = gsap.timeline();
         tl.fromTo(modalRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3 })
             .fromTo(contentRef.current,
@@ -303,7 +307,10 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
                 { scale: 1, y: 0, opacity: 1, duration: 0.4, ease: 'back.out(1.2)' },
                 "-=0.2"
             );
-        return () => { document.body.style.overflow = ''; };
+        return () => {
+            if (main) main.style.overflow = '';
+            document.body.style.overflow = '';
+        };
     }, []);
 
     const handleClose = () => {
@@ -378,7 +385,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
         }
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div ref={modalRef} onClick={handleClose} className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" />
 
@@ -419,7 +426,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar relative z-10">
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar relative z-10" data-lenis-prevent>
 
                     {/* Photo Upload Section */}
                     <div className="relative -mt-7 mb-8 flex flex-col items-center">
@@ -657,7 +664,8 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

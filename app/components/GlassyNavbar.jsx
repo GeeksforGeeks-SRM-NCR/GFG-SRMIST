@@ -15,7 +15,7 @@ export default function GlassyNavbar() {
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const [showLoginOptions, setShowLoginOptions] = useState(false);
+    // showLoginOptions state removed
     const [user, setUser] = useState(null);
     const desktopDropdownRef = useRef(null);
     const mobileDropdownRef = useRef(null);
@@ -36,16 +36,8 @@ export default function GlassyNavbar() {
 
         checkUser();
 
-        // Handle click outside to close login dropdown
-        const handleClickOutside = (event) => {
-            const isClickInsideDesktop = desktopDropdownRef.current && desktopDropdownRef.current.contains(event.target);
-            const isClickInsideMobile = mobileDropdownRef.current && mobileDropdownRef.current.contains(event.target);
-
-            if (!isClickInsideDesktop && !isClickInsideMobile) {
-                setShowLoginOptions(false);
-            }
-        };
-        document.addEventListener("click", handleClickOutside);
+        // Click outside listener removed as dropdown is gone
+        // document.addEventListener("click", handleClickOutside);
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
@@ -53,7 +45,7 @@ export default function GlassyNavbar() {
 
         return () => {
             subscription.unsubscribe();
-            document.removeEventListener("click", handleClickOutside);
+            // document.removeEventListener("click", handleClickOutside);
             // Clean up timeouts
             if (hoverTimeoutRef.current) {
                 clearTimeout(hoverTimeoutRef.current);
@@ -229,7 +221,7 @@ export default function GlassyNavbar() {
                             <button
                                 onClick={() => {
                                     vibrateLightClick();
-                                    setShowLoginOptions(!showLoginOptions);
+                                    setShowLoginModal(true);
                                 }}
                                 className={`relative z-[1002] flex items-center gap-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30 whitespace-nowrap ${isHomePage ? 'px-4 py-2' : 'w-10 h-10 justify-center'}`}
                                 title="Login"
@@ -237,38 +229,6 @@ export default function GlassyNavbar() {
                                 <LogIn size={18} />
                                 {isHomePage && <span>Login</span>}
                             </button>
-
-                            {/* Login Options Dropdown */}
-                            {showLoginOptions && (
-                                <div className="absolute top-full right-0 mt-3 w-48 py-2 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1003] animate-in fade-in slide-in-from-top-2 duration-200">
-                                    <button
-                                        onClick={() => {
-                                            vibrateLightClick();
-                                            setShowLoginModal(true);
-                                            setShowLoginOptions(false);
-                                        }}
-                                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3"
-                                    >
-                                        <div className="w-8 h-8 rounded-lg bg-[#2f8d46]/20 flex items-center justify-center text-[#2f8d46]">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                        </div>
-                                        <span>User Login</span>
-                                    </button>
-                                    <Link
-                                        href="/login"
-                                        onClick={() => {
-                                            vibrateLightClick();
-                                            setShowLoginOptions(false);
-                                        }}
-                                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3"
-                                    >
-                                        <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                        </div>
-                                        <span>Admin Login</span>
-                                    </Link>
-                                </div>
-                            )}
                         </div>
                     )}
                 </div>
@@ -303,39 +263,13 @@ export default function GlassyNavbar() {
                             <button
                                 onClick={() => {
                                     vibrateLightClick();
-                                    setShowLoginOptions(!showLoginOptions);
+                                    setShowLoginModal(true);
                                 }}
                                 className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
                                 title="Login"
                             >
                                 <LogIn size={18} />
                             </button>
-
-                            {showLoginOptions && (
-                                <div className="absolute top-full right-0 mt-3 w-48 py-2 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1003]">
-                                    <button
-                                        onClick={() => {
-                                            vibrateLightClick();
-                                            setShowLoginModal(true);
-                                            setShowLoginOptions(false);
-                                        }}
-                                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors border-b border-white/5"
-                                    >
-                                        User Login
-                                    </button>
-                                    <Link
-                                        href="/login"
-                                        onClick={() => {
-                                            vibrateLightClick();
-                                            setShowLoginOptions(false);
-                                            setIsMobileMenuOpen(false);
-                                        }}
-                                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors block"
-                                    >
-                                        Admin Login
-                                    </Link>
-                                </div>
-                            )}
                         </div>
                     )}
 
