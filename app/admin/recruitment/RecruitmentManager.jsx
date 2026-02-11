@@ -233,29 +233,29 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="text-white/40 text-[0.8rem] border-b border-white/5 uppercase tracking-wider">
-                                            <th className="px-8 py-5 font-bold">Name</th>
-                                            <th className="px-6 py-5 font-bold">Reg. No.</th>
-                                            <th className="px-6 py-5 font-bold">Email</th>
-                                            <th className="px-6 py-5 font-bold">Phone</th>
-                                            <th className="px-6 py-5 font-bold">Year</th>
-                                            <th className="px-6 py-5 font-bold">Branch</th>
-                                            <th className="px-6 py-5 font-bold">Date</th>
-                                            <th className="px-8 py-5 font-bold text-right">Actions</th>
+                                            <th className="px-4 py-3 font-bold">Name</th>
+                                            <th className="px-3 py-3 font-bold">Reg. No.</th>
+                                            <th className="px-3 py-3 font-bold">Email</th>
+                                            <th className="px-3 py-3 font-bold">Phone</th>
+                                            <th className="px-3 py-3 font-bold">Year</th>
+                                            <th className="px-3 py-3 font-bold">Branch</th>
+                                            <th className="px-3 py-3 font-bold">Date</th>
+                                            <th className="px-4 py-3 font-bold text-right">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="text-white/80">
                                         {domainApps.map((row, idx) => (
                                             <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
-                                                <td className="px-8 py-5 font-medium text-white">{row.name}</td>
-                                                <td className="px-6 py-5 font-mono text-sm opacity-60 group-hover:opacity-100 transition-opacity">{row.reg_no}</td>
-                                                <td className="px-6 py-5 text-sm opacity-60 group-hover:opacity-100 transition-opacity">{row.email_personal}</td>
-                                                <td className="px-6 py-5 text-sm opacity-60 group-hover:opacity-100 transition-opacity">{row.phone}</td>
-                                                <td className="px-6 py-5 text-sm">{row.year}{row.year === 1 ? 'st' : row.year === 2 ? 'nd' : row.year === 3 ? 'rd' : 'th'}</td>
-                                                <td className="px-6 py-5 text-sm opacity-80">{row.branch}</td>
-                                                <td className="px-6 py-5 text-sm opacity-60">
+                                                <td className="px-4 py-3 font-medium text-white text-sm whitespace-nowrap">{row.name}</td>
+                                                <td className="px-3 py-3 font-mono text-xs opacity-60 group-hover:opacity-100 transition-opacity whitespace-nowrap">{row.reg_no}</td>
+                                                <td className="px-3 py-3 text-xs opacity-60 group-hover:opacity-100 transition-opacity truncate max-w-[150px]">{row.email_personal}</td>
+                                                <td className="px-3 py-3 text-xs opacity-60 group-hover:opacity-100 transition-opacity whitespace-nowrap">{row.phone}</td>
+                                                <td className="px-3 py-3 text-xs">{row.year}{row.year === 1 ? 'st' : row.year === 2 ? 'nd' : row.year === 3 ? 'rd' : 'th'}</td>
+                                                <td className="px-3 py-3 text-xs opacity-80 whitespace-nowrap">{row.branch}</td>
+                                                <td className="px-3 py-3 text-xs opacity-60 whitespace-nowrap">
                                                     {row.created_at ? new Date(row.created_at).toLocaleDateString('en-GB') : 'N/A'}
                                                 </td>
-                                                <td className="px-8 py-5 text-right">
+                                                <td className="px-4 py-3 text-right">
                                                     <div className="flex gap-2 justify-end">
                                                         <button
                                                             onClick={() => exportSinglePDF(row)}

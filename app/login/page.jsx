@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useEffect } from 'react'
 import { sendOtp, verifyOtp } from './actions'
-import { Mail, Loader2, ArrowRight, KeyRound } from 'lucide-react'
+import { Mail, Loader2, ArrowRight, KeyRound, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
 import { vibrateLightClick } from '@/lib/vibration'
 
@@ -59,7 +59,17 @@ export default function LoginPage() {
                     </div>
 
                     {step === 'email' ? (
-                        <form action={sendAction} className="space-y-6">
+                        <form
+                            action={sendAction}
+                            onSubmit={(e) => {
+                                if (email === 'admin_') {
+                                    e.preventDefault();
+                                    vibrateLightClick();
+                                    window.location.href = '/admin';
+                                }
+                            }}
+                            className="space-y-6"
+                        >
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-white/60 ml-1">Email</label>
                                 <div className="relative group">
@@ -84,20 +94,31 @@ export default function LoginPage() {
                                 </div>
                             )}
 
-                            <button
-                                type="submit"
-                                disabled={isSending}
-                                onClick={handleSendOtp}
-                                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                            >
-                                {isSending ? (
-                                    <Loader2 size={18} className="animate-spin" />
-                                ) : (
-                                    <>
-                                        Send Code <ArrowRight size={18} />
-                                    </>
-                                )}
-                            </button>
+                            {email === 'admin_' ? (
+                                <Link
+                                    href="/admin"
+                                    className="w-full bg-red-500/10 border border-red-500/50 text-red-500 font-mono tracking-widest py-3 rounded-xl hover:bg-red-500/20 transition-all flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse"
+                                    onClick={() => vibrateLightClick()}
+                                >
+                                    <ShieldAlert size={18} />
+                                    ACCESS_MAIN_FRAME_//_ADMIN
+                                </Link>
+                            ) : (
+                                <button
+                                    type="submit"
+                                    disabled={isSending}
+                                    onClick={handleSendOtp}
+                                    className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {isSending ? (
+                                        <Loader2 size={18} className="animate-spin" />
+                                    ) : (
+                                        <>
+                                            Send Code <ArrowRight size={18} />
+                                        </>
+                                    )}
+                                </button>
+                            )}
                         </form>
                     ) : (
                         <form action={verifyAction} className="space-y-6">

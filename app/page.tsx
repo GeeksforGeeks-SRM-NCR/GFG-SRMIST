@@ -3,6 +3,7 @@ import { Logo2 } from "./logo/logo2";
 import FuzzyText from "./components/FuzzyText";
 import GlassyNavbar from "./components/GlassyNavbar";
 import LogoLoop from './components/LogoLoop';
+import KonamiCodeListener from './components/KonamiCodeListener';
 import { SiInstagram, SiGithub, SiLinkedin, SiDiscord, SiX } from 'react-icons/si';
 
 import DecryptedText from './components/DecryptedText';
@@ -28,6 +29,7 @@ export default async function Home() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
+      <KonamiCodeListener />
       {/* Glassy Navbar */}
       <GlassyNavbar />
 

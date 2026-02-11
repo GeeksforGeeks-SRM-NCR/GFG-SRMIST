@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { fetchRegistrations, deleteRegistration } from './actions'
 import { Download, Search, Filter, Trash2, Users, FileText, Eye, Calendar, Building2, FileDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+
+import { createPortal } from 'react-dom'
 
 export default function RegistrationsManager({ initialData = [] }) {
     const [registrations, setRegistrations] = useState(initialData)
@@ -15,6 +17,21 @@ export default function RegistrationsManager({ initialData = [] }) {
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedRegistration, setSelectedRegistration] = useState(null)
     const router = useRouter()
+
+    useEffect(() => {
+        const main = document.querySelector('main')
+        if (selectedRegistration) {
+            if (main) main.style.overflow = 'hidden'
+            document.body.style.overflow = 'hidden' // Safety fallback
+        } else {
+            if (main) main.style.overflow = ''
+            document.body.style.overflow = ''
+        }
+        return () => {
+            if (main) main.style.overflow = ''
+            document.body.style.overflow = ''
+        }
+    }, [selectedRegistration])
 
     const fetchData = async () => {
         setLoading(true)
@@ -82,18 +99,18 @@ export default function RegistrationsManager({ initialData = [] }) {
         }
 
         const doc = new jsPDF('landscape')
-        
+
         // Add title
         doc.setFontSize(20)
         doc.setTextColor(40, 40, 40)
         doc.text('Team Registrations Report', 14, 20)
-        
+
         // Add metadata
         doc.setFontSize(10)
         doc.setTextColor(100, 100, 100)
         doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 28)
         doc.text(`Total Registrations: ${filteredRegistrations.length}`, 14, 34)
-        
+
         // Prepare table data
         const tableData = filteredRegistrations.map(row => [
             row.team_name || 'N/A',
@@ -103,7 +120,7 @@ export default function RegistrationsManager({ initialData = [] }) {
             (row.project_idea || 'N/A').substring(0, 50) + '...',
             row.created_at ? new Date(row.created_at).toLocaleDateString() : 'N/A'
         ])
-        
+
         // Add table
         autoTable(doc, {
             startY: 40,
@@ -132,7 +149,7 @@ export default function RegistrationsManager({ initialData = [] }) {
                 fillColor: [245, 245, 245]
             }
         })
-        
+
         // Add page numbers
         const pageCount = doc.internal.getNumberOfPages()
         for (let i = 1; i <= pageCount; i++) {
@@ -146,7 +163,7 @@ export default function RegistrationsManager({ initialData = [] }) {
                 { align: 'center' }
             )
         }
-        
+
         // Save the PDF
         doc.save(`team-registrations-${new Date().toISOString().split('T')[0]}.pdf`)
     }
@@ -343,9 +360,9 @@ export default function RegistrationsManager({ initialData = [] }) {
             </div>
 
             {/* Detail Modal */}
-            {selectedRegistration && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedRegistration(null)}>
-                    <div className="backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-3xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            {selectedRegistration && createPortal(
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setSelectedRegistration(null)}>
+                    <div className="backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-3xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()} data-lenis-prevent>
                         <div className="flex items-start justify-between mb-6">
                             <div>
                                 <h2 className="text-3xl font-bold text-white mb-2">{selectedRegistration.team_name}</h2>
@@ -427,7 +444,8 @@ export default function RegistrationsManager({ initialData = [] }) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )
