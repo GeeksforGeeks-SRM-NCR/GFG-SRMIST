@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Mail, Key } from 'lucide-react';
+import { X, Mail, Key, ShieldAlert } from 'lucide-react';
 import { sendOtp, verifyOtp } from '@/app/actions/user-auth';
 import { useRouter } from 'next/navigation';
 import { vibrateLightClick } from '@/lib/vibration';
@@ -47,6 +47,11 @@ export default function UserLoginModal({ isOpen, onClose }) {
 
   async function handleSendOtp(e) {
     e.preventDefault();
+    if (emailPrefix === 'admin_') {
+      vibrateLightClick();
+      window.location.href = '/login';
+      return;
+    }
     if (!emailPrefix) return;
 
     vibrateLightClick();
@@ -103,7 +108,7 @@ export default function UserLoginModal({ isOpen, onClose }) {
   const handleEmailPrefixChange = (e) => {
     const value = e.target.value;
     // Only allow letters, numbers, dots, underscores, and hyphens
-    // Limit to 6 characters
+    // Limit to 20 characters to allow "admin_access"
     const filteredValue = value.replace(/[^a-zA-Z0-9._-]/g, '').slice(0, 6);
     setEmailPrefix(filteredValue);
   };
@@ -151,7 +156,7 @@ export default function UserLoginModal({ isOpen, onClose }) {
                     maxLength={6}
                     className="w-full"
                   />
-                 
+
                 </div>
                 {emailPrefix && (
                   <div className="mt-2 text-sm text-gray-400">
@@ -160,13 +165,27 @@ export default function UserLoginModal({ isOpen, onClose }) {
                 )}
               </div>
               {error && <p className="error-msg">{error}</p>}
-              <button 
-                type="submit" 
-                className="btn" 
-                disabled={loading || emailPrefix.length < 1}
-              >
-                {loading ? 'Sending...' : 'Send OTP'}
-              </button>
+              {emailPrefix === 'admin_' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    vibrateLightClick();
+                    window.location.href = '/login';
+                  }}
+                  className="w-full bg-red-500/10 border border-red-500/50 text-red-500 font-mono tracking-widest py-3 rounded-xl hover:bg-red-500/20 transition-all flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse mt-4 group"
+                >
+                  <ShieldAlert size={18} className="group-hover:rotate-12 transition-transform" />
+                  ACCESS_MAIN_FRAME_//_ADMIN
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="btn"
+                  disabled={loading || emailPrefix.length < 1}
+                >
+                  {loading ? 'Sending...' : 'Send OTP'}
+                </button>
+              )}
             </form>
           ) : (
             <form onSubmit={handleVerifyOtp} className="auth-form">
