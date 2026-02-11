@@ -87,7 +87,8 @@
   min-width: max-content !important;
 }
 
-.encrypted, .revealed {
+.encrypted,
+.revealed {
   font-family: 'SF Pro', monospace !important;
   letter-spacing: 0.02em !important;
   display: inline-block !important;
@@ -122,7 +123,7 @@ a[href="/"] {
   .custom-desktop\:flex {
     display: flex !important;
   }
-  
+
   .custom-desktop\:hidden {
     display: none !important;
   }
@@ -132,7 +133,7 @@ a[href="/"] {
   .custom-desktop\:flex {
     display: none !important;
   }
-  
+
   .custom-desktop\:hidden {
     display: flex !important;
   }
@@ -181,5 +182,32 @@ a[href="/"] {
     @apply bg-background text-foreground;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
   }
 }

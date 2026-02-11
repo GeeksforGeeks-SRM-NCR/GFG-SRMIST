@@ -5,12 +5,52 @@ import TiltedCard from './TiltedCard';
 import PixelCard from './PixelCard';
 import ShapeBlur from './ShapeBlur';
 
+// Helper function to extract plain text from RichText document
+function extractTextFromRichText(richText) {
+    if (!richText || typeof richText === 'string') {
+        return richText || '';
+    }
+
+    if (richText.content && Array.isArray(richText.content)) {
+        return richText.content
+            .map(node => {
+                if (node.content && Array.isArray(node.content)) {
+                    return node.content
+                        .map(textNode => textNode.value || '')
+                        .join('');
+                }
+                return '';
+            })
+            .join('\n');
+    }
+
+    return '';
+}
+
+// Helper function to generate slug from title
+function generateSlug(title) {
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 export default function EventCard({ event }) {
-    const { title, slug, date, venue, coverImage } = event.fields;
+    const { title, slug, date, venue, coverImage, registrationLink } = event.fields;
     const imageUrl = coverImage?.fields?.file?.url ? `https:${coverImage.fields.file.url}` : '/placeholder.jpg';
 
     const isCompleted = moment(date).isBefore(moment());
     const isUpcoming = moment(date).isAfter(moment());
+
+    // Generate slug if it doesn't exist (for old events)
+    const eventSlug = slug || generateSlug(title);
+
+    // Extract registration link from RichText
+    const regLink = extractTextFromRichText(registrationLink);
+    const hasExternalLink = regLink && regLink.trim() !== '';
+    const registrationUrl = hasExternalLink
+        ? regLink
+        : `/pages/events/team-register?event=${encodeURIComponent(title)}&slug=${eventSlug}`;
 
     return (
         <div className="block relative group w-full" style={{ maxWidth: '380px', minWidth: '320px' }}>
@@ -33,7 +73,7 @@ export default function EventCard({ event }) {
                 >
                     <div className="flex flex-col h-full bg-[#0a0a0a] border border-white/10 rounded-[25px] overflow-hidden">
                         {/* Fixed height banner */}
-                        <Link href={`/pages/events/${slug}`} className="relative w-full block h-[240px]">
+                        <Link href={`/pages/events/${eventSlug}`} className="relative w-full block h-[240px]">
                             <PixelCard
                                 variant="default"
                                 gap={8}
@@ -51,7 +91,7 @@ export default function EventCard({ event }) {
                         </Link>
 
                         <div className="p-6 flex flex-col gap-4">
-                            <Link href={`/pages/events/${slug}`}>
+                            <Link href={`/pages/events/${eventSlug}`}>
                                 <h3 className="text-2xl font-bold text-white font-sf-pro leading-tight hover:text-[#46b94e] transition-colors">{title}</h3>
                             </Link>
 
@@ -71,13 +111,15 @@ export default function EventCard({ event }) {
                             </div>
 
                             <div className="mt-auto flex flex-col gap-3">
-                                <Link href={`/pages/events/${slug}`} className="flex items-center gap-2 text-[#46b94e] font-medium font-sf-pro text-sm group-hover:translate-x-1 transition-transform">
+                                <Link href={`/pages/events/${eventSlug}`} className="flex items-center gap-2 text-[#46b94e] font-medium font-sf-pro text-sm group-hover:translate-x-1 transition-transform">
                                     View Details <ArrowRight size={16} />
                                 </Link>
 
                                 {isUpcoming && (
                                     <Link
-                                        href={`/pages/events/team-register?event=${encodeURIComponent(title)}&slug=${slug}`}
+                                        href={registrationUrl}
+                                        target={hasExternalLink ? "_blank" : undefined}
+                                        rel={hasExternalLink ? "noopener noreferrer" : undefined}
                                         className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#46b94e] to-[#3da544] text-black font-bold py-2.5 rounded-xl hover:brightness-110 transition-all shadow-[0_0_15px_rgba(70,185,78,0.3)] font-sf-pro text-sm"
                                     >
                                         Register Now
@@ -86,7 +128,7 @@ export default function EventCard({ event }) {
 
                                 {isCompleted && (
                                     <Link
-                                        href={`/pages/events/${slug}/gallery`}
+                                        href={`/pages/events/${eventSlug}/gallery`}
                                         className="w-full flex items-center justify-center gap-2 bg-white/10 text-white font-bold py-2.5 rounded-xl hover:bg-white/20 transition-all border border-white/20 hover:border-white/40 font-sf-pro text-sm"
                                     >
                                         View Gallery

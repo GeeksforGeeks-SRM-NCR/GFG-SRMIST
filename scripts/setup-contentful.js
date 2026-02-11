@@ -5,7 +5,7 @@ require('dotenv').config(); // Load env vars
 
 const SPACE_ID = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
 const ACCESS_TOKEN = process.env.NEXT_PUBLIC_CONTENTFUL_PAT || process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN; // Prefer PAT for management
-const ENVIRONMENT_ID = 'master';
+const ENVIRONMENT_ID = process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID;
 
 if (!SPACE_ID || !ACCESS_TOKEN) {
     console.error('Missing Contentful configuration. Check .env file.');

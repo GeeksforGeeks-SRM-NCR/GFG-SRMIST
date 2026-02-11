@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     let response = NextResponse.next({
         request: {
             headers: request.headers,
@@ -58,8 +58,18 @@ export async function middleware(request: NextRequest) {
     }
 
     // 1. Protect /admin routes
-    if (request.nextUrl.pathname.startsWith('/admin') && !user) {
-        return NextResponse.redirect(new URL('/login', request.url));
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+        if (!user) {
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
+        
+        // Check if user's email is in the allowed admin emails list
+        const allowedEmails = process.env.ALLOWED_ADMIN_EMAILS?.split(',').map(e => e.trim()) || [];
+        if (!allowedEmails.includes(user.email || '')) {
+            // Unauthorized access attempt - sign out and redirect
+            await supabase.auth.signOut();
+            return NextResponse.redirect(new URL('/login?error=unauthorized', request.url));
+        }
     }
 
     // 2. Redirect logged-in users away from /login

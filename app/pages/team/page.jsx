@@ -13,6 +13,7 @@ import { AnimatedTooltip } from "../../../components/ui/animated-tooltip";
 const client = createClient({
     space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
+    environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID,
 });
 
 const createSlug = (name) => {
@@ -32,7 +33,7 @@ export default function TeamPage() {
     const [loading, setLoading] = useState(true);
     const [openTeams, setOpenTeams] = useState({});
 
-    const years = [2025, 2024, 2023];
+
 
     const toggleTeam = (teamName) => {
         setOpenTeams((prev) => ({
@@ -100,8 +101,54 @@ export default function TeamPage() {
         fetchFacultyMembers();
     }, []);
 
+    const [availableYears, setAvailableYears] = useState([2025]);
+
+    // Fetch available years on mount
+    useEffect(() => {
+        const fetchYears = async () => {
+            try {
+                // Fetch all entries, selecting only the 'year' field for performance
+                const response = await client.getEntries({
+                    content_type: "memberProfile",
+                    limit: 1000,
+                });
+
+                console.log("TeamPage: Years Fetch Response items:", response.items.length);
+
+                const yearsSet = new Set();
+                response.items.forEach(item => {
+                    const y = item.fields.year;
+                    if (y) {
+                        yearsSet.add(Number(y));
+                    }
+                });
+
+                console.log("TeamPage: Found Years:", Array.from(yearsSet));
+
+                // Default fallback if no years found
+                if (yearsSet.size === 0) {
+                    yearsSet.add(new Date().getFullYear());
+                }
+
+                const sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
+                setAvailableYears(sortedYears);
+
+                // Set default selected year to the most recent one if not already set
+                if (!selectedYear && sortedYears.length > 0) {
+                    setSelectedYear(sortedYears[0]);
+                }
+            } catch (err) {
+                console.error("Error fetching years:", err);
+            }
+        };
+
+        fetchYears();
+    }, []);
+
     // Fetch year-based members
     useEffect(() => {
+        if (!selectedYear) return;
+
         const fetchMembers = async () => {
             setLoading(true);
             try {
@@ -111,7 +158,7 @@ export default function TeamPage() {
                     order: 'fields.order',
                 });
 
-                console.log('Fetched members count:', response.items.length);
+                console.log(`Fetched ${response.items.length} members for year ${selectedYear}`);
 
                 const formatted = response.items.map((item) => {
                     const imgUrl = item.fields.photo?.fields?.file?.url;
@@ -128,8 +175,6 @@ export default function TeamPage() {
                             orderValue = 999;
                         }
                     }
-
-                    console.log(`${item.fields.name}: order=${orderValue}`);
 
                     return {
                         id: item.sys.id,
@@ -156,8 +201,6 @@ export default function TeamPage() {
                     const orderB = Number(b.order) || 999;
                     return orderA - orderB;
                 });
-
-                console.log('Sorted order:', sortedMembers.map(m => `${m.name}:${m.order}`).join(', '));
 
                 setMembers(sortedMembers);
             } catch (err) {
@@ -309,7 +352,7 @@ export default function TeamPage() {
                                     alignSelf: "center",
                                 }}
                             >
-                                {years.map((year) => (
+                                {availableYears.map((year) => (
                                     <button
                                         key={year}
                                         onClick={() => setSelectedYear(year)}
@@ -466,6 +509,7 @@ export default function TeamPage() {
                                             </motion.div>
                                         ))}
                                     </div>
+
 
                                     {/* Team Stats Summary */}
                                     <motion.div

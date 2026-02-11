@@ -33,7 +33,9 @@ import { createClient } from '@/lib/supabase-server';
 import LeaderboardClient from './LeaderboardClient';
 
 // Revalidate every 30 seconds for fresh rankings
-export const revalidate = 30;
+// Force dynamic rendering because we use cookies for user authentication
+export const dynamic = 'force-dynamic';
+// export const revalidate = 30;
 
 /**
  * Fetch the complete leaderboard with rankings
@@ -185,8 +187,8 @@ export default async function LeaderboardPage() {
     ]);
 
     return (
-        <LeaderboardClient 
-            leaderboard={leaderboard} 
+        <LeaderboardClient
+            leaderboard={leaderboard}
             stats={stats}
             currentUserRank={currentUserRank}
         />
