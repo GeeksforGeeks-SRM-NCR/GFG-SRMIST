@@ -5,7 +5,7 @@ export async function submitTeamRegistration(data) {
     try {
         const supabase = await createAdminClient();
 
-      
+
         const members = [
             {
                 name: data.leader.name,
@@ -45,8 +45,8 @@ export async function submitTeamRegistration(data) {
             college_name: collegeName,
             members: members,
             member_count: memberCount,
-            project_idea: data.project_idea,
-            project_description: data.project_description
+            project_idea: data.project_idea || 'Not Applicable',
+            project_description: data.project_description || 'Not Applicable'
         };
 
         console.log('Inserting registration data:', registrationData);

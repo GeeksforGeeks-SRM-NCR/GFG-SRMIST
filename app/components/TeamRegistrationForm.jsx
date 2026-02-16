@@ -98,9 +98,7 @@ export default function TeamRegistrationForm() {
                     section: data.section,
                     email_id: data.email_id
                 },
-                teamMembers,
-                project_idea: data.project_idea,
-                project_description: data.project_description
+                teamMembers
             };
 
             console.log('Submitting payload:', payload);
@@ -344,7 +342,7 @@ export default function TeamRegistrationForm() {
                                 className={`${inputClasses} appearance-none cursor-pointer text-lg`}
                             >
                                 <option value="0" className="text-black">Select team size</option>
-                                {[1, 2, 3, 4, 5, 6].map(num => (
+                                {[1, 2, 3, 4].map(num => (
                                     <option key={num} value={num} className="text-black">{num} Member{num > 1 ? 's' : ''}</option>
                                 ))}
                             </select>
@@ -362,25 +360,7 @@ export default function TeamRegistrationForm() {
                     )}
                 </AnimatePresence>
 
-                {/* Project Details */}
-                <motion.div variants={itemVariants} className="border border-white/10 rounded-2xl p-6 bg-white/5">
-                    <h3 className="text-2xl font-bold text-[#46b94e] mb-4">Project Details</h3>
-                    <div className="space-y-4">
-                        <div>
-                            <label className={labelClasses}>Project Idea</label>
-                            <input {...register("project_idea", { required: true })} placeholder="Brief title of your project" className={inputClasses} />
-                        </div>
-                        <div>
-                            <label className={labelClasses}>Project Description</label>
-                            <textarea 
-                                {...register("project_description", { required: true })} 
-                                placeholder="Describe your project idea in detail..." 
-                                rows={6} 
-                                className={`${inputClasses} resize-none`} 
-                            />
-                        </div>
-                    </div>
-                </motion.div>
+
 
                 <motion.button
                     variants={itemVariants}
