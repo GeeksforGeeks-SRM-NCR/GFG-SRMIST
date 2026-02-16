@@ -14,6 +14,7 @@ export async function submitTeamRegistration(data) {
                 branch: data.leader.branch,
                 section: data.leader.section,
                 email_id: data.leader.email_id,
+                phone_number: data.leader.phone_number,
                 role: 'leader'
             },
             ...data.teamMembers.map(member => ({
@@ -23,14 +24,19 @@ export async function submitTeamRegistration(data) {
                 branch: member.branch,
                 section: member.section,
                 email_id: member.email_id,
+                phone_number: member.phone_number,
                 role: 'member'
             }))
         ];
 
         const memberCount = members.length;
 
-        if (memberCount > 7) {
-            throw new Error('Maximum 7 members allowed (1 leader + 6 team members)');
+        if (memberCount < 2) {
+            throw new Error('Minimum 2 members required (1 leader + at least 1 team member)');
+        }
+
+        if (memberCount > 4) {
+            throw new Error('Maximum 4 members allowed (1 leader + 3 team members)');
         }
 
         // Use team name from form data

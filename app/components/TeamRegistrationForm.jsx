@@ -17,11 +17,11 @@ const springValues = {
 export default function TeamRegistrationForm() {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [teamMemberCount, setTeamMemberCount] = useState(0);
+    const [teamMemberCount, setTeamMemberCount] = useState(1);
     const searchParams = useSearchParams();
     const eventName = searchParams.get('event') || 'General Event Registration';
     const eventSlug = searchParams.get('slug') || '';
-    
+
     const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm({
         defaultValues: {
             event_name: eventName
@@ -82,7 +82,8 @@ export default function TeamRegistrationForm() {
                     year: data[`member${i}_year`],
                     branch: data[`member${i}_branch`],
                     section: data[`member${i}_section`],
-                    email_id: data[`member${i}_email_id`]
+                    email_id: data[`member${i}_email_id`],
+                    phone_number: data[`member${i}_phone_number`]
                 });
             }
 
@@ -96,7 +97,9 @@ export default function TeamRegistrationForm() {
                     year: data.year,
                     branch: data.branch,
                     section: data.section,
-                    email_id: data.email_id
+                    section: data.section,
+                    email_id: data.email_id,
+                    phone_number: data.phone_number
                 },
                 teamMembers
             };
@@ -204,6 +207,10 @@ export default function TeamRegistrationForm() {
                         <label className={labelClasses}>Email ID</label>
                         <input {...register(`member${memberNumber}_email_id`, { required: true })} placeholder="email@example.com" type="email" className={inputClasses} />
                     </div>
+                    <div>
+                        <label className={labelClasses}>Phone Number</label>
+                        <input {...register(`member${memberNumber}_phone_number`, { required: true, pattern: { value: /^[0-9]{10}$/, message: "Invalid Phone Number" } })} placeholder="Enter Your Mobile No." type="tel" className={inputClasses} />
+                    </div>
                 </div>
             </motion.div>
         );
@@ -282,11 +289,11 @@ export default function TeamRegistrationForm() {
                 {/* College Name */}
                 <motion.div variants={itemVariants}>
                     <label className={labelClasses}>College Name</label>
-                    <input 
-                        {...register("college_name", { required: true })} 
+                    <input
+                        {...register("college_name", { required: true })}
                         defaultValue="SRM Institute of Science and Technology"
-                        placeholder="Edit if from different college" 
-                        className={inputClasses} 
+                        placeholder="Edit if from different college"
+                        className={inputClasses}
                     />
                     <p className="text-xs text-gray-500 mt-1 ml-1">Default: SRM Institute of Science and Technology (Edit if different)</p>
                 </motion.div>
@@ -328,6 +335,10 @@ export default function TeamRegistrationForm() {
                             <label className={labelClasses}>Email ID</label>
                             <input {...register("email_id", { required: true })} placeholder="email@example.com" type="email" className={inputClasses} />
                         </div>
+                        <div>
+                            <label className={labelClasses}>Phone Number</label>
+                            <input {...register("phone_number", { required: true, pattern: { value: /^[0-9]{10}$/, message: "Invalid Phone Number" } })} placeholder="10-digit Mobile No." type="tel" className={inputClasses} />
+                        </div>
                     </div>
                 </motion.div>
 
@@ -336,12 +347,11 @@ export default function TeamRegistrationForm() {
                     <label className="block text-lg font-semibold text-[#46b94e] mb-3">Number of Team Members</label>
                     <div className="flex items-center gap-4">
                         <div className="relative flex-1">
-                            <select 
+                            <select
                                 value={teamMemberCount}
                                 onChange={(e) => setTeamMemberCount(parseInt(e.target.value))}
                                 className={`${inputClasses} appearance-none cursor-pointer text-lg`}
                             >
-                                <option value="0" className="text-black">Select team size</option>
                                 {[1, 2, 3, 4].map(num => (
                                     <option key={num} value={num} className="text-black">{num} Member{num > 1 ? 's' : ''}</option>
                                 ))}
