@@ -204,22 +204,49 @@ export default function EventDetailsPage() {
                             transition={{ duration: 0.6, delay: 0.4 }}
                             className="space-y-4 md:space-y-6"
                         >
-                            {isRegOpen && (
-                                <div className="bg-gradient-to-br from-[#46b94e]/10 to-emerald-900/10 border border-[#46b94e]/30 rounded-[20px] md:rounded-[25px] p-5 md:p-8 backdrop-blur-md relative overflow-hidden group">
-                                    <div className="absolute inset-0 bg-[#46b94e]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                    <h3 className="text-xl md:text-2xl font-bold mb-2 font-sf-pro relative z-10">Registration Open!</h3>
-                                    <p className="text-gray-400 mb-5 md:mb-8 text-xs md:text-sm font-sf-pro relative z-10">Secure your spot for this event now. Limited seats available.</p>
-                                    <Link
-                                        href={registrationUrl}
-                                        target={hasExternalLink ? "_blank" : undefined}
-                                        rel={hasExternalLink ? "noopener noreferrer" : undefined}
-                                        className="relative z-10 w-full flex items-center justify-center gap-2 md:gap-3 bg-[#46b94e] text-black font-bold py-3 md:py-4 rounded-xl hover:bg-[#3da544] transition-all hover:scale-[1.02] shadow-lg shadow-green-500/20 font-sf-pro text-base md:text-lg"
-                                    >
-                                        <Ticket size={18} className="md:w-[22px] md:h-[22px]" />
-                                        Register Now
-                                    </Link>
-                                </div>
-                            )}
+                            {/* Registration logic block */}
+                            {(() => {
+                                const isEventPast = date ? new Date(date) < new Date() : false;
+
+                                // If the event is in the past, do not show the registration block at all
+                                if (isEventPast) {
+                                    return null;
+                                }
+
+                                const isActuallyOpen = (isRegOpen === true || isRegOpen === undefined);
+
+                                if (isActuallyOpen) {
+                                    return (
+                                        <div className="bg-gradient-to-br from-[#46b94e]/10 to-emerald-900/10 border border-[#46b94e]/30 rounded-[20px] md:rounded-[25px] p-5 md:p-8 backdrop-blur-md relative overflow-hidden group">
+                                            <div className="absolute inset-0 bg-[#46b94e]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                            <h3 className="text-xl md:text-2xl font-bold mb-2 font-sf-pro relative z-10">Registration Open!</h3>
+                                            <p className="text-gray-400 mb-5 md:mb-8 text-xs md:text-sm font-sf-pro relative z-10">Secure your spot for this event now. Limited seats available.</p>
+                                            <Link
+                                                href={registrationUrl}
+                                                target={hasExternalLink ? "_blank" : undefined}
+                                                rel={hasExternalLink ? "noopener noreferrer" : undefined}
+                                                className="relative z-10 w-full flex items-center justify-center gap-2 md:gap-3 bg-[#46b94e] text-black font-bold py-3 md:py-4 rounded-xl hover:bg-[#3da544] transition-all hover:scale-[1.02] shadow-lg shadow-green-500/20 font-sf-pro text-base md:text-lg"
+                                            >
+                                                <Ticket size={18} className="md:w-[22px] md:h-[22px]" />
+                                                Register Now
+                                            </Link>
+                                        </div>
+                                    );
+                                } else {
+                                    return (
+                                        <div className="bg-gradient-to-br from-red-500/10 to-rose-900/10 border border-red-500/30 rounded-[20px] md:rounded-[25px] p-5 md:p-8 backdrop-blur-md relative overflow-hidden group">
+                                            <h3 className="text-xl md:text-2xl font-bold mb-2 font-sf-pro relative z-10 text-red-400">Registrations Closed</h3>
+                                            <p className="text-gray-400 mb-5 md:mb-8 text-xs md:text-sm font-sf-pro relative z-10">We are no longer accepting registrations for this event.</p>
+                                            <button
+                                                disabled
+                                                className="relative z-10 w-full flex items-center justify-center gap-2 md:gap-3 bg-red-500/50 text-white/50 font-bold py-3 md:py-4 rounded-xl cursor-not-allowed font-sf-pro text-base md:text-lg"
+                                            >
+                                                Registration Closed
+                                            </button>
+                                        </div>
+                                    );
+                                }
+                            })()}
 
                             {galleryImages && galleryImages.length > 0 && (
                                 <div className="bg-white/5 border border-white/10 rounded-[20px] md:rounded-[25px] p-5 md:p-8 backdrop-blur-md hover:bg-white/10 transition-colors duration-300">

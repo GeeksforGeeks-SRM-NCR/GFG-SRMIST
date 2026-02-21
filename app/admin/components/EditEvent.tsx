@@ -12,6 +12,7 @@ interface EditEventProps {
         title: string;
         date: string;
         venue: string;
+        noMembers: number | '';
         registrationLink: string;
         description: string;
         isRegOpen: boolean;
@@ -196,6 +197,23 @@ export const EditEvent: React.FC<EditEventProps> = ({
                                         </div>
                                         <p className="text-[10px] text-gray-500 text-right">Leave empty for internal form</p>
                                     </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Team Size (Members)</label>
+                                        <div className="relative group/input">
+                                            <input
+                                                type="text"
+                                                name="noMembers"
+                                                required
+                                                pattern="^\s*\d+\s*(?:-\s*\d+\s*)?$"
+                                                placeholder="e.g. 4 or 2-4"
+                                                value={formData.noMembers}
+                                                onChange={handleChange}
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all pl-10"
+                                            />
+                                            <Type className="absolute left-3 top-3.5 h-4 w-4 text-gray-600 group-focus-within/input:text-purple-500 transition-colors" />
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">
@@ -212,12 +230,9 @@ export const EditEvent: React.FC<EditEventProps> = ({
                                 <div className="flex items-center justify-between p-4 rounded-xl bg-black/40 border border-white/10">
                                     <div className="flex items-center gap-3">
                                         <input
-                                            type="checkbox"
+                                            type="hidden"
                                             name="isRegOpen"
-                                            id="isRegOpen"
-                                            checked={formData.isRegOpen}
-                                            onChange={(e) => setFormData(p => ({ ...p, isRegOpen: e.target.checked }))}
-                                            className="hidden"
+                                            value={formData.isRegOpen ? 'true' : 'false'}
                                         />
                                         <div
                                             className={`w-10 h-6 rounded-full p-1 transition-colors cursor-pointer ${formData.isRegOpen ? 'bg-emerald-500' : 'bg-gray-700'}`}

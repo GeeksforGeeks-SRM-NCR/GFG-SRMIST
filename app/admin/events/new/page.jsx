@@ -32,10 +32,21 @@ export default function NewEventPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-white/60 mb-2">Venue</label>
                         <input
                             type="text"
                             name="venue"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-white/60 mb-2">Team Size (Members) *</label>
+                        <input
+                            type="text"
+                            name="noMembers"
+                            required
+                            pattern="^\s*\d+\s*(?:-\s*\d+\s*)?$"
+                            placeholder="e.g. 4 or 2-4"
                             className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                         />
                     </div>

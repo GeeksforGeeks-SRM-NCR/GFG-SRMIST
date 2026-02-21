@@ -1,12 +1,13 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Check, ChevronDown, Plus, Minus } from "lucide-react";
+import { Loader2, Check, ChevronDown, Plus, Minus, X, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { Logo2 } from "@/app/logo/logo2";
 import { submitTeamRegistration } from "@/app/actions/team-registration";
+import CustomSelect, { yearOptions, branchOptions, sectionOptions } from "@/app/components/CustomSelect";
 
 const springValues = {
     damping: 30,
@@ -14,15 +15,28 @@ const springValues = {
     mass: 2
 };
 
-export default function TeamRegistrationForm() {
+export default function TeamRegistrationForm({ eventName: propEventName, noMembers = "4" }) {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [teamMemberCount, setTeamMemberCount] = useState(1);
+    const [errorMessage, setErrorMessage] = useState("");
+    const errorScrollRef = useRef(null);
+
+    // Parse noMembers string into min and max
+    const parts = String(noMembers || "4").split('-').map(s => parseInt(s.trim(), 10));
+    const minMembers = (!isNaN(parts[0]) && parts[0] > 0) ? parts[0] : 1;
+    const maxMembers = (parts.length > 1 && !isNaN(parts[1])) ? parts[1] : minMembers;
+
+    // Remove the Team Leader from the count of "Additional Members"
+    // So if the form takes 2-4 total members, additional members are 1-3
+    const minAdditional = Math.max(0, minMembers - 1);
+    const maxAdditional = Math.max(0, maxMembers - 1);
+
+    const [teamMemberCount, setTeamMemberCount] = useState(minAdditional);
     const searchParams = useSearchParams();
-    const eventName = searchParams.get('event') || 'General Event Registration';
+    const eventName = propEventName || searchParams.get('event') || 'General Event Registration';
     const eventSlug = searchParams.get('slug') || '';
 
-    const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm({
+    const { register, handleSubmit, watch, formState: { errors }, setValue, control } = useForm({
         defaultValues: {
             event_name: eventName
         }
@@ -32,46 +46,9 @@ export default function TeamRegistrationForm() {
         setValue('event_name', eventName);
     }, [eventName, setValue]);
 
-    // Tilt Effect Logic
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const rotateX = useSpring(useMotionValue(0), springValues);
-    const rotateY = useSpring(useMotionValue(0), springValues);
-    const scale = useSpring(1, springValues);
-    const opacity = useSpring(0);
-
-    function handleMouse(e) {
-        if (window.innerWidth < 768) return;
-
-        const rect = e.currentTarget.getBoundingClientRect();
-        const offsetX = e.clientX - rect.left - rect.width / 2;
-        const offsetY = e.clientY - rect.top - rect.height / 2;
-
-        const rotateAmplitude = 5;
-        const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
-        const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
-
-        rotateX.set(rotationX);
-        rotateY.set(rotationY);
-
-        x.set(e.clientX - rect.left);
-        y.set(e.clientY - rect.top);
-    }
-
-    function handleMouseEnter() {
-        scale.set(1.01);
-        opacity.set(1);
-    }
-
-    function handleMouseLeave() {
-        opacity.set(0);
-        scale.set(1);
-        rotateX.set(0);
-        rotateY.set(0);
-    }
-
     const onSubmit = async (data) => {
         setSubmitting(true);
+        setErrorMessage("");
         try {
             // Prepare team members data
             const teamMembers = [];
@@ -111,12 +88,16 @@ export default function TeamRegistrationForm() {
             if (result.success) {
                 console.log('Successfully submitted registration:', result.data);
                 setSubmitted(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 throw new Error(result.message || 'Failed to submit registration');
             }
         } catch (err) {
             console.error('Error Submitting:', err);
-            alert(`Something went wrong: ${err.message || 'Please try again'}`);
+            setErrorMessage(err.message || 'Please try again');
+            if (errorScrollRef.current) {
+                errorScrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         } finally {
             setSubmitting(false);
         }
@@ -143,8 +124,8 @@ export default function TeamRegistrationForm() {
         );
     }
 
-    const inputClasses = "w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-[#46b94e] focus:bg-white/10 outline-none transition-all duration-300 text-white placeholder-gray-500 focus:shadow-[0_0_20px_rgba(70,185,78,0.2)]";
-    const labelClasses = "block text-sm font-medium text-gray-400 mb-2 ml-1";
+    const inputClasses = "w-full p-3.5 bg-white/5 rounded-xl border border-white/10 focus:border-[#46b94e] focus:bg-[#46b94e]/5 outline-none transition-all duration-300 text-white placeholder-gray-500 focus:ring-2 focus:ring-[#46b94e]/20 focus:shadow-[0_0_20px_rgba(70,185,78,0.15)]";
+    const labelClasses = "block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-2 ml-1";
 
     const containerVariants = {
         hidden: { opacity: 0, y: 50 },
@@ -167,12 +148,28 @@ export default function TeamRegistrationForm() {
         return (
             <motion.div
                 key={memberNumber}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="border border-white/10 rounded-2xl p-6 bg-white/5 backdrop-blur-sm"
+                initial={{ opacity: 0, height: 0, y: -20 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                className="border border-white/5 rounded-3xl p-6 md:p-8 bg-gradient-to-b from-white/5 to-transparent relative group hover:border-white/10 transition-colors"
+                style={{ zIndex: 50 - memberNumber }}
             >
-                <h3 className="text-xl font-bold text-[#46b94e] mb-4">Team Member {memberNumber}</h3>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-500 to-transparent opacity-30 group-hover:opacity-60 transition-opacity"></div>
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white text-sm border border-white/20">{memberNumber + 1}</span>
+                        Team Member {memberNumber + 1}
+                    </h3>
+                    {memberNumber > minAdditional && memberNumber === teamMemberCount && (
+                        <button
+                            type="button"
+                            onClick={() => setTeamMemberCount(prev => prev - 1)}
+                            className="text-red-400 hover:text-white hover:bg-red-500/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 text-xs font-semibold"
+                        >
+                            <Minus size={14} /> Remove
+                        </button>
+                    )}
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label className={labelClasses}>Name</label>
@@ -180,28 +177,61 @@ export default function TeamRegistrationForm() {
                     </div>
                     <div>
                         <label className={labelClasses}>Registration No.</label>
-                        <input {...register(`member${memberNumber}_reg_no`, { required: true })} placeholder="Enter Reg No" className={inputClasses} />
+                        <input {...register(`member${memberNumber}_reg_no`, {
+                            required: "Required",
+                            pattern: {
+                                value: /^RA\d{13}$/i,
+                                message: "Must start with RA and exactly 13 digits"
+                            }
+                        })}
+                            placeholder="RAxxxxxxxxxxxxx"
+                            maxLength={15}
+                            onInput={(e) => {
+                                let val = e.target.value.toUpperCase();
+                                if (!val.startsWith('RA')) {
+                                    val = 'RA' + val.replace(/^RA/i, '');
+                                }
+                                const numbers = val.substring(2).replace(/[^0-9]/g, '');
+                                e.target.value = 'RA' + numbers.substring(0, 13);
+                            }}
+                            className={`${inputClasses} ${errors[`member${memberNumber}_reg_no`] ? '!border-red-500' : ''}`}
+                        />
+                        {errors[`member${memberNumber}_reg_no`] && (
+                            <p className="text-red-500 text-xs mt-1 ml-1">{errors[`member${memberNumber}_reg_no`].message}</p>
+                        )}
                     </div>
-                    <div>
+                    <div className="relative z-[50]">
                         <label className={labelClasses}>Year</label>
-                        <div className="relative">
-                            <select {...register(`member${memberNumber}_year`, { required: true })} className={`${inputClasses} appearance-none cursor-pointer`}>
-                                <option value="" className="text-black">Select Year</option>
-                                <option value="1" className="text-black">1st Year</option>
-                                <option value="2" className="text-black">2nd Year</option>
-                                <option value="3" className="text-black">3rd Year</option>
-                                <option value="4" className="text-black">4th Year</option>
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
-                        </div>
+                        <CustomSelect
+                            control={control}
+                            name={`member${memberNumber}_year`}
+                            rules={{ required: "Required" }}
+                            options={yearOptions}
+                            placeholder="Select Year"
+                            className={inputClasses}
+                        />
                     </div>
-                    <div>
+                    <div className="relative z-[40]">
                         <label className={labelClasses}>Branch</label>
-                        <input {...register(`member${memberNumber}_branch`, { required: true })} placeholder="CSE, ECE, etc." className={inputClasses} />
+                        <CustomSelect
+                            control={control}
+                            name={`member${memberNumber}_branch`}
+                            rules={{ required: "Required" }}
+                            options={branchOptions}
+                            placeholder="Select Branch"
+                            className={inputClasses}
+                        />
                     </div>
-                    <div>
+                    <div className="relative z-[30]">
                         <label className={labelClasses}>Section</label>
-                        <input {...register(`member${memberNumber}_section`, { required: true })} placeholder="A, B, C..." className={inputClasses} />
+                        <CustomSelect
+                            control={control}
+                            name={`member${memberNumber}_section`}
+                            rules={{ required: "Required" }}
+                            options={sectionOptions}
+                            placeholder="Select Section"
+                            className={inputClasses}
+                        />
                     </div>
                     <div>
                         <label className={labelClasses}>Email ID</label>
@@ -209,7 +239,19 @@ export default function TeamRegistrationForm() {
                     </div>
                     <div>
                         <label className={labelClasses}>Phone Number</label>
-                        <input {...register(`member${memberNumber}_phone_number`, { required: true, pattern: { value: /^[0-9]{10}$/, message: "Invalid Phone Number" } })} placeholder="Enter Your Mobile No." type="tel" className={inputClasses} />
+                        <input
+                            {...register(`member${memberNumber}_phone_number`, {
+                                required: true,
+                                pattern: { value: /^[0-9]{10}$/, message: "Invalid Phone Number" },
+                                minLength: 10,
+                                maxLength: 10
+                            })}
+                            placeholder="Enter Your Mobile No."
+                            type="tel"
+                            maxLength={10}
+                            onInput={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10); }}
+                            className={inputClasses}
+                        />
                     </div>
                 </div>
             </motion.div>
@@ -217,25 +259,13 @@ export default function TeamRegistrationForm() {
     };
 
     return (
-        <div
-            className="perspective-1000 w-full max-w-4xl mx-auto"
-            onMouseMove={handleMouse}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            style={{ perspective: "1000px" }}
-        >
+        <div className="w-full max-w-4xl mx-auto">
             <motion.form
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                style={{
-                    rotateX,
-                    rotateY,
-                    scale,
-                    transformStyle: "preserve-3d"
-                }}
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col gap-6 p-6 md:p-10 bg-black/40 border border-white/10 rounded-3xl backdrop-blur-xl shadow-2xl relative overflow-hidden"
+                className="flex flex-col gap-6 p-6 md:p-10 bg-[#0a0a0a]/90 border border-white/10 rounded-3xl backdrop-blur-2xl shadow-2xl relative overflow-hidden"
             >
                 {/* Decorative Elements */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#46b94e] to-transparent opacity-50"></div>
@@ -266,41 +296,81 @@ export default function TeamRegistrationForm() {
                     </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="text-center mb-4">
-                    <h2 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-[#46b94e] to-white">Team Registration</h2>
-                    <p className="text-gray-400">Register your team for the event</p>
+                <motion.div variants={itemVariants} className="text-center mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#46b94e]/10 border border-[#46b94e]/20 text-[#46b94e] text-sm font-semibold mb-4 tracking-wide uppercase">
+                        Registration Form
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-200 to-gray-500">
+                        Secure Your Spot
+                    </h2>
+                    <p className="text-gray-400 max-w-md mx-auto">Fill in the details below to register your team for this event and secure your participation.</p>
                 </motion.div>
 
+                {/* Error Message Popup */}
+                <AnimatePresence>
+                    {errorMessage && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                            className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 md:p-5 flex items-start gap-4 backdrop-blur-md relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+                            <div className="bg-red-500/20 p-2 rounded-full shrink-0">
+                                <AlertCircle size={24} className="text-red-400" />
+                            </div>
+                            <div className="flex-1 pr-6">
+                                <h4 className="text-red-400 font-bold mb-1">Registration Error</h4>
+                                <p className="text-red-200/80 text-sm leading-relaxed">{errorMessage}</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setErrorMessage("")}
+                                className="absolute right-4 top-4 text-red-400/50 hover:text-red-400 hover:bg-red-500/10 p-1.5 rounded-lg transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 {/* Event Name */}
-                <motion.div variants={itemVariants}>
-                    <label className="block text-lg font-semibold text-[#46b94e] mb-3">Event Name</label>
-                    <div className="w-full p-4 bg-[#46b94e]/10 rounded-xl border border-[#46b94e]/30 text-white font-medium">
+                <motion.div variants={itemVariants} className="bg-gradient-to-r from-[#46b94e]/20 to-transparent p-6 rounded-2xl border-l-4 border-[#46b94e] backdrop-blur-sm">
+                    <label className="block text-sm font-bold text-[#46b94e] uppercase tracking-wider mb-2">Selected Event</label>
+                    <div className="text-2xl font-bold text-white">
                         {eventName}
                     </div>
                     <input type="hidden" {...register("event_name")} value={eventName} />
                 </motion.div>
 
                 {/* Team Name */}
-                <motion.div variants={itemVariants}>
+                <motion.div variants={itemVariants} ref={errorScrollRef}>
                     <label className={labelClasses}>Team Name</label>
                     <input {...register("team_name", { required: true })} placeholder="Enter your team name (e.g., Code Warriors)" className={inputClasses} />
                 </motion.div>
 
                 {/* College Name */}
                 <motion.div variants={itemVariants}>
-                    <label className={labelClasses}>College Name</label>
+                    <label className={labelClasses}>College / Institution Name</label>
                     <input
                         {...register("college_name", { required: true })}
                         defaultValue="SRM Institute of Science and Technology"
                         placeholder="Edit if from different college"
                         className={inputClasses}
                     />
-                    <p className="text-xs text-gray-500 mt-1 ml-1">Default: SRM Institute of Science and Technology (Edit if different)</p>
+                    <p className="text-[11px] text-gray-500 mt-2 ml-1 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#46b94e]/50"></span>
+                        Defaults to SRM Institute of Science and Technology
+                    </p>
                 </motion.div>
 
                 {/* Team Leader Details */}
-                <motion.div variants={itemVariants} className="border border-[#46b94e]/30 rounded-2xl p-6 bg-[#46b94e]/5">
-                    <h3 className="text-2xl font-bold text-[#46b94e] mb-4">Team Leader Details</h3>
+                <motion.div variants={itemVariants} className="border border-white/5 rounded-3xl p-6 md:p-8 bg-gradient-to-b from-white/5 to-transparent relative group hover:border-white/10 transition-colors" style={{ zIndex: 60 }}>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#46b94e] to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#46b94e] text-black text-sm">1</span>
+                        Team Leader Details
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className={labelClasses}>Name</label>
@@ -308,28 +378,61 @@ export default function TeamRegistrationForm() {
                         </div>
                         <div>
                             <label className={labelClasses}>Registration No.</label>
-                            <input {...register("reg_no", { required: true })} placeholder="Enter your Reg No" className={inputClasses} />
+                            <input {...register("reg_no", {
+                                required: "Required",
+                                pattern: {
+                                    value: /^RA\d{13}$/i,
+                                    message: "Must start with RA and exactly 13 digits"
+                                }
+                            })}
+                                placeholder="RAxxxxxxxxxxxxx"
+                                maxLength={15}
+                                onInput={(e) => {
+                                    let val = e.target.value.toUpperCase();
+                                    if (!val.startsWith('RA')) {
+                                        val = 'RA' + val.replace(/^RA/i, '');
+                                    }
+                                    const numbers = val.substring(2).replace(/[^0-9]/g, '');
+                                    e.target.value = 'RA' + numbers.substring(0, 13);
+                                }}
+                                className={`${inputClasses} ${errors.reg_no ? '!border-red-500' : ''}`}
+                            />
+                            {errors.reg_no && (
+                                <p className="text-red-500 text-xs mt-1 ml-1">{errors.reg_no.message}</p>
+                            )}
                         </div>
-                        <div>
+                        <div className="relative z-[50]">
                             <label className={labelClasses}>Year</label>
-                            <div className="relative">
-                                <select {...register("year", { required: true })} className={`${inputClasses} appearance-none cursor-pointer`}>
-                                    <option value="" className="text-black">Select Year</option>
-                                    <option value="1" className="text-black">1st Year</option>
-                                    <option value="2" className="text-black">2nd Year</option>
-                                    <option value="3" className="text-black">3rd Year</option>
-                                    <option value="4" className="text-black">4th Year</option>
-                                </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
-                            </div>
+                            <CustomSelect
+                                control={control}
+                                name="year"
+                                rules={{ required: "Required" }}
+                                options={yearOptions}
+                                placeholder="Select Year"
+                                className={inputClasses}
+                            />
                         </div>
-                        <div>
+                        <div className="relative z-[40]">
                             <label className={labelClasses}>Branch</label>
-                            <input {...register("branch", { required: true })} placeholder="CSE, ECE, etc." className={inputClasses} />
+                            <CustomSelect
+                                control={control}
+                                name="branch"
+                                rules={{ required: "Required" }}
+                                options={branchOptions}
+                                placeholder="Select Branch"
+                                className={inputClasses}
+                            />
                         </div>
-                        <div>
+                        <div className="relative z-[30]">
                             <label className={labelClasses}>Section</label>
-                            <input {...register("section", { required: true })} placeholder="A, B, C..." className={inputClasses} />
+                            <CustomSelect
+                                control={control}
+                                name="section"
+                                rules={{ required: "Required" }}
+                                options={sectionOptions}
+                                placeholder="Select Section"
+                                className={inputClasses}
+                            />
                         </div>
                         <div>
                             <label className={labelClasses}>Email ID</label>
@@ -337,29 +440,41 @@ export default function TeamRegistrationForm() {
                         </div>
                         <div>
                             <label className={labelClasses}>Phone Number</label>
-                            <input {...register("phone_number", { required: true, pattern: { value: /^[0-9]{10}$/, message: "Invalid Phone Number" } })} placeholder="10-digit Mobile No." type="tel" className={inputClasses} />
+                            <input
+                                {...register("phone_number", {
+                                    required: true,
+                                    pattern: { value: /^[0-9]{10}$/, message: "Invalid Phone Number" },
+                                    minLength: 10,
+                                    maxLength: 10
+                                })}
+                                placeholder="10-digit Mobile No."
+                                type="tel"
+                                maxLength={10}
+                                onInput={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10); }}
+                                className={inputClasses}
+                            />
                         </div>
                     </div>
                 </motion.div>
 
                 {/* Team Members Section */}
-                <motion.div variants={itemVariants}>
-                    <label className="block text-lg font-semibold text-[#46b94e] mb-3">Number of Team Members</label>
-                    <div className="flex items-center gap-4">
-                        <div className="relative flex-1">
-                            <select
-                                value={teamMemberCount}
-                                onChange={(e) => setTeamMemberCount(parseInt(e.target.value))}
-                                className={`${inputClasses} appearance-none cursor-pointer text-lg`}
-                            >
-                                {[1, 2, 3, 4].map(num => (
-                                    <option key={num} value={num} className="text-black">{num} Member{num > 1 ? 's' : ''}</option>
-                                ))}
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#46b94e] pointer-events-none" size={24} />
+                {maxAdditional > 0 && (
+                    <motion.div variants={itemVariants} className="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <label className="block text-lg font-bold text-white mb-1">Additional Team Members</label>
+                            <p className="text-gray-400 text-sm">Add up to {maxAdditional} additional members (Currently: {teamMemberCount}).</p>
                         </div>
-                    </div>
-                </motion.div>
+                        {teamMemberCount < maxAdditional && (
+                            <button
+                                type="button"
+                                onClick={() => setTeamMemberCount(prev => prev + 1)}
+                                className="bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl px-5 py-3 font-semibold transition-all flex items-center justify-center gap-2 group shrink-0"
+                            >
+                                <Plus size={18} className="text-[#46b94e] group-hover:scale-110 transition-transform" /> Add Member
+                            </button>
+                        )}
+                    </motion.div>
+                )}
 
                 {/* Dynamic Team Member Forms */}
                 <AnimatePresence>
@@ -378,7 +493,7 @@ export default function TeamRegistrationForm() {
                     whileTap={{ scale: 0.98 }}
                     disabled={submitting}
                     type="submit"
-                    className="mt-6 p-4 bg-gradient-to-r from-[#46b94e] to-[#3da544] text-black font-bold text-lg rounded-xl hover:brightness-110 transition-all shadow-[0_0_20px_rgba(70,185,78,0.2)] flex justify-center items-center gap-2"
+                    className="mt-6 p-4 bg-gradient-to-r from-[#46b94e] to-[#3da544] text-black font-bold text-lg rounded-2xl hover:brightness-110 transition-all shadow-[0_0_20px_rgba(70,185,78,0.2)] flex justify-center items-center gap-2 tracking-wide"
                 >
                     {submitting ? <Loader2 className="animate-spin" /> : "Submit Registration"}
                 </motion.button>

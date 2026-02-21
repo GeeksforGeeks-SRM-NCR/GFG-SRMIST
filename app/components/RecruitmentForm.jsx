@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { submitRecruitment } from "@/app/admin/recruitment/actions";
 import { Loader2, Check, ChevronDown } from "lucide-react";
+import CustomSelect, { yearOptions, branchOptions, sectionOptions } from "@/app/components/CustomSelect";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { Logo2 } from "@/app/logo/logo2";
 
@@ -16,7 +17,7 @@ const springValues = {
 export default function RecruitmentForm() {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, watch, formState: { errors }, control } = useForm();
     const selectedTeam = watch("team_preference");
 
     // Tilt Effect Logic
@@ -194,7 +195,28 @@ export default function RecruitmentForm() {
                     </motion.div>
                     <motion.div variants={itemVariants}>
                         <label className={labelClasses}>Registration No.</label>
-                        <input {...register("reg_no", { required: true })} placeholder="Enter your Registration Number" className={inputClasses} />
+                        <input {...register("reg_no", {
+                            required: "Required",
+                            pattern: {
+                                value: /^RA\d{13}$/i,
+                                message: "Must start with RA and exactly 13 digits"
+                            }
+                        })}
+                            placeholder="RAxxxxxxxxxxxxx"
+                            maxLength={15}
+                            onInput={(e) => {
+                                let val = e.target.value.toUpperCase();
+                                if (!val.startsWith('RA')) {
+                                    val = 'RA' + val.replace(/^RA/i, '');
+                                }
+                                const numbers = val.substring(2).replace(/[^0-9]/g, '');
+                                e.target.value = 'RA' + numbers.substring(0, 13);
+                            }}
+                            className={`${inputClasses} ${errors.reg_no ? '!border-red-500' : ''}`}
+                        />
+                        {errors.reg_no && (
+                            <p className="text-red-500 text-xs mt-1 ml-1">{errors.reg_no.message}</p>
+                        )}
                     </motion.div>
                     <motion.div variants={itemVariants}>
                         <label className={labelClasses}>College ID</label>
@@ -211,45 +233,61 @@ export default function RecruitmentForm() {
                         <label className={labelClasses}>Phone Number</label>
                         <input {...register("phone", { required: true })} placeholder="+91 " type="tel" className={inputClasses} />
                     </motion.div>
-                    <motion.div variants={itemVariants} className="relative">
+                    <motion.div variants={itemVariants} className="relative z-30">
                         <label className={labelClasses}>Year</label>
-                        <div className="relative">
-                            <select {...register("year", { required: true })} className={`${inputClasses} appearance-none cursor-pointer`}>
-                                <option value="" className="text-black">Select Year</option>
-                                <option value="1" className="text-black">1st Year</option>
-                                <option value="2" className="text-black">2nd Year</option>
-                                <option value="3" className="text-black">3rd Year</option>
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
-                        </div>
+                        <CustomSelect
+                            control={control}
+                            name="year"
+                            rules={{ required: "Required" }}
+                            options={yearOptions}
+                            placeholder="Select Year"
+                            className={inputClasses}
+                        />
                     </motion.div>
-                    <motion.div variants={itemVariants}>
+                    <motion.div variants={itemVariants} className="relative z-30">
                         <label className={labelClasses}>Section</label>
-                        <input {...register("section", { required: true })} placeholder="A,B,C,D.." className={inputClasses} />
+                        <CustomSelect
+                            control={control}
+                            name="section"
+                            rules={{ required: "Required" }}
+                            options={sectionOptions}
+                            placeholder="Select Section"
+                            className={inputClasses}
+                        />
                     </motion.div>
                 </div>
 
-                <motion.div variants={itemVariants}>
+                <motion.div variants={itemVariants} className="relative z-20">
                     <label className={labelClasses}>Branch</label>
-                    <input {...register("branch", { required: true })} placeholder=" Core, ECE, AIML..." className={inputClasses} />
+                    <CustomSelect
+                        control={control}
+                        name="branch"
+                        rules={{ required: "Required" }}
+                        options={branchOptions}
+                        placeholder="Select Branch"
+                        className={inputClasses}
+                    />
                 </motion.div>
 
                 {/* Team Preference */}
-                <motion.div variants={itemVariants}>
+                <motion.div variants={itemVariants} className="relative z-10">
                     <label className="block text-lg font-semibold text-[#46b94e] mb-3">Preferred Domain</label>
-                    <div className="relative">
-                        <select {...register("team_preference", { required: true })} className={`${inputClasses} appearance-none cursor-pointer text-lg`}>
-                            <option value="" className="text-black">Select a Team</option>
-                            <option value="Technical" className="text-black">Technical Team</option>
-                            <option value="Events" className="text-black">Events Mangement Team</option>
-                            <option value="Corporate" className="text-black">PR Team</option>
-                            <option value="Creatives" className="text-black">Design & Branding Team</option>
-                            <option value="Marketing" className="text-black">Marketing Team</option>
-                            <option value="Social Media" className="text-black">Social Media Team</option>
-                            <option value="Photography" className="text-black">Photography Team</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#46b94e] pointer-events-none" size={24} />
-                    </div>
+                    <CustomSelect
+                        control={control}
+                        name="team_preference"
+                        rules={{ required: "Required" }}
+                        options={[
+                            { value: "Technical", label: "Technical Team" },
+                            { value: "Events", label: "Events Management Team" },
+                            { value: "Corporate", label: "PR Team" },
+                            { value: "Creatives", label: "Design & Branding Team" },
+                            { value: "Marketing", label: "Marketing Team" },
+                            { value: "Social Media", label: "Social Media Team" },
+                            { value: "Photography", label: "Photography Team" }
+                        ]}
+                        placeholder="Select a Team"
+                        className={`${inputClasses} text-lg`}
+                    />
                 </motion.div>
 
                 {/* Conditional Skills */}
