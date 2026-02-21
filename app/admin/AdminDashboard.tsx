@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import {
-    LayoutDashboard, Calendar, Users, Settings, UserCog, FileText, LucideIcon,
+    LayoutDashboard, Calendar, Users, Settings, UserCog, FileText, FileSpreadsheet, LucideIcon,
     ArrowUpRight, TrendingUp, TrendingDown
 } from 'lucide-react';
 import gsap from 'gsap';
@@ -15,7 +15,7 @@ interface DashboardItem {
     description: string;
     icon: LucideIcon;
     actionText: string;
-    theme: 'purple' | 'emerald' | 'blue' | 'orange';
+    theme: 'purple' | 'emerald' | 'blue' | 'orange' | 'cyan';
     link: string;
 }
 
@@ -64,6 +64,15 @@ const DASHBOARD_ITEMS: DashboardItem[] = [
         actionText: 'Review Data',
         theme: 'orange',
         link: '/admin/registrations'
+    },
+    {
+        id: 'od-management',
+        title: 'OD Management',
+        description: 'Filter teams and generate native attendance spreadsheets natively.',
+        icon: FileSpreadsheet,
+        actionText: 'Manage ODs',
+        theme: 'cyan',
+        link: '/admin/od-management'
     },
 ];
 
@@ -124,6 +133,13 @@ const DashboardCard: React.FC<{ item: DashboardItem; index: number }> = ({ item 
             text: 'text-orange-400',
             gradient: 'from-orange-500/20 to-transparent',
             border: 'group-hover:border-orange-500/30'
+        },
+        cyan: {
+            accent: 'bg-cyan-500',
+            glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(6,182,212,0.3)]',
+            text: 'text-cyan-400',
+            gradient: 'from-cyan-500/20 to-transparent',
+            border: 'group-hover:border-cyan-500/30'
         },
     };
 

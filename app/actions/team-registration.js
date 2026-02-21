@@ -45,8 +45,31 @@ export async function submitTeamRegistration(data) {
         // Use college name from form data (with default)
         const collegeName = data.college_name || 'SRM Institute of Science and Technology';
 
+        const eventNameForQuery = data.event_name || 'General Registration';
+
+        // Check for duplicate team name (case-insensitive)
+        const { data: existingTeams, error: checkError } = await supabase
+            .from('registrations')
+            .select('id')
+            .eq('event_name', eventNameForQuery)
+            .ilike('team_name', teamName)
+            .limit(1);
+
+        if (checkError) {
+            console.error('Error checking for duplicate team names:', checkError);
+            // We'll proceed or throw depending on how strict we want to be, but let's throw to be safe
+            throw new Error('Failed to verify team name availability.');
+        }
+
+        if (existingTeams && existingTeams.length > 0) {
+            return {
+                success: false,
+                message: `The team name "${teamName}" is already taken for this event. Please choose another name.`
+            };
+        }
+
         const registrationData = {
-            event_name: data.event_name || 'General Registration',
+            event_name: eventNameForQuery,
             team_name: teamName,
             college_name: collegeName,
             members: members,

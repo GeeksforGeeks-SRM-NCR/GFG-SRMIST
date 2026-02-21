@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { fetchRegistrations, deleteRegistration } from './actions'
-import { Download, Search, Filter, Trash2, Users, FileText, Eye, Calendar, Building2, FileDown } from 'lucide-react'
+import { Download, Search, Filter, Trash2, Users, FileText, Eye, Calendar, Building2, FileDown, ClipboardList } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -68,18 +68,25 @@ export default function RegistrationsManager({ initialData = [] }) {
             return
         }
 
-        const headers = ['ID', 'Event Name', 'Team Name', 'College', 'Member Count', 'Project Idea', 'Created At']
+        const headers = ['ID', 'Event Name', 'Team Name', 'College', 'Member Count', 'Leader Name', 'Leader Phone', 'All Phones', 'Project Idea', 'Created At']
         const csvContent = [
             headers.join(','),
-            ...filteredRegistrations.map(row => [
-                `"${row.id || ''}"`,
-                `"${row.event_name || ''}"`,
-                `"${row.team_name || ''}"`,
-                `"${row.college_name || ''}"`,
-                `"${row.member_count || ''}"`,
-                `"${(row.project_idea || '').replace(/"/g, '""')}"`,
-                `"${row.created_at || ''}"`
-            ].join(','))
+            ...filteredRegistrations.map(row => {
+                const leader = row.members?.find(m => m.role === 'leader') || {}
+                const allPhones = row.members?.map(m => m.phone_number).filter(Boolean).join('; ') || ''
+                return [
+                    `"${row.id || ''}"`,
+                    `"${row.event_name || ''}"`,
+                    `"${row.team_name || ''}"`,
+                    `"${row.college_name || ''}"`,
+                    `"${row.member_count || ''}"`,
+                    `"${leader.name || ''}"`,
+                    `"${leader.phone_number || ''}"`,
+                    `"${allPhones}"`,
+                    `"${(row.project_idea || '').replace(/"/g, '""')}"`,
+                    `"${row.created_at || ''}"`
+                ].join(',')
+            })
         ].join('\n')
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
@@ -112,19 +119,22 @@ export default function RegistrationsManager({ initialData = [] }) {
         doc.text(`Total Registrations: ${filteredRegistrations.length}`, 14, 34)
 
         // Prepare table data
-        const tableData = filteredRegistrations.map(row => [
-            row.team_name || 'N/A',
-            row.event_name || 'N/A',
-            row.college_name || 'N/A',
-            row.member_count || '0',
-            (row.project_idea || 'N/A').substring(0, 50) + '...',
-            row.created_at ? new Date(row.created_at).toLocaleDateString() : 'N/A'
-        ])
+        const tableData = filteredRegistrations.map(row => {
+            const leader = row.members?.find(m => m.role === 'leader') || {}
+            return [
+                row.team_name || 'N/A',
+                row.event_name || 'N/A',
+                row.college_name || 'N/A',
+                row.member_count || '0',
+                leader.phone_number || 'N/A',
+                row.created_at ? new Date(row.created_at).toLocaleDateString() : 'N/A'
+            ]
+        })
 
         // Add table
         autoTable(doc, {
             startY: 40,
-            head: [['Team Name', 'Event', 'College', 'Members', 'Project Idea', 'Date']],
+            head: [['Team Name', 'Event', 'College', 'Members', 'Leader Phone', 'Date']],
             body: tableData,
             theme: 'grid',
             headStyles: {
@@ -142,7 +152,7 @@ export default function RegistrationsManager({ initialData = [] }) {
                 1: { cellWidth: 40 },
                 2: { cellWidth: 50 },
                 3: { cellWidth: 20, halign: 'center' },
-                4: { cellWidth: 60 },
+                4: { cellWidth: 35 },
                 5: { cellWidth: 30 }
             },
             alternateRowStyles: {
@@ -166,6 +176,16 @@ export default function RegistrationsManager({ initialData = [] }) {
 
         // Save the PDF
         doc.save(`team-registrations-${new Date().toISOString().split('T')[0]}.pdf`)
+    }
+
+    const handleExportOD = () => {
+        if (!selectedEventFilter) {
+            alert("Please select a specific event from the filter first to export an OD list.");
+            return;
+        }
+
+        const filteredByEvent = registrations.filter(r => r.event_name === selectedEventFilter);
+        exportODListExcel(filteredByEvent, selectedEventFilter);
     }
 
     const filteredRegistrations = registrations.filter(reg => {
@@ -267,6 +287,13 @@ export default function RegistrationsManager({ initialData = [] }) {
 
                     {/* Export Button */}
                     <div className="flex gap-3">
+                        <button
+                            onClick={handleExportOD}
+                            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all duration-300 flex items-center gap-2 font-semibold"
+                        >
+                            <ClipboardList className="w-5 h-5" />
+                            OD List
+                        </button>
                         <button
                             onClick={handleExport}
                             className="px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl transition-all duration-300 flex items-center gap-2 font-semibold"
@@ -429,6 +456,10 @@ export default function RegistrationsManager({ initialData = [] }) {
                                                         <p className="text-white/80">{member.section || 'N/A'}</p>
                                                     </div>
                                                     <div>
+                                                        <p className="text-white/40">Phone</p>
+                                                        <p className="text-white/80 truncate">{member.phone_number || 'N/A'}</p>
+                                                    </div>
+                                                    <div className="col-span-2">
                                                         <p className="text-white/40">Email</p>
                                                         <p className="text-white/80 truncate">{member.email_id || 'N/A'}</p>
                                                     </div>

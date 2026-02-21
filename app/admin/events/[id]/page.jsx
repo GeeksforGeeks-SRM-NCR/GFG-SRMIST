@@ -1,4 +1,4 @@
-import { contentfulClient } from '@/lib/contentful'
+import { contentfulManagementClient, SPACE_ID, ENVIRONMENT_ID } from '@/lib/contentful-admin'
 import { notFound } from 'next/navigation'
 import EditEventClient from './EditEventClient'
 
@@ -27,39 +27,85 @@ function extractTextFromRichText(richText) {
     return ''
 }
 
-async function getEvent(id) {
+async function getEventWithAssets(id) {
     try {
-        const entry = await contentfulClient.getEntry(id)
-        return entry
+        const space = await contentfulManagementClient.getSpace(SPACE_ID)
+        const environment = await space.getEnvironment(ENVIRONMENT_ID)
+        const entry = await environment.getEntry(id)
+
+        let coverImageAsset = null;
+        if (entry.fields.coverImage?.['en-US']?.sys?.id) {
+            try {
+                const asset = await environment.getAsset(entry.fields.coverImage['en-US'].sys.id)
+                coverImageAsset = {
+                    sys: asset.sys,
+                    fields: {
+                        title: asset.fields.title?.['en-US'],
+                        file: asset.fields.file?.['en-US']
+                    }
+                }
+            } catch (e) {
+                console.error("Cover image fetch error", e)
+            }
+        }
+
+        let galleryImageAssets = [];
+        const galleryLinks = entry.fields.galleryImages?.['en-US'] || [];
+
+        galleryImageAssets = (await Promise.all(
+            galleryLinks.map(async (link) => {
+                if (link.sys?.id) {
+                    try {
+                        const asset = await environment.getAsset(link.sys.id)
+                        return {
+                            sys: asset.sys,
+                            fields: {
+                                title: asset.fields.title?.['en-US'],
+                                file: asset.fields.file?.['en-US']
+                            }
+                        }
+                    } catch (e) {
+                        return null
+                    }
+                }
+                return null
+            })
+        )).filter(Boolean)
+
+        return { entry, coverImageAsset, galleryImageAssets }
     } catch (error) {
+        console.error("Error fetching event for edit:", error)
         return null
     }
 }
 
 export default async function EditEventPage({ params }) {
     const { id } = await params
-    const event = await getEvent(id)
+    const eventData = await getEventWithAssets(id)
 
-    if (!event) {
+    if (!eventData) {
         notFound()
     }
 
-    const { title, date, venue, registrationLink, description, galleryImages, coverImage, isRegOpen } = event.fields
+    const { entry, coverImageAsset, galleryImageAssets } = eventData
+    const { title, date, venue, registrationLink, description, isRegOpen, noMembers } = entry.fields
 
     // Extract plain text from RichText fields
-    const registrationLinkText = extractTextFromRichText(registrationLink)
-    const descriptionText = extractTextFromRichText(description)
+    const registrationLinkText = extractTextFromRichText(registrationLink?.['en-US'])
+    const descriptionText = extractTextFromRichText(description?.['en-US'])
 
     // Format date for input (YYYY-MM-DD)
-    const formattedDate = date ? new Date(date).toISOString().split('T')[0] : ''
+    const rawDate = date?.['en-US']
+    const formattedDate = rawDate ? new Date(rawDate).toISOString().split('T')[0] : ''
 
     const initialData = {
-        title: title || '',
+        title: title?.['en-US'] || '',
         date: formattedDate,
-        venue: venue || '',
+        venue: venue?.['en-US'] || '',
         registrationLink: registrationLinkText,
         description: descriptionText,
-        isRegOpen: isRegOpen || false,
+        isRegOpen: isRegOpen?.['en-US'] || false,
+        noMembers: noMembers?.['en-US'] || '',
     }
 
     return (
@@ -67,8 +113,8 @@ export default async function EditEventPage({ params }) {
             <EditEventClient
                 eventId={id}
                 initialData={initialData}
-                coverImage={coverImage}
-                galleryImages={galleryImages || []}
+                coverImage={coverImageAsset}
+                galleryImages={galleryImageAssets}
             />
         </div>
     )

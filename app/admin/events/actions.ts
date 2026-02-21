@@ -87,11 +87,17 @@ export async function createEvent(formData: FormData) {
     const venue = formData.get('venue') as string
     const registrationLink = formData.get('registrationLink') as string
     const description = formData.get('description') as string
-    const isRegOpen = formData.get('isRegOpen') === 'true'
+    const isRegOpenStr = formData.get('isRegOpen') as string
+    const isRegOpen = isRegOpenStr === 'true' || isRegOpenStr === 'on'
+    const noMembers = formData.get('noMembers') as string
     const coverImageFile = formData.get('coverImage') as File | null
 
     if (!title || !date) {
         throw new Error('Title and Date are required')
+    }
+
+    if (!noMembers || !/^\s*\d+\s*(?:-\s*\d+\s*)?$/.test(noMembers)) {
+        throw new Error('Team member value must be a number or a range (e.g. "4" or "2-4")')
     }
 
     const slug = generateSlug(title)
@@ -110,6 +116,7 @@ export async function createEvent(formData: FormData) {
             date: { 'en-US': date },
             venue: { 'en-US': venue },
             isRegOpen: { 'en-US': isRegOpen },
+            noMembers: { 'en-US': noMembers },
             registrationLink: { 'en-US': createRichTextDocument(registrationLink) },
             description: { 'en-US': createRichTextDocument(description) },
             galleryImages: { 'en-US': [] },
@@ -129,13 +136,20 @@ export async function updateEventDetails(formData: FormData) {
     const venue = formData.get('venue') as string
     const registrationLink = formData.get('registrationLink') as string
     const description = formData.get('description') as string
-    const isRegOpen = formData.get('isRegOpen') === 'true'
+    const isRegOpenStr = formData.get('isRegOpen') as string
+    const isRegOpen = isRegOpenStr === 'true' || isRegOpenStr === 'on'
+    const noMembers = formData.get('noMembers') as string
     const coverImageFile = formData.get('coverImage') as File | null
 
     if (!eventId) throw new Error('Event ID is required')
+    if (!noMembers || !/^\s*\d+\s*(?:-\s*\d+\s*)?$/.test(noMembers)) {
+        throw new Error('Team member value must be a number or a range (e.g. "4" or "2-4")')
+    }
 
     const environment = await getEnvironment()
     const entry = await environment.getEntry(eventId)
+
+    const isPublished = !!entry.sys.publishedVersion
 
     // Handle Title, Date, Venue
     entry.fields.title['en-US'] = title
@@ -145,6 +159,10 @@ export async function updateEventDetails(formData: FormData) {
     // Handle Registration Status
     if (!entry.fields.isRegOpen) entry.fields.isRegOpen = {}
     entry.fields.isRegOpen['en-US'] = isRegOpen
+
+    // Handle No. of Members
+    if (!entry.fields.noMembers) entry.fields.noMembers = {}
+    entry.fields.noMembers['en-US'] = noMembers
 
     // Handle Rich Text Fields
     entry.fields.registrationLink['en-US'] = createRichTextDocument(registrationLink)
@@ -167,7 +185,9 @@ export async function updateEventDetails(formData: FormData) {
     }
 
     const updatedEntry = await entry.update()
-    await updatedEntry.publish()
+    if (isPublished) {
+        await updatedEntry.publish()
+    }
 
     revalidatePath(`/admin/events/${eventId}`)
     revalidatePath('/admin/events')
@@ -238,6 +258,7 @@ export async function uploadEventImage(eventId: string, formData: FormData) {
 
     // Step 5: Link to Event
     const entry = await environment.getEntry(eventId)
+    const isPublished = !!entry.sys.publishedVersion
 
     if (!entry.fields.galleryImages) {
         entry.fields.galleryImages = { 'en-US': [] }
@@ -255,7 +276,9 @@ export async function uploadEventImage(eventId: string, formData: FormData) {
     })
 
     const updatedEntry = await entry.update()
-    await updatedEntry.publish()
+    if (isPublished) {
+        await updatedEntry.publish()
+    }
 
     revalidatePath(`/admin/events/${eventId}`)
 }
@@ -263,6 +286,7 @@ export async function uploadEventImage(eventId: string, formData: FormData) {
 export async function deleteEventImage(eventId: string, imageId: string) {
     const environment = await getEnvironment()
     const entry = await environment.getEntry(eventId)
+    const isPublished = !!entry.sys.publishedVersion
 
     if (entry.fields.galleryImages && entry.fields.galleryImages['en-US']) {
         entry.fields.galleryImages['en-US'] = entry.fields.galleryImages['en-US'].filter(
@@ -270,7 +294,9 @@ export async function deleteEventImage(eventId: string, imageId: string) {
         )
 
         const updatedEntry = await entry.update()
-        await updatedEntry.publish()
+        if (isPublished) {
+            await updatedEntry.publish()
+        }
     }
 
     // Optionally delete the asset itself? The prompt says "unlink it".
@@ -288,6 +314,7 @@ export async function uploadCoverImage(eventId: string, formData: FormData) {
     const asset = await uploadAsset(environment, file)
 
     const entry = await environment.getEntry(eventId)
+    const isPublished = !!entry.sys.publishedVersion
 
     if (!entry.fields.coverImage) {
         entry.fields.coverImage = {}
@@ -301,7 +328,9 @@ export async function uploadCoverImage(eventId: string, formData: FormData) {
     }
 
     const updatedEntry = await entry.update()
-    await updatedEntry.publish()
+    if (isPublished) {
+        await updatedEntry.publish()
+    }
 
     revalidatePath(`/admin/events/${eventId}`)
 }
@@ -309,13 +338,47 @@ export async function uploadCoverImage(eventId: string, formData: FormData) {
 export async function deleteCoverImage(eventId: string) {
     const environment = await getEnvironment()
     const entry = await environment.getEntry(eventId)
-
-    if (entry.fields.coverImage) {
-        delete entry.fields.coverImage['en-US']
-    }
+    const isPublished = !!entry.sys.publishedVersion
 
     const updatedEntry = await entry.update()
-    await updatedEntry.publish()
+    if (isPublished) {
+        await updatedEntry.publish()
+    }
 
     revalidatePath(`/admin/events/${eventId}`)
+}
+
+export async function publishEventAction(eventId: string) {
+    const environment = await getEnvironment()
+    const entry = await environment.getEntry(eventId)
+
+    // Check if the entry is unpublished/draft
+    await entry.publish()
+
+    revalidatePath('/admin/events')
+}
+
+export async function unpublishEventAction(eventId: string) {
+    const environment = await getEnvironment()
+    const entry = await environment.getEntry(eventId)
+
+    // Check if the entry is published
+    if (entry.sys.publishedVersion) {
+        await entry.unpublish()
+    }
+
+    revalidatePath('/admin/events')
+}
+
+export async function deleteEventAction(eventId: string) {
+    const environment = await getEnvironment()
+    const entry = await environment.getEntry(eventId)
+
+    // Check if the entry is published, it needs to be unpublished before deleting
+    if (entry.sys.publishedVersion) {
+        await entry.unpublish()
+    }
+
+    await entry.delete()
+    revalidatePath('/admin/events')
 }
