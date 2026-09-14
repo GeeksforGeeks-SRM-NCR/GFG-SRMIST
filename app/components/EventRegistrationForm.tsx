@@ -70,6 +70,25 @@ export default function EventRegistrationForm({
 		name: "members",
 	});
 
+	const cleanPhone = (phone?: string) => {
+		if (!phone) return "";
+		let digits = phone.replace(/[^0-9]/g, "");
+		if (digits.length > 10 && digits.startsWith("91")) {
+			digits = digits.slice(2);
+		}
+		return digits.slice(0, 10);
+	};
+
+	const cleanRegNo = (reg?: string) => {
+		if (!reg) return "";
+		const digits = reg
+			.toUpperCase()
+			.replace(/^RA/i, "")
+			.replace(/[^0-9]/g, "")
+			.slice(0, 13);
+		return digits ? `RA${digits}` : "";
+	};
+
 	const onSubmit = async (data: RegistrationFormValues) => {
 		setSubmitting(true);
 		try {
@@ -77,7 +96,11 @@ export default function EventRegistrationForm({
 				event_name: eventName || "General Event",
 				team_name: data.team_name,
 				college_name: data.college_name,
-				members: data.members,
+				members: data.members.map((m) => ({
+					...m,
+					phone: cleanPhone(m.phone),
+					regNumber: cleanRegNo(m.regNumber),
+				})),
 			};
 
 			const { error } = await supabase.from("registrations").insert([payload]);
@@ -162,30 +185,65 @@ export default function EventRegistrationForm({
 								className="p-3 bg-white/10 rounded-lg border border-white/20 outline-none placeholder:text-gray-500"
 							/>
 							<div className="flex flex-col">
-								<input
-									{...register(`members.${index}.regNumber`, {
-										required: "Required",
-										pattern: {
-											value: /^RA\d{13}$/i,
-											message: "Must start with RA and exactly 13 digits",
-										},
-									})}
-									placeholder="RAxxxxxxxxxxxxx"
-									maxLength={15}
-									onInput={(e) => {
-										const target = e.target as HTMLInputElement;
-										let val = target.value.toUpperCase();
-										if (!val.startsWith("RA")) {
-											val = "RA" + val.replace(/^RA/i, "");
-										}
-										const numbers = val.substring(2).replace(/[^0-9]/g, "");
-										target.value = "RA" + numbers.substring(0, 13);
-									}}
-									className={`p-3 w-full bg-white/10 rounded-lg border outline-none placeholder:text-gray-500 ${(errors.members?.[index] as { regNumber?: FieldError })?.regNumber ? "border-red-500" : "border-white/20"}`}
-								/>
-								{(errors.members?.[index] as { regNumber?: FieldError })?.regNumber && (
+								<div
+									className={`flex items-center w-full bg-white/10 rounded-lg border ${
+										(
+											errors.members?.[index] as {
+												regNumber?: import("react-hook-form").FieldError;
+											}
+										)?.regNumber
+											? "border-red-500"
+											: "border-white/20"
+									} focus-within:border-[#46b94e] transition-all overflow-hidden`}
+								>
+									<span className="px-3.5 py-3 text-white/70 font-semibold text-sm select-none border-r border-white/20 flex-shrink-0">
+										RA
+									</span>
+									<input
+										{...register(`members.${index}.regNumber`, {
+											required: "Registration number is required",
+											pattern: {
+												value: /^[0-9]{13}$/,
+												message: "Registration number must be exactly 13 digits",
+											},
+											minLength: {
+												value: 13,
+												message: "Registration number must be exactly 13 digits",
+											},
+											maxLength: {
+												value: 13,
+												message: "Registration number must be exactly 13 digits",
+											},
+										})}
+										placeholder="2311003010123"
+										type="text"
+										inputMode="numeric"
+										maxLength={13}
+										onInput={(e) => {
+											const target = e.target as HTMLInputElement;
+											let val = target.value.toUpperCase();
+											if (val.startsWith("RA")) {
+												val = val.replace(/^RA/i, "");
+											}
+											const numbers = val.replace(/[^0-9]/g, "");
+											target.value = numbers.slice(0, 13);
+										}}
+										className="w-full p-3 bg-transparent outline-none text-white placeholder:text-gray-500"
+									/>
+								</div>
+								{(
+									errors.members?.[index] as {
+										regNumber?: import("react-hook-form").FieldError;
+									}
+								)?.regNumber && (
 									<span className="text-red-500 text-xs mt-1 ml-1">
-										{(errors.members?.[index] as { regNumber?: FieldError })?.regNumber?.message}
+										{
+											(
+												errors.members?.[index] as {
+													regNumber?: import("react-hook-form").FieldError;
+												}
+											)?.regNumber?.message
+										}
 									</span>
 								)}
 							</div>
@@ -196,11 +254,66 @@ export default function EventRegistrationForm({
 								className="p-3 bg-white/10 rounded-lg border border-white/20 outline-none placeholder:text-gray-500"
 							/>
 
-							<input
-								{...register(`members.${index}.phone`, { required: true })}
-								placeholder="Phone Number *"
-								className="p-3 bg-white/10 rounded-lg border border-white/20 outline-none placeholder:text-gray-500"
-							/>
+							<div
+								className={`flex items-center w-full bg-white/10 rounded-lg border ${
+									(
+										errors.members?.[index] as {
+											phone?: import("react-hook-form").FieldError;
+										}
+									)?.phone
+										? "border-red-500"
+										: "border-white/20"
+								} focus-within:border-[#46b94e] transition-all overflow-hidden`}
+							>
+								<span className="px-3.5 py-3 text-white/70 font-semibold text-sm select-none border-r border-white/20 flex-shrink-0">
+									+91
+								</span>
+								<input
+									{...register(`members.${index}.phone`, {
+										required: "Phone number is required",
+										pattern: {
+											value: /^[0-9]{10}$/,
+											message: "Phone number must be exactly 10 digits",
+										},
+										minLength: {
+											value: 10,
+											message: "Phone number must be exactly 10 digits",
+										},
+										maxLength: {
+											value: 10,
+											message: "Phone number must be exactly 10 digits",
+										},
+									})}
+									placeholder="9876543210"
+									type="tel"
+									inputMode="numeric"
+									maxLength={10}
+									onInput={(e) => {
+										const target = e.target as HTMLInputElement;
+										let val = target.value.replace(/[^0-9]/g, "");
+										if (val.length > 10 && val.startsWith("91")) {
+											val = val.slice(2);
+										}
+										target.value = val.slice(0, 10);
+									}}
+									className="w-full p-3 bg-transparent outline-none text-white placeholder:text-gray-500"
+								/>
+							</div>
+							{(
+								errors.members?.[index] as {
+									phone?: import("react-hook-form").FieldError;
+								}
+							)?.phone && (
+								<p className="text-red-500 text-xs mt-1 ml-1">
+									{
+										(
+											errors.members?.[index] as {
+												phone?: import("react-hook-form").FieldError;
+											}
+										)?.phone?.message
+									}
+								</p>
+							)}
 							<div className="relative z-30">
 								<CustomSelect
 									control={control}

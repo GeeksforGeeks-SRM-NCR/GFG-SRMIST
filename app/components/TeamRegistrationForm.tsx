@@ -80,6 +80,25 @@ export default function TeamRegistrationForm({
 		setValue("event_name", eventName);
 	}, [eventName, setValue]);
 
+	const cleanPhone = (phone?: string) => {
+		if (!phone) return "";
+		let digits = phone.replace(/[^0-9]/g, "");
+		if (digits.length > 10 && digits.startsWith("91")) {
+			digits = digits.slice(2);
+		}
+		return digits.slice(0, 10);
+	};
+
+	const cleanRegNo = (reg?: string) => {
+		if (!reg) return "";
+		const digits = reg
+			.toUpperCase()
+			.replace(/^RA/i, "")
+			.replace(/[^0-9]/g, "")
+			.slice(0, 13);
+		return digits ? `RA${digits}` : "";
+	};
+
 	const onSubmit = async (data: FieldValues) => {
 		setSubmitting(true);
 		setErrorMessage("");
@@ -89,12 +108,12 @@ export default function TeamRegistrationForm({
 			for (let i = 1; i <= teamMemberCount; i++) {
 				teamMembers.push({
 					name: data[`member${i}_name`],
-					reg_no: data[`member${i}_reg_no`],
+					reg_no: cleanRegNo(data[`member${i}_reg_no`]),
 					year: data[`member${i}_year`],
 					branch: data[`member${i}_branch`],
 					section: data[`member${i}_section`],
 					email_id: data[`member${i}_email_id`],
-					phone_number: data[`member${i}_phone_number`],
+					phone_number: cleanPhone(data[`member${i}_phone_number`]),
 				});
 			}
 
@@ -104,12 +123,12 @@ export default function TeamRegistrationForm({
 				college_name: data.college_name,
 				leader: {
 					name: data.name,
-					reg_no: data.reg_no,
+					reg_no: cleanRegNo(data.reg_no),
 					year: data.year,
 					branch: data.branch,
 					section: data.section,
 					email_id: data.email_id,
-					phone_number: data.phone_number,
+					phone_number: cleanPhone(data.phone_number),
 				},
 				teamMembers,
 			};
@@ -226,30 +245,54 @@ export default function TeamRegistrationForm({
 					</div>
 					<div>
 						<label className={labelClasses}>Registration No.</label>
-						<input
-							{...register(`member${memberNumber}_reg_no`, {
-								required: "Required",
-								pattern: {
-									value: /^RA\d{13}$/i,
-									message: "Must start with RA and exactly 13 digits",
-								},
-							})}
-							placeholder="RAxxxxxxxxxxxxx"
-							maxLength={15}
-							onInput={(e) => {
-								const target = e.target as HTMLInputElement;
-								let val = target.value.toUpperCase();
-								if (!val.startsWith("RA")) {
-									val = "RA" + val.replace(/^RA/i, "");
-								}
-								const numbers = val.substring(2).replace(/[^0-9]/g, "");
-								target.value = "RA" + numbers.substring(0, 13);
-							}}
-							className={`${inputClasses} ${errors[`member${memberNumber}_reg_no`] ? "!border-red-500" : ""}`}
-						/>
+						<div
+							className={`flex items-center w-full bg-white/5 rounded-xl border ${
+								errors[`member${memberNumber}_reg_no`]
+									? "!border-red-500"
+									: "border-white/10"
+							} focus-within:border-[#46b94e] focus-within:bg-white/10 transition-all duration-300 focus-within:shadow-[0_0_20px_rgba(70,185,78,0.2)] overflow-hidden`}
+						>
+							<span className="px-4 py-4 text-white/70 font-semibold text-sm select-none border-r border-white/15 flex-shrink-0">
+								RA
+							</span>
+							<input
+								{...register(`member${memberNumber}_reg_no`, {
+									required: "Registration number is required",
+									pattern: {
+										value: /^[0-9]{13}$/,
+										message: "Registration number must be exactly 13 digits",
+									},
+									minLength: {
+										value: 13,
+										message: "Registration number must be exactly 13 digits",
+									},
+									maxLength: {
+										value: 13,
+										message: "Registration number must be exactly 13 digits",
+									},
+								})}
+								placeholder="2311003010123"
+								type="text"
+								inputMode="numeric"
+								maxLength={13}
+								onInput={(e) => {
+									const target = e.target as HTMLInputElement;
+									let val = target.value.toUpperCase();
+									if (val.startsWith("RA")) {
+										val = val.replace(/^RA/i, "");
+									}
+									const numbers = val.replace(/[^0-9]/g, "");
+									target.value = numbers.slice(0, 13);
+								}}
+								className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-500"
+							/>
+						</div>
 						{errors[`member${memberNumber}_reg_no`] && (
 							<p className="text-red-500 text-xs mt-1 ml-1">
-								{errors[`member${memberNumber}_reg_no`]?.message as string}
+								{
+									errors[`member${memberNumber}_reg_no`]
+										?.message as string
+								}
 							</p>
 						)}
 					</div>
@@ -299,25 +342,55 @@ export default function TeamRegistrationForm({
 					</div>
 					<div>
 						<label className={labelClasses}>Phone Number</label>
-						<input
-							{...register(`member${memberNumber}_phone_number`, {
-								required: true,
-								pattern: {
-									value: /^[0-9]{10}$/,
-									message: "Invalid Phone Number",
-								},
-								minLength: 10,
-								maxLength: 10,
-							})}
-							placeholder="Enter Your Mobile No."
-							type="tel"
-							maxLength={10}
-							onInput={(e) => {
-								const t = e.target as HTMLInputElement;
-								t.value = t.value.replace(/[^0-9]/g, "").slice(0, 10);
-							}}
-							className={inputClasses}
-						/>
+						<div
+							className={`flex items-center w-full bg-white/5 rounded-xl border ${
+								errors[`member${memberNumber}_phone_number`]
+									? "!border-red-500"
+									: "border-white/10"
+							} focus-within:border-[#46b94e] focus-within:bg-white/10 transition-all duration-300 focus-within:shadow-[0_0_20px_rgba(70,185,78,0.2)] overflow-hidden`}
+						>
+							<span className="px-4 py-4 text-white/70 font-semibold text-sm select-none border-r border-white/15 flex-shrink-0">
+								+91
+							</span>
+							<input
+								{...register(`member${memberNumber}_phone_number`, {
+									required: true,
+									pattern: {
+										value: /^[0-9]{10}$/,
+										message: "Phone number must be exactly 10 digits",
+									},
+									minLength: {
+										value: 10,
+										message: "Phone number must be exactly 10 digits",
+									},
+									maxLength: {
+										value: 10,
+										message: "Phone number must be exactly 10 digits",
+									},
+								})}
+								placeholder="9876543210"
+								type="tel"
+								inputMode="numeric"
+								maxLength={10}
+								onInput={(e) => {
+									const t = e.target as HTMLInputElement;
+									let val = t.value.replace(/[^0-9]/g, "");
+									if (val.length > 10 && val.startsWith("91")) {
+										val = val.slice(2);
+									}
+									t.value = val.slice(0, 10);
+								}}
+								className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-500"
+							/>
+						</div>
+						{errors[`member${memberNumber}_phone_number`] && (
+							<p className="text-red-500 text-xs mt-1 ml-1">
+								{
+									errors[`member${memberNumber}_phone_number`]
+										?.message as string
+								}
+							</p>
+						)}
 					</div>
 				</div>
 			</motion.div>
@@ -470,27 +543,46 @@ export default function TeamRegistrationForm({
 						</div>
 						<div>
 							<label className={labelClasses}>Registration No.</label>
-							<input
-								{...register("reg_no", {
-									required: "Required",
-									pattern: {
-										value: /^RA\d{13}$/i,
-										message: "Must start with RA and exactly 13 digits",
-									},
-								})}
-								placeholder="RAxxxxxxxxxxxxx"
-								maxLength={15}
-								onInput={(e) => {
-									const target = e.target as HTMLInputElement;
-									let val = target.value.toUpperCase();
-									if (!val.startsWith("RA")) {
-										val = "RA" + val.replace(/^RA/i, "");
-									}
-									const numbers = val.substring(2).replace(/[^0-9]/g, "");
-									target.value = "RA" + numbers.substring(0, 13);
-								}}
-								className={`${inputClasses} ${errors.reg_no ? "!border-red-500" : ""}`}
-							/>
+							<div
+								className={`flex items-center w-full bg-white/5 rounded-xl border ${
+									errors.reg_no ? "!border-red-500" : "border-white/10"
+								} focus-within:border-[#46b94e] focus-within:bg-white/10 transition-all duration-300 focus-within:shadow-[0_0_20px_rgba(70,185,78,0.2)] overflow-hidden`}
+							>
+								<span className="px-4 py-4 text-white/70 font-semibold text-sm select-none border-r border-white/15 flex-shrink-0">
+									RA
+								</span>
+								<input
+									{...register("reg_no", {
+										required: "Registration number is required",
+										pattern: {
+											value: /^[0-9]{13}$/,
+											message: "Registration number must be exactly 13 digits",
+										},
+										minLength: {
+											value: 13,
+											message: "Registration number must be exactly 13 digits",
+										},
+										maxLength: {
+											value: 13,
+											message: "Registration number must be exactly 13 digits",
+										},
+									})}
+									placeholder="2311003010123"
+									type="text"
+									inputMode="numeric"
+									maxLength={13}
+									onInput={(e) => {
+										const target = e.target as HTMLInputElement;
+										let val = target.value.toUpperCase();
+										if (val.startsWith("RA")) {
+											val = val.replace(/^RA/i, "");
+										}
+										const numbers = val.replace(/[^0-9]/g, "");
+										target.value = numbers.slice(0, 13);
+									}}
+									className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-500"
+								/>
+							</div>
 							{errors.reg_no && (
 								<p className="text-red-500 text-xs mt-1 ml-1">
 									{errors.reg_no.message as string}
@@ -541,25 +633,50 @@ export default function TeamRegistrationForm({
 						</div>
 						<div>
 							<label className={labelClasses}>Phone Number</label>
-							<input
-								{...register("phone_number", {
-									required: true,
-									pattern: {
-										value: /^[0-9]{10}$/,
-										message: "Invalid Phone Number",
-									},
-									minLength: 10,
-									maxLength: 10,
-								})}
-								placeholder="10-digit Mobile No."
-								type="tel"
-								maxLength={10}
-								onInput={(e) => {
-									const t = e.target as HTMLInputElement;
-									t.value = t.value.replace(/[^0-9]/g, "").slice(0, 10);
-								}}
-								className={inputClasses}
-							/>
+							<div
+								className={`flex items-center w-full bg-white/5 rounded-xl border ${
+									errors.phone_number ? "!border-red-500" : "border-white/10"
+								} focus-within:border-[#46b94e] focus-within:bg-white/10 transition-all duration-300 focus-within:shadow-[0_0_20px_rgba(70,185,78,0.2)] overflow-hidden`}
+							>
+								<span className="px-4 py-4 text-white/70 font-semibold text-sm select-none border-r border-white/15 flex-shrink-0">
+									+91
+								</span>
+								<input
+									{...register("phone_number", {
+										required: true,
+										pattern: {
+											value: /^[0-9]{10}$/,
+											message: "Phone number must be exactly 10 digits",
+										},
+										minLength: {
+											value: 10,
+											message: "Phone number must be exactly 10 digits",
+										},
+										maxLength: {
+											value: 10,
+											message: "Phone number must be exactly 10 digits",
+										},
+									})}
+									placeholder="9876543210"
+									type="tel"
+									inputMode="numeric"
+									maxLength={10}
+									onInput={(e) => {
+										const t = e.target as HTMLInputElement;
+										let val = t.value.replace(/[^0-9]/g, "");
+										if (val.length > 10 && val.startsWith("91")) {
+											val = val.slice(2);
+										}
+										t.value = val.slice(0, 10);
+									}}
+									className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-500"
+								/>
+							</div>
+							{errors.phone_number && (
+								<p className="text-red-500 text-xs mt-1 ml-1">
+									{errors.phone_number.message as string}
+								</p>
+							)}
 						</div>
 					</div>
 				</motion.div>
