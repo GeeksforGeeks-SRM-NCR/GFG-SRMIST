@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build"
+
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "RESEND_API_KEY"
+  SECRETS_SCAN_OMIT_PATHS = ".netlify/**, .next/**"
