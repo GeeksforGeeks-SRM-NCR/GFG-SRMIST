@@ -97,34 +97,34 @@ export default function RecruitmentManager({
 
 	// Lock body scroll and listen for Escape / Arrow keys when modal is open
 	useEffect(() => {
-	if (selectedApplicantIndex === null) {
-		document.body.style.overflow = "";
-		return;
-	}
-
-	document.body.style.overflow = "hidden";
-
-	const handleKeyDown = (e: KeyboardEvent) => {
-		if (e.key === "Escape") {
-			setSelectedApplicantIndex(null);
-		} else if (e.key === "ArrowLeft") {
-			setSelectedApplicantIndex((prev) =>
-				prev !== null && prev > 0 ? prev - 1 : prev,
-			);
-		} else if (e.key === "ArrowRight") {
-			setSelectedApplicantIndex((prev) =>
-				prev !== null && prev < selectedModalList.length - 1 ? prev + 1 : prev,
-			);
+		if (selectedApplicantIndex === null) {
+			document.body.style.overflow = "";
+			return;
 		}
-	};
 
-	window.addEventListener("keydown", handleKeyDown);
+		document.body.style.overflow = "hidden";
 
-	return () => {
-		document.body.style.overflow = "";
-		window.removeEventListener("keydown", handleKeyDown);
-	};
-}, [selectedApplicantIndex, selectedModalList.length]);
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape") {
+				setSelectedApplicantIndex(null);
+			} else if (e.key === "ArrowLeft") {
+				setSelectedApplicantIndex((prev) =>
+					prev !== null && prev > 0 ? prev - 1 : prev,
+				);
+			} else if (e.key === "ArrowRight") {
+				setSelectedApplicantIndex((prev) =>
+					prev !== null && prev < selectedModalList.length - 1 ? prev + 1 : prev,
+				);
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+
+		return () => {
+			document.body.style.overflow = "";
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [selectedApplicantIndex, selectedModalList.length]);
 
 	const handleCopy = (text: string, fieldName: string) => {
 		navigator.clipboard.writeText(text);
@@ -1060,5 +1060,3 @@ export default function RecruitmentManager({
 		</div>
 	);
 }
-
-

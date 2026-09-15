@@ -5,7 +5,7 @@ import {
 	useMotionValue,
 	useSpring,
 } from "framer-motion";
-import { Check, ChevronDown, Loader2 } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -42,6 +42,7 @@ const springValues = {
 export default function RecruitmentForm() {
 	const [submitting, setSubmitting] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const {
 		register,
 		handleSubmit,
@@ -110,6 +111,7 @@ export default function RecruitmentForm() {
 
 	const onSubmit = async (data: RecruitmentFormValues) => {
 		setSubmitting(true);
+		setErrorMessage(null);
 		try {
 			const payload = {
 				name: data.name,
@@ -135,9 +137,26 @@ export default function RecruitmentForm() {
 			setSubmitted(true);
 		} catch (err: unknown) {
 			console.error("Error Submitting:", err);
-			const message = err instanceof Error ? err.message : "Please try again";
-			console.error("Error message:", message);
-			alert(`Something went wrong: ${message}`);
+			let message = "Something went wrong. Please try again.";
+			if (err instanceof Error) {
+				if (
+					err.message.includes("recruitments_reg_no_key") ||
+					err.message.toLowerCase().includes("reg_no") ||
+					err.message.toLowerCase().includes("registration number")
+				) {
+					message =
+						"An application with this Registration Number has already been submitted.";
+				} else if (err.message.toLowerCase().includes("email")) {
+					message =
+						"An application with this email address has already been submitted.";
+				} else {
+					message = err.message.replace(
+						/^Failed to submit application:\s*/i,
+						"",
+					);
+				}
+			}
+			setErrorMessage(message);
 		} finally {
 			setSubmitting(false);
 		}
@@ -491,6 +510,32 @@ export default function RecruitmentForm() {
 						className={`${inputClasses} resize-none`}
 					/>
 				</motion.div>
+
+				<AnimatePresence>
+					{errorMessage && (
+						<motion.div
+							initial={{ opacity: 0, y: -10, scale: 0.98 }}
+							animate={{ opacity: 1, y: 0, scale: 1 }}
+							exit={{ opacity: 0, y: -10, scale: 0.98 }}
+							className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center justify-between gap-3 text-red-200 backdrop-blur-md shadow-[0_0_25px_rgba(239,68,68,0.15)]"
+						>
+							<div className="flex items-center gap-3">
+								<AlertCircle className="text-red-400 shrink-0" size={22} />
+								<span className="text-sm font-medium leading-relaxed">
+									{errorMessage}
+								</span>
+							</div>
+							<button
+								type="button"
+								onClick={() => setErrorMessage(null)}
+								className="text-red-400 hover:text-red-200 transition-colors p-1 rounded-lg hover:bg-white/5 shrink-0"
+								aria-label="Dismiss error"
+							>
+								<X size={18} />
+							</button>
+						</motion.div>
+					)}
+				</AnimatePresence>
 
 				<motion.button
 					variants={itemVariants}
