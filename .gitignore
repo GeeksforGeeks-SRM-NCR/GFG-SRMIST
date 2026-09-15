@@ -46,3 +46,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
+
+# Local review artifacts
+/pull_requests/
