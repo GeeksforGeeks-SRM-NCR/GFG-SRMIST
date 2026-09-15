@@ -149,6 +149,27 @@ export async function submitRecruitment(formData: RecruitmentFormData) {
 			"Error submitting recruitment:",
 			JSON.stringify(error, null, 2),
 		);
+		if (error.code === "23505") {
+			if (
+				error.message?.includes("reg_no") ||
+				error.details?.includes("reg_no")
+			) {
+				throw new Error(
+					"An application with this Registration Number has already been submitted.",
+				);
+			}
+			if (
+				error.message?.includes("email") ||
+				error.details?.includes("email")
+			) {
+				throw new Error(
+					"An application with this email address has already been submitted.",
+				);
+			}
+			throw new Error(
+				"An application with these details has already been submitted.",
+			);
+		}
 		throw new Error(
 			`Failed to submit application: ${error.message || "Unknown error"}`,
 		);

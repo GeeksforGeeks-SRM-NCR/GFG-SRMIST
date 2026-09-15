@@ -5,7 +5,7 @@ import {
 	useMotionValue,
 	useSpring,
 } from "framer-motion";
-import { Check, ChevronDown, Loader2 } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -42,6 +42,7 @@ const springValues = {
 export default function RecruitmentForm() {
 	const [submitting, setSubmitting] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const {
 		register,
 		handleSubmit,
@@ -89,15 +90,35 @@ export default function RecruitmentForm() {
 		rotateY.set(0);
 	}
 
+	const cleanPhone = (phone?: string) => {
+		if (!phone) return "";
+		let digits = phone.replace(/[^0-9]/g, "");
+		if (digits.length > 10 && digits.startsWith("91")) {
+			digits = digits.slice(2);
+		}
+		return digits.slice(0, 10);
+	};
+
+	const cleanRegNo = (reg?: string) => {
+		if (!reg) return "";
+		const digits = reg
+			.toUpperCase()
+			.replace(/^RA/i, "")
+			.replace(/[^0-9]/g, "")
+			.slice(0, 13);
+		return digits ? `RA${digits}` : "";
+	};
+
 	const onSubmit = async (data: RecruitmentFormValues) => {
 		setSubmitting(true);
+		setErrorMessage(null);
 		try {
 			const payload = {
 				name: data.name,
 				email_college: data.email_college,
 				email_personal: data.email_personal,
-				phone: data.phone,
-				reg_no: data.reg_no,
+				phone: cleanPhone(data.phone),
+				reg_no: cleanRegNo(data.reg_no),
 				year: parseInt(data.year),
 				section: data.section,
 				branch: data.branch,
@@ -116,9 +137,26 @@ export default function RecruitmentForm() {
 			setSubmitted(true);
 		} catch (err: unknown) {
 			console.error("Error Submitting:", err);
-			const message = err instanceof Error ? err.message : "Please try again";
-			console.error("Error message:", message);
-			alert(`Something went wrong: ${message}`);
+			let message = "Something went wrong. Please try again.";
+			if (err instanceof Error) {
+				if (
+					err.message.includes("recruitments_reg_no_key") ||
+					err.message.toLowerCase().includes("reg_no") ||
+					err.message.toLowerCase().includes("registration number")
+				) {
+					message =
+						"An application with this Registration Number has already been submitted.";
+				} else if (err.message.toLowerCase().includes("email")) {
+					message =
+						"An application with this email address has already been submitted.";
+				} else {
+					message = err.message.replace(
+						/^Failed to submit application:\s*/i,
+						"",
+					);
+				}
+			}
+			setErrorMessage(message);
 		} finally {
 			setSubmitting(false);
 		}
@@ -242,27 +280,46 @@ export default function RecruitmentForm() {
 					</motion.div>
 					<motion.div variants={itemVariants}>
 						<label className={labelClasses}>Registration No.</label>
-						<input
-							{...register("reg_no", {
-								required: "Required",
-								pattern: {
-									value: /^RA\d{13}$/i,
-									message: "Must start with RA and exactly 13 digits",
-								},
-							})}
-							placeholder="RAxxxxxxxxxxxxx"
-							maxLength={15}
-							onInput={(e) => {
-								const target = e.target as HTMLInputElement;
-								let val = target.value.toUpperCase();
-								if (!val.startsWith("RA")) {
-									val = "RA" + val.replace(/^RA/i, "");
-								}
-								const numbers = val.substring(2).replace(/[^0-9]/g, "");
-								target.value = "RA" + numbers.substring(0, 13);
-							}}
-							className={`${inputClasses} ${errors.reg_no ? "!border-red-500" : ""}`}
-						/>
+						<div
+							className={`flex items-center w-full bg-white/5 rounded-xl border ${
+								errors.reg_no ? "!border-red-500" : "border-white/10"
+							} focus-within:border-[#46b94e] focus-within:bg-white/10 transition-all duration-300 focus-within:shadow-[0_0_20px_rgba(70,185,78,0.2)] overflow-hidden`}
+						>
+							<span className="px-4 py-4 text-white/70 font-semibold text-sm select-none border-r border-white/15 flex-shrink-0">
+								RA
+							</span>
+							<input
+								{...register("reg_no", {
+									required: "Registration number is required",
+									pattern: {
+										value: /^[0-9]{13}$/,
+										message: "Registration number must be exactly 13 digits",
+									},
+									minLength: {
+										value: 13,
+										message: "Registration number must be exactly 13 digits",
+									},
+									maxLength: {
+										value: 13,
+										message: "Registration number must be exactly 13 digits",
+									},
+								})}
+								placeholder="2311003010123"
+								type="text"
+								inputMode="numeric"
+								maxLength={13}
+								onInput={(e) => {
+									const target = e.target as HTMLInputElement;
+									let val = target.value.toUpperCase();
+									if (val.startsWith("RA")) {
+										val = val.replace(/^RA/i, "");
+									}
+									const numbers = val.replace(/[^0-9]/g, "");
+									target.value = numbers.slice(0, 13);
+								}}
+								className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-500"
+							/>
+						</div>
 						{errors.reg_no && (
 							<p className="text-red-500 text-xs mt-1 ml-1">
 								{errors.reg_no.message as string}
@@ -292,12 +349,50 @@ export default function RecruitmentForm() {
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<motion.div variants={itemVariants}>
 						<label className={labelClasses}>Phone Number</label>
-						<input
-							{...register("phone", { required: true })}
-							placeholder="+91 "
-							type="tel"
-							className={inputClasses}
-						/>
+						<div
+							className={`flex items-center w-full bg-white/5 rounded-xl border ${
+								errors.phone ? "!border-red-500" : "border-white/10"
+							} focus-within:border-[#46b94e] focus-within:bg-white/10 transition-all duration-300 focus-within:shadow-[0_0_20px_rgba(70,185,78,0.2)] overflow-hidden`}
+						>
+							<span className="px-4 py-4 text-white/70 font-semibold text-sm select-none border-r border-white/15 flex-shrink-0">
+								+91
+							</span>
+							<input
+								{...register("phone", {
+									required: "Phone number is required",
+									pattern: {
+										value: /^[0-9]{10}$/,
+										message: "Phone number must be exactly 10 digits",
+									},
+									minLength: {
+										value: 10,
+										message: "Phone number must be exactly 10 digits",
+									},
+									maxLength: {
+										value: 10,
+										message: "Phone number must be exactly 10 digits",
+									},
+								})}
+								placeholder="9876543210"
+								type="tel"
+								inputMode="numeric"
+								maxLength={10}
+								onInput={(e) => {
+									const target = e.target as HTMLInputElement;
+									let val = target.value.replace(/[^0-9]/g, "");
+									if (val.length > 10 && val.startsWith("91")) {
+										val = val.slice(2);
+									}
+									target.value = val.slice(0, 10);
+								}}
+								className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-500"
+							/>
+						</div>
+						{errors.phone && (
+							<p className="text-red-500 text-xs mt-1 ml-1">
+								{errors.phone.message as string}
+							</p>
+						)}
 					</motion.div>
 					<motion.div variants={itemVariants} className="relative z-30">
 						<label className={labelClasses}>Year</label>
@@ -415,6 +510,32 @@ export default function RecruitmentForm() {
 						className={`${inputClasses} resize-none`}
 					/>
 				</motion.div>
+
+				<AnimatePresence>
+					{errorMessage && (
+						<motion.div
+							initial={{ opacity: 0, y: -10, scale: 0.98 }}
+							animate={{ opacity: 1, y: 0, scale: 1 }}
+							exit={{ opacity: 0, y: -10, scale: 0.98 }}
+							className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center justify-between gap-3 text-red-200 backdrop-blur-md shadow-[0_0_25px_rgba(239,68,68,0.15)]"
+						>
+							<div className="flex items-center gap-3">
+								<AlertCircle className="text-red-400 shrink-0" size={22} />
+								<span className="text-sm font-medium leading-relaxed">
+									{errorMessage}
+								</span>
+							</div>
+							<button
+								type="button"
+								onClick={() => setErrorMessage(null)}
+								className="text-red-400 hover:text-red-200 transition-colors p-1 rounded-lg hover:bg-white/5 shrink-0"
+								aria-label="Dismiss error"
+							>
+								<X size={18} />
+							</button>
+						</motion.div>
+					)}
+				</AnimatePresence>
 
 				<motion.button
 					variants={itemVariants}

@@ -1,7 +1,7 @@
 "use client";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { contentfulClient } from "@/lib/contentful";
 import DomeGallery from "../../../../components/DomeGallery";
@@ -16,9 +16,18 @@ interface EventWithGallery {
 
 export default function EventGalleryPage() {
 	const { slug } = useParams();
+	const router = useRouter();
 	const [event, setEvent] = useState<EventWithGallery | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
+
+	const handleBack = () => {
+		if (typeof window !== "undefined" && window.history.length > 1) {
+			router.back();
+		} else {
+			router.push("/pages/events");
+		}
+	};
 
 	useEffect(() => {
 		const checkMobile = () => {
@@ -84,12 +93,13 @@ export default function EventGalleryPage() {
 	return (
 		<div className="h-screen w-full bg-black relative overflow-hidden">
 			<div className="absolute top-4 left-4 md:top-6 md:left-6 z-50">
-				<Link
-					href={`/pages/events/${slug}`}
-					className="inline-flex items-center gap-1.5 md:gap-2 text-white/80 hover:text-[#46b94e] transition-colors bg-black/20 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-white/10 hover:border-[#46b94e]/50 text-sm md:text-base"
+				<button
+					type="button"
+					onClick={handleBack}
+					className="inline-flex items-center gap-1.5 md:gap-2 text-white/80 hover:text-[#46b94e] transition-colors bg-black/20 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-white/10 hover:border-[#46b94e]/50 text-sm md:text-base cursor-pointer"
 				>
 					<ArrowLeft size={16} className="md:w-5 md:h-5" /> Back
-				</Link>
+				</button>
 			</div>
 
 			{domeImages.length > 0 ? (
