@@ -96,9 +96,7 @@ export async function fetchRecruitments(startDate?: string, endDate?: string) {
 			"Error fetching recruitments:",
 			JSON.stringify(error, null, 2),
 		);
-		throw new Error(
-			`Failed to fetch recruitment data: ${error.message || "Unknown error"}`,
-		);
+		return [];
 	}
 
 	return data || [];
