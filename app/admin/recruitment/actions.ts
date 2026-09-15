@@ -120,13 +120,28 @@ interface RecruitmentFormData {
 
 export async function submitRecruitment(formData: RecruitmentFormData) {
 	const supabase = await createAdminClient();
+	const collegeId = formData.email_college.trim().toLowerCase();
+	const collegeIdPattern = /^[a-z]{2}[0-9]{4}$/;
+	const collegeEmailPattern = /^([a-z]{2}[0-9]{4})@srmist\.edu\.in$/;
+	const collegeIdMatch = collegeEmailPattern.exec(collegeId);
+	const normalizedCollegeEmail = collegeIdMatch
+		? `${collegeIdMatch[1]}@srmist.edu.in`
+		: collegeIdPattern.test(collegeId)
+			? `${collegeId}@srmist.edu.in`
+			: null;
+
+	if (!normalizedCollegeEmail) {
+		throw new Error(
+			"College ID must contain 2 letters followed by 4 digits and use the @srmist.edu.in domain.",
+		);
+	}
 
 	const { data, error } = await supabase
 		.from("recruitments")
 		.insert([
 			{
 				name: formData.name,
-				email_college: formData.email_college,
+				email_college: normalizedCollegeEmail,
 				email_personal: formData.email_personal,
 				phone: formData.phone,
 				reg_no: formData.reg_no,
