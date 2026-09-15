@@ -96,9 +96,7 @@ export async function fetchRecruitments(startDate?: string, endDate?: string) {
 			"Error fetching recruitments:",
 			JSON.stringify(error, null, 2),
 		);
-		throw new Error(
-			`Failed to fetch recruitment data: ${error.message || "Unknown error"}`,
-		);
+		return [];
 	}
 
 	return data || [];
@@ -122,13 +120,28 @@ interface RecruitmentFormData {
 
 export async function submitRecruitment(formData: RecruitmentFormData) {
 	const supabase = await createAdminClient();
+	const collegeId = formData.email_college.trim().toLowerCase();
+	const collegeIdPattern = /^[a-z]{2}[0-9]{4}$/;
+	const collegeEmailPattern = /^([a-z]{2}[0-9]{4})@srmist\.edu\.in$/;
+	const collegeIdMatch = collegeEmailPattern.exec(collegeId);
+	const normalizedCollegeEmail = collegeIdMatch
+		? `${collegeIdMatch[1]}@srmist.edu.in`
+		: collegeIdPattern.test(collegeId)
+			? `${collegeId}@srmist.edu.in`
+			: null;
+
+	if (!normalizedCollegeEmail) {
+		throw new Error(
+			"College ID must contain 2 letters followed by 4 digits and use the @srmist.edu.in domain.",
+		);
+	}
 
 	const { data, error } = await supabase
 		.from("recruitments")
 		.insert([
 			{
 				name: formData.name,
-				email_college: formData.email_college,
+				email_college: normalizedCollegeEmail,
 				email_personal: formData.email_personal,
 				phone: formData.phone,
 				reg_no: formData.reg_no,
@@ -145,35 +158,39 @@ export async function submitRecruitment(formData: RecruitmentFormData) {
 		.select();
 
 	if (error) {
-		console.error(
-			"Error submitting recruitment:",
-			JSON.stringify(error, null, 2),
-		);
+		//console.warn("Recruitment submission rejected:", error.message);
 		if (error.code === "23505") {
 			if (
 				error.message?.includes("reg_no") ||
 				error.details?.includes("reg_no")
 			) {
-				throw new Error(
-					"An application with this Registration Number has already been submitted.",
-				);
+				return {
+					success: false,
+					error:
+						"An application with this Registration Number has already been submitted.",
+				};
 			}
 			if (
 				error.message?.includes("email") ||
 				error.details?.includes("email")
 			) {
-				throw new Error(
-					"An application with this email address has already been submitted.",
-				);
+				return {
+					success: false,
+					error:
+						"An application with this email address has already been submitted.",
+				};
 			}
-			throw new Error(
-				"An application with these details has already been submitted.",
-			);
+			return {
+				success: false,
+				error:
+					"An application with these details has already been submitted.",
+			};
 		}
-		throw new Error(
-			`Failed to submit application: ${error.message || "Unknown error"}`,
-		);
+		return {
+			success: false,
+			error: `Failed to submit application: ${error.message || "Unknown error"}`,
+		};
 	}
 
-	return data;
+	return { success: true, data };
 }

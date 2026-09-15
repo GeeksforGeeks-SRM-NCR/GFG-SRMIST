@@ -113,9 +113,10 @@ export default function RecruitmentForm() {
 		setSubmitting(true);
 		setErrorMessage(null);
 		try {
+			const collegeId = data.email_college.trim().toLowerCase();
 			const payload = {
 				name: data.name,
-				email_college: data.email_college,
+				email_college: `${collegeId}@srmist.edu.in`,
 				email_personal: data.email_personal,
 				phone: cleanPhone(data.phone),
 				reg_no: cleanRegNo(data.reg_no),
@@ -131,32 +132,20 @@ export default function RecruitmentForm() {
 
 			console.log("Submitting payload:", payload);
 
-			await submitRecruitment(payload);
+			const res = await submitRecruitment(payload);
+
+			if (!res.success) {
+				setErrorMessage(
+					res.error || "Failed to submit application. Please try again.",
+				);
+				return;
+			}
 
 			console.log("Successfully submitted application");
 			setSubmitted(true);
 		} catch (err: unknown) {
 			console.error("Error Submitting:", err);
-			let message = "Something went wrong. Please try again.";
-			if (err instanceof Error) {
-				if (
-					err.message.includes("recruitments_reg_no_key") ||
-					err.message.toLowerCase().includes("reg_no") ||
-					err.message.toLowerCase().includes("registration number")
-				) {
-					message =
-						"An application with this Registration Number has already been submitted.";
-				} else if (err.message.toLowerCase().includes("email")) {
-					message =
-						"An application with this email address has already been submitted.";
-				} else {
-					message = err.message.replace(
-						/^Failed to submit application:\s*/i,
-						"",
-					);
-				}
-			}
-			setErrorMessage(message);
+			setErrorMessage("An unexpected error occurred. Please try again.");
 		} finally {
 			setSubmitting(false);
 		}
@@ -328,12 +317,41 @@ export default function RecruitmentForm() {
 					</motion.div>
 					<motion.div variants={itemVariants}>
 						<label className={labelClasses}>College ID</label>
-						<input
-							{...register("email_college", { required: true })}
-							placeholder="Enter your College ID"
-							type="email"
-							className={inputClasses}
-						/>
+						<div
+							className={`flex items-center w-full bg-white/5 rounded-xl border ${
+								errors.email_college ? "!border-red-500" : "border-white/10"
+							} focus-within:border-[#46b94e] focus-within:bg-white/10 transition-all duration-300 focus-within:shadow-[0_0_20px_rgba(70,185,78,0.2)] overflow-hidden`}
+						>
+							<input
+								{...register("email_college", {
+									required: "College ID is required",
+									pattern: {
+										value: /^[A-Za-z]{2}[0-9]{4}$/,
+										message:
+											"College ID must contain 2 letters followed by 4 digits",
+									},
+									onChange: (event) => {
+										event.target.value = event.target.value
+											.replace(/[^a-zA-Z0-9]/g, "")
+											.slice(0, 6);
+									},
+								})}
+								placeholder="ab1234"
+								type="text"
+								inputMode="text"
+								autoCapitalize="none"
+								maxLength={6}
+								className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-500"
+							/>
+							<span className="px-4 py-4 text-white/70 font-semibold text-sm select-none border-l border-white/15 flex-shrink-0">
+								@srmist.edu.in
+							</span>
+						</div>
+						{errors.email_college && (
+							<p className="text-red-500 text-xs mt-1 ml-1">
+								{errors.email_college.message as string}
+							</p>
+						)}
 					</motion.div>
 					<motion.div variants={itemVariants}>
 						<label className={labelClasses}>Personal Email ID</label>
