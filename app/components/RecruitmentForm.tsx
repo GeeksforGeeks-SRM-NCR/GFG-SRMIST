@@ -132,32 +132,20 @@ export default function RecruitmentForm() {
 
 			console.log("Submitting payload:", payload);
 
-			await submitRecruitment(payload);
+			const res = await submitRecruitment(payload);
+
+			if (!res.success) {
+				setErrorMessage(
+					res.error || "Failed to submit application. Please try again.",
+				);
+				return;
+			}
 
 			console.log("Successfully submitted application");
 			setSubmitted(true);
 		} catch (err: unknown) {
 			console.error("Error Submitting:", err);
-			let message = "Something went wrong. Please try again.";
-			if (err instanceof Error) {
-				if (
-					err.message.includes("recruitments_reg_no_key") ||
-					err.message.toLowerCase().includes("reg_no") ||
-					err.message.toLowerCase().includes("registration number")
-				) {
-					message =
-						"An application with this Registration Number has already been submitted.";
-				} else if (err.message.toLowerCase().includes("email")) {
-					message =
-						"An application with this email address has already been submitted.";
-				} else {
-					message = err.message.replace(
-						/^Failed to submit application:\s*/i,
-						"",
-					);
-				}
-			}
-			setErrorMessage(message);
+			setErrorMessage("An unexpected error occurred. Please try again.");
 		} finally {
 			setSubmitting(false);
 		}
