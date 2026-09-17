@@ -35,6 +35,9 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 				email_id: data.leader.email_id,
 				phone_number: data.leader.phone_number,
 				role: "leader",
+				college_name: data.college_name || "SRM Institute of Science and Technology",
+				project_idea: data.project_idea || "Not Applicable",
+				project_description: data.project_description || "Not Applicable",
 			},
 			...data.teamMembers.map((member) => ({
 				name: member.name,
@@ -45,23 +48,36 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 				email_id: member.email_id,
 				phone_number: member.phone_number,
 				role: "member",
+				college_name: data.college_name || "SRM Institute of Science and Technology",
 			})),
 		];
 
 		const memberCount = members.length;
 
 		if (memberCount < 2) {
-			throw new Error(
-				"Minimum 2 members required (1 leader + at least 1 team member)",
-			);
+			return {
+				success: false,
+				message:
+					"Minimum 2 members required (1 leader + at least 1 team member)",
+			};
 		}
 
 		if (memberCount > 4) {
-			throw new Error("Maximum 4 members allowed (1 leader + 3 team members)");
+			return {
+				success: false,
+				message: "Maximum 4 members allowed (1 leader + 3 team members)",
+			};
 		}
 
 		// Use team name from form data
-		const teamName = data.team_name;
+		const teamName = data.team_name?.trim();
+
+		if (!teamName) {
+			return {
+				success: false,
+				message: "Team name is required.",
+			};
+		}
 
 		// Use college name from form data (with default)
 		const collegeName =
@@ -69,18 +85,20 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 
 		const eventNameForQuery = data.event_name || "General Registration";
 
-		// Check for duplicate team name (case-insensitive)
+		// Check for duplicate team name (case-insensitive) using event_id column
 		const { data: existingTeams, error: checkError } = await supabase
 			.from("registrations")
 			.select("id")
-			.eq("event_name", eventNameForQuery)
+			.eq("event_id", eventNameForQuery)
 			.ilike("team_name", teamName)
 			.limit(1);
 
 		if (checkError) {
 			console.error("Error checking for duplicate team names:", checkError);
-			// We'll proceed or throw depending on how strict we want to be, but let's throw to be safe
-			throw new Error("Failed to verify team name availability.");
+			return {
+				success: false,
+				message: "Failed to verify team name availability. Please try again.",
+			};
 		}
 
 		if (existingTeams && existingTeams.length > 0) {
@@ -91,13 +109,9 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 		}
 
 		const registrationData = {
-			event_name: eventNameForQuery,
+			event_id: eventNameForQuery,
 			team_name: teamName,
-			college_name: collegeName,
 			members: members,
-			member_count: memberCount,
-			project_idea: data.project_idea || "Not Applicable",
-			project_description: data.project_description || "Not Applicable",
 		};
 
 		console.log("Inserting registration data:", registrationData);
@@ -110,7 +124,10 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 
 		if (error) {
 			console.error("Supabase error:", error);
-			throw new Error(`Failed to submit registration: ${error.message}`);
+			return {
+				success: false,
+				message: `Failed to submit registration: ${error.message}`,
+			};
 		}
 
 		console.log("Successfully inserted registration:", insertedData);
@@ -122,6 +139,12 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 		};
 	} catch (error) {
 		console.error("Error in submitTeamRegistration:", error);
-		throw error;
+		return {
+			success: false,
+			message:
+				error instanceof Error
+					? error.message
+					: "An unexpected error occurred while submitting registration. Please try again.",
+		};
 	}
 }

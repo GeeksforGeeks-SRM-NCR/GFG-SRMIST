@@ -52,7 +52,7 @@ export interface EventFields {
 	date: string;
 	endDate?: string;
 	venue?: string;
-	noMembers?: number;
+	noMembers?: string | number;
 	eventType?: string;
 	coverImage?: ContentfulAssetLink;
 	galleryImages?: ContentfulAssetLink[];

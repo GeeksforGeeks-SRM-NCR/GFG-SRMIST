@@ -93,11 +93,11 @@ export default function EventRegistrationForm({
 		setSubmitting(true);
 		try {
 			const payload = {
-				event_name: eventName || "General Event",
+				event_id: eventName || "General Event",
 				team_name: data.team_name,
-				college_name: data.college_name,
 				members: data.members.map((m) => ({
 					...m,
+					college_name: data.college_name,
 					phone: cleanPhone(m.phone),
 					regNumber: cleanRegNo(m.regNumber),
 				})),

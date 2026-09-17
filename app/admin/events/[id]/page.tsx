@@ -161,7 +161,7 @@ export default async function EditEventPage({
 		registrationLink: registrationLinkText,
 		description: descriptionText,
 		isRegOpen: (isRegOpen?.["en-US"] as boolean) || false,
-		noMembers: noMembers?.["en-US"] as number | "",
+		noMembers: (noMembers?.["en-US"] as string | number) ?? "",
 	};
 
 	return (
