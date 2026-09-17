@@ -35,6 +35,9 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 				email_id: data.leader.email_id,
 				phone_number: data.leader.phone_number,
 				role: "leader",
+				college_name: data.college_name || "SRM Institute of Science and Technology",
+				project_idea: data.project_idea || "Not Applicable",
+				project_description: data.project_description || "Not Applicable",
 			},
 			...data.teamMembers.map((member) => ({
 				name: member.name,
@@ -45,6 +48,7 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 				email_id: member.email_id,
 				phone_number: member.phone_number,
 				role: "member",
+				college_name: data.college_name || "SRM Institute of Science and Technology",
 			})),
 		];
 
@@ -69,17 +73,16 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 
 		const eventNameForQuery = data.event_name || "General Registration";
 
-		// Check for duplicate team name (case-insensitive)
+		// Check for duplicate team name (case-insensitive) using event_id column
 		const { data: existingTeams, error: checkError } = await supabase
 			.from("registrations")
 			.select("id")
-			.eq("event_name", eventNameForQuery)
+			.eq("event_id", eventNameForQuery)
 			.ilike("team_name", teamName)
 			.limit(1);
 
 		if (checkError) {
 			console.error("Error checking for duplicate team names:", checkError);
-			// We'll proceed or throw depending on how strict we want to be, but let's throw to be safe
 			throw new Error("Failed to verify team name availability.");
 		}
 
@@ -91,13 +94,9 @@ export async function submitTeamRegistration(data: TeamRegistrationData) {
 		}
 
 		const registrationData = {
-			event_name: eventNameForQuery,
+			event_id: eventNameForQuery,
 			team_name: teamName,
-			college_name: collegeName,
 			members: members,
-			member_count: memberCount,
-			project_idea: data.project_idea || "Not Applicable",
-			project_description: data.project_description || "Not Applicable",
 		};
 
 		console.log("Inserting registration data:", registrationData);

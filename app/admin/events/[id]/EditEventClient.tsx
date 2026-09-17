@@ -18,7 +18,7 @@ interface EditEventClientProps {
 		title: string;
 		date: string;
 		venue: string;
-		noMembers: number | "";
+		noMembers: string | number | "";
 		registrationLink: string;
 		description: string;
 		isRegOpen: boolean;

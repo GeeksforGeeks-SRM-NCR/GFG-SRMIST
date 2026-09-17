@@ -25,7 +25,10 @@ export async function fetchRegistrations(startDate?: string, endDate?: string) {
 			return [];
 		}
 
-		return data || [];
+		return (data || []).map((item: any) => ({
+			...item,
+			event_name: item.event_name || item.event_id,
+		}));
 	} catch (error) {
 		console.error("Error in fetchRegistrations:", error);
 		return [];
