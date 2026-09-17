@@ -88,18 +88,25 @@ export default function CustomSelect<T extends FieldValues = FieldValues>({
 										animate={{ opacity: 1, y: 0 }}
 										exit={{ opacity: 0, y: -10 }}
 										transition={{ duration: 0.15 }}
-										className="absolute z-[60] w-full mt-2 bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)]"
+										className="absolute z-[100] w-full mt-2 bg-[#1a1a1a] backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.9)]"
 									>
 										<div
 											className="max-h-60 overflow-y-auto custom-scrollbar pointer-events-auto rounded-xl shadow-inner scroll-smooth"
 											onWheel={(e) => e.stopPropagation()}
 											onTouchMove={(e) => e.stopPropagation()}
+											onMouseDown={(e) => e.stopPropagation()}
 										>
 											{options.map((opt: SelectOption) => (
 												<div
 													key={opt.value}
 													className={`px-4 py-3 cursor-pointer text-sm transition-colors ${value === opt.value ? "bg-[#46b94e]/20 text-[#46b94e] font-medium border-l-2 border-[#46b94e]" : "text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent"}`}
-													onClick={() => {
+													onMouseDown={(e) => {
+														e.preventDefault();
+														e.stopPropagation();
+													}}
+													onClick={(e) => {
+														e.preventDefault();
+														e.stopPropagation();
 														onChange(opt.value);
 														setIsOpen(false);
 													}}
