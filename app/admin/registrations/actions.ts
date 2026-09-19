@@ -25,10 +25,36 @@ export async function fetchRegistrations(startDate?: string, endDate?: string) {
 			return [];
 		}
 
-		return (data || []).map((item: any) => ({
-			...item,
-			event_name: item.event_name || item.event_id,
-		}));
+		return (data || []).map((item: any) => {
+			const membersList = Array.isArray(item.members) ? item.members : [];
+			const leaderOrFirst =
+				membersList.find((m: any) => m.role === "leader") ||
+				membersList[0] ||
+				{};
+			const projectIdea =
+				item.project_idea ||
+				leaderOrFirst.project_idea ||
+				membersList.find((m: any) => m.project_idea)?.project_idea ||
+				"";
+			const projectDescription =
+				item.project_description ||
+				leaderOrFirst.project_description ||
+				membersList.find((m: any) => m.project_description)?.project_description ||
+				"";
+			const collegeName =
+				item.college_name ||
+				leaderOrFirst.college_name ||
+				"SRM Institute of Science and Technology";
+
+			return {
+				...item,
+				event_name: item.event_name || item.event_id || "General Event",
+				member_count: item.member_count ?? membersList.length,
+				college_name: collegeName,
+				project_idea: projectIdea,
+				project_description: projectDescription,
+			};
+		});
 	} catch (error) {
 		console.error("Error in fetchRegistrations:", error);
 		return [];

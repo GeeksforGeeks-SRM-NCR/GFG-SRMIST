@@ -412,7 +412,7 @@ export default function RecruitmentForm() {
 							</p>
 						)}
 					</motion.div>
-					<motion.div variants={itemVariants} className="relative z-30">
+					<motion.div variants={itemVariants} className="relative z-[50]">
 						<label className={labelClasses}>Year</label>
 						<CustomSelect
 							control={control}
@@ -423,7 +423,7 @@ export default function RecruitmentForm() {
 							className={inputClasses}
 						/>
 					</motion.div>
-					<motion.div variants={itemVariants} className="relative z-30">
+					<motion.div variants={itemVariants} className="relative z-[40]">
 						<label className={labelClasses}>Section</label>
 						<CustomSelect
 							control={control}
@@ -436,7 +436,7 @@ export default function RecruitmentForm() {
 					</motion.div>
 				</div>
 
-				<motion.div variants={itemVariants} className="relative z-20">
+				<motion.div variants={itemVariants} className="relative z-[30]">
 					<label className={labelClasses}>Branch</label>
 					<CustomSelect
 						control={control}
@@ -449,7 +449,7 @@ export default function RecruitmentForm() {
 				</motion.div>
 
 				{/* Team Preference */}
-				<motion.div variants={itemVariants} className="relative z-10">
+				<motion.div variants={itemVariants} className="relative z-[20]">
 					<label className="block text-lg font-semibold text-[#46b94e] mb-3">
 						Preferred Domain
 					</label>
