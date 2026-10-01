@@ -148,15 +148,26 @@ export default async function EditEventPage({
 		description?.["en-US"] as string | RichTextNode | null | undefined,
 	);
 
-	// Format date for input (YYYY-MM-DD)
+	// Format date (YYYY-MM-DD) and time (HH:mm) for inputs
 	const rawDate = date?.["en-US"] as string | undefined;
-	const formattedDate = rawDate
-		? (new Date(rawDate).toISOString().split("T")[0] ?? "")
-		: "";
+	let formattedDate = "";
+	let formattedTime = "00:00";
+
+	if (rawDate) {
+		if (rawDate.includes("T")) {
+			const parts = rawDate.split("T");
+			formattedDate = parts[0] || "";
+			const timeMatch = parts[1]?.match(/^(\d{2}:\d{2})/);
+			formattedTime = timeMatch && timeMatch[1] ? timeMatch[1] : "00:00";
+		} else {
+			formattedDate = rawDate;
+		}
+	}
 
 	const initialData = {
 		title: (title?.["en-US"] as string) || "",
 		date: formattedDate,
+		time: formattedTime,
 		venue: (venue?.["en-US"] as string) || "",
 		registrationLink: registrationLinkText,
 		description: descriptionText,

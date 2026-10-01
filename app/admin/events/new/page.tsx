@@ -26,16 +26,30 @@ export default function NewEventPage() {
 						/>
 					</div>
 
-					<div>
-						<label className="block text-sm font-medium text-white/60 mb-2">
-							Date
-						</label>
-						<input
-							type="date"
-							name="date"
-							required
-							className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-						/>
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+						<div>
+							<label className="block text-sm font-medium text-white/60 mb-2">
+								Date *
+							</label>
+							<input
+								type="date"
+								name="date"
+								required
+								className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors [color-scheme:dark]"
+							/>
+						</div>
+
+						<div>
+							<label className="block text-sm font-medium text-white/60 mb-2">
+								Time
+							</label>
+							<input
+								type="time"
+								name="time"
+								defaultValue="00:00"
+								className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 transition-colors [color-scheme:dark]"
+							/>
+						</div>
 					</div>
 
 					<div>

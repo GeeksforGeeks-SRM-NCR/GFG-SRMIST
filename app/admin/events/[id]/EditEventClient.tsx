@@ -17,6 +17,7 @@ interface EditEventClientProps {
 	initialData: {
 		title: string;
 		date: string;
+		time: string;
 		venue: string;
 		noMembers: string | number | "";
 		registrationLink: string;

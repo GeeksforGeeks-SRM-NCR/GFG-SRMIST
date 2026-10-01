@@ -194,10 +194,12 @@ export default async function EventsDashboard() {
 											</svg>
 											<span className="truncate">
 												{date
-													? new Date(date).toLocaleDateString("en-US", {
+													? new Date(date).toLocaleString("en-US", {
 															year: "numeric",
 															month: "short",
 															day: "numeric",
+															hour: "2-digit",
+															minute: "2-digit",
 														})
 													: "No date set"}
 											</span>

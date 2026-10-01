@@ -91,6 +91,7 @@ async function uploadAsset(
 export async function createEvent(formData: FormData) {
 	const title = formData.get("title") as string;
 	const date = formData.get("date") as string;
+	const time = (formData.get("time") as string) || "00:00";
 	const venue = formData.get("venue") as string;
 	const registrationLink = formData.get("registrationLink") as string;
 	const description = formData.get("description") as string;
@@ -120,11 +121,13 @@ export async function createEvent(formData: FormData) {
 		};
 	}
 
+	const fullDateTime = time ? `${date}T${time}:00` : date;
+
 	const entry = await environment.createEntry("event", {
 		fields: {
 			title: { "en-US": title },
 			slug: { "en-US": slug },
-			date: { "en-US": date },
+			date: { "en-US": fullDateTime },
 			venue: { "en-US": venue },
 			isRegOpen: { "en-US": isRegOpen },
 			noMembers: { "en-US": noMembers },
@@ -144,6 +147,7 @@ export async function updateEventDetails(formData: FormData) {
 	const eventId = formData.get("eventId") as string;
 	const title = formData.get("title") as string;
 	const date = formData.get("date") as string;
+	const time = (formData.get("time") as string) || "00:00";
 	const venue = formData.get("venue") as string;
 	const registrationLink = formData.get("registrationLink") as string;
 	const description = formData.get("description") as string;
@@ -165,8 +169,9 @@ export async function updateEventDetails(formData: FormData) {
 	const isPublished = !!entry.sys.publishedVersion;
 
 	// Handle Title, Date, Venue
+	const fullDateTime = time ? `${date}T${time}:00` : date;
 	entry.fields.title["en-US"] = title;
-	entry.fields.date["en-US"] = date;
+	entry.fields.date["en-US"] = fullDateTime;
 	entry.fields.venue["en-US"] = venue;
 
 	// Handle Registration Status
